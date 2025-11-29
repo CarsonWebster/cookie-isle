@@ -39,7 +39,7 @@ buildExpired = false
   ]
 
   # Call to action link (for Order Now button)
-  contact_url = "/contact"
+  contact_url = "contact"
 
   # Color scheme - customize your site colors here
   # NOTE: This must come AFTER all simple key-value pairs in [params]

@@ -1,10 +1,12 @@
 {{ define "main" }}
 <section class="error-page">
-  <div class="error-content">
-    <h1>404</h1>
-    <h2>Oops! This cookie crumbled.</h2>
-    <p>We couldn't find the page you're looking for. Maybe it got eaten?</p>
-    <a href="/" class="btn">Back to the Bakery</a>
-  </div>
+    <div class="error-content">
+        <h1>404</h1>
+        <h2>Oops! This cookie crumbled.</h2>
+        <p>We couldn't find the page you're looking for. Maybe it got eaten?</p>
+        <a href="{{ site.Home.RelPermalink }}" class="btn"
+            >Back to the Bakery</a
+        >
+    </div>
 </section>
 {{ end }}

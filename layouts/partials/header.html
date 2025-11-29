@@ -1,8 +1,8 @@
 <header class="site-header">
     <div class="container">
-        <a href="{{ "/" | relURL }}" class="logo">
+        <a href="{{ site.Home.RelPermalink }}" class="logo">
             {{ with site.Params.logo }}
-            <img src="{{ . }}" alt="{{ site.Title }}" class="logo-image" />
+            <img src="{{ . | relURL }}" alt="{{ site.Title }}" class="logo-image" />
             {{ else }}
             <span class="logo-icon">🍪</span>
             <span class="logo-text">{{ site.Title }}</span>
@@ -12,11 +12,11 @@
         {{/* Desktop Navigation */}}
         <nav class="main-nav">
             <ul>
-                <li><a href="{{ "/" | relURL }}">Home</a></li>
-                <li><a href="{{ "/menu/" | relURL }}">Menu</a></li>
-                <li><a href="{{ "/about/" | relURL }}">About</a></li>
+                <li><a href="{{ site.Home.RelPermalink }}">Home</a></li>
+                <li><a href="{{ "menu/" | relURL }}">Menu</a></li>
+                <li><a href="{{ "about/" | relURL }}">About</a></li>
                 {{ with site.Params.contact_url }}
-                <li><a href="{{ . }}" class="btn btn-nav">Order Now</a></li>
+                <li><a href="{{ . | relURL }}" class="btn btn-nav">Order Now</a></li>
                 {{ end }}
             </ul>
         </nav>
@@ -36,9 +36,9 @@
 {{/* Mobile Slide-out Navigation */}}
 <nav class="mobile-nav" id="mobile-nav" aria-hidden="true">
     <div class="mobile-nav-header">
-        <a href="{{ "/" | relURL }}" class="logo">
+        <a href="{{ site.Home.RelPermalink }}" class="logo">
             {{ with site.Params.logo }}
-            <img src="{{ . }}" alt="{{ site.Title }}" class="logo-image" />
+            <img src="{{ . | relURL }}" alt="{{ site.Title }}" class="logo-image" />
             {{ else }}
             <span class="logo-icon">🍪</span>
             <span class="logo-text">{{ site.Title }}</span>
@@ -53,14 +53,14 @@
     </div>
 
     <ul class="mobile-nav-links">
-        <li><a href="{{ "/" | relURL }}">Home</a></li>
-        <li><a href="{{ "/menu/" | relURL }}">Menu</a></li>
-        <li><a href="{{ "/about/" | relURL }}">About</a></li>
+        <li><a href="{{ site.Home.RelPermalink }}">Home</a></li>
+        <li><a href="{{ "menu/" | relURL }}">Menu</a></li>
+        <li><a href="{{ "about/" | relURL }}">About</a></li>
     </ul>
 
     {{ with site.Params.contact_url }}
     <div class="mobile-nav-cta">
-        <a href="{{ . }}" class="btn">Order Now</a>
+        <a href="{{ . | relURL }}" class="btn">Order Now</a>
     </div>
     {{ end }}
 

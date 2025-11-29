@@ -5,7 +5,7 @@
         <h2 class="section-title">Featured Treats</h2>
         {{ partial "menu-grid.html" (dict "context" . "featured_only" true) }}
         <div style="text-align: center; margin-top: var(--space-lg)">
-            <a href="/menu/" class="btn">View Full Menu</a>
+            <a href="{{ "menu/" | relURL }}" class="btn">View Full Menu</a>
         </div>
     </div>
 </section>

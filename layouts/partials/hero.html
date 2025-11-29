@@ -8,9 +8,9 @@
         {{ end }} {{ with .Content }}
         <div class="hero-description">{{ . }}</div>
         {{ end }} {{ with .Params.cta }}
-        <a href="/menu/" class="btn hero-cta">{{ . }}</a>
+        <a href="{{ "menu/" | relURL }}" class="btn hero-cta">{{ . }}</a>
         {{ else }}
-        <a href="/menu/" class="btn hero-cta">View Our Menu</a>
+        <a href="{{ "menu/" | relURL }}" class="btn hero-cta">View Our Menu</a>
         {{ end }}
     </div>
 </section>

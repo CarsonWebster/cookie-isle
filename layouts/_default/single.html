@@ -5,7 +5,7 @@
         {{ if eq .Section "menu" }}
         <div class="menu-item-hero">
             {{ with .Params.image }}
-            <img src="{{ . }}" alt="{{ $.Title }}" />
+            <img src="{{ . | relURL }}" alt="{{ $.Title }}" />
             {{ else }}
             <div class="menu-item-hero-placeholder">
                 <span>🍪</span>
@@ -48,7 +48,11 @@
         {{ end }}
 
         <nav class="page-nav">
-            <a href="{{ if eq .Section "menu" }}/menu/{{ else }}/{{ end }}" class="btn">&larr; {{ if eq .Section "menu" }}Back to Menu{{ else }}Back Home{{ end }}</a>
+            {{ if eq .Section "menu" }}
+            <a href="{{ "menu/" | relURL }}" class="btn">&larr; Back to Menu</a>
+            {{ else }}
+            <a href="{{ site.Home.RelPermalink }}" class="btn">&larr; Back Home</a>
+            {{ end }}
         </nav>
     </div>
 </article>
