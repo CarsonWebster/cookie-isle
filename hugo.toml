@@ -23,8 +23,8 @@ buildExpired = false
   description = "Fresh-baked cookies made with love at our cozy micro-bakery"
   author = "The Cookie Isle"
 
-  # Logo
-  logo = "/CookieIsleLogo.png"
+  # Logo (no leading slash for proper relURL handling)
+  logo = "CookieIsleLogo.png"
 
   # Contact information (must be before nested tables like [params.colors])
   email = "hello@thecookieisle.com"
