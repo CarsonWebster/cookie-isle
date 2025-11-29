@@ -395,12 +395,93 @@ body.mobile-nav-open {
     );
     padding: var(--space-xxl) 0;
     text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .hero-content {
     max-width: 700px;
     margin: 0 auto;
     padding: 0 var(--container-padding);
+    position: relative;
+    z-index: 2;
+}
+
+/* Hero decorative images - desktop only
+   --visibility is set inline from hugo.toml (0-100%)
+   0% = fully off-screen, 100% = fully on-screen */
+.hero-decor {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    pointer-events: none;
+    --visibility: 70;
+    --img-width: 300px;
+}
+
+.hero-decor img {
+    max-height: 350px;
+    width: auto;
+    opacity: 0.85;
+}
+
+/* Left image: visibility controls how much is on-screen
+   At 0% the image is fully off-screen, at 100% it's fully on-screen */
+.hero-decor-left {
+    --img-width: 350px;
+    left: calc((var(--visibility) - 100) * var(--img-width) / 100);
+}
+
+.hero-decor-left img {
+    max-height: 420px;
+    width: var(--img-width);
+}
+
+/* Right image: visibility controls how much is on-screen */
+.hero-decor-right {
+    --img-width: 280px;
+    right: calc((var(--visibility) - 100) * var(--img-width) / 100);
+}
+
+.hero-decor-right img {
+    max-height: 300px;
+    width: var(--img-width);
+}
+
+/* Show decorative images on large screens only */
+@media (min-width: 1100px) {
+    .hero-decor {
+        display: block;
+    }
+
+    .hero {
+        padding: var(--space-xxl) 0;
+        min-height: 450px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Slightly larger images on bigger screens */
+@media (min-width: 1300px) {
+    .hero-decor-left {
+        --img-width: 400px;
+    }
+
+    .hero-decor-right {
+        --img-width: 320px;
+    }
+
+    .hero-decor-left img {
+        max-height: 480px;
+    }
+
+    .hero-decor-right img {
+        max-height: 340px;
+    }
 }
 
 .hero-title {

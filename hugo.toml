@@ -41,6 +41,16 @@ buildExpired = false
   # Call to action link (for Order Now button)
   contact_url = "contact"
 
+  # Hero section decorative images (desktop only, ≥1200px screens)
+  [params.hero]
+    # Left decorative image (e.g., palm trees)
+    image_left = "palmtree.png"
+    image_left_visibility = 100      # Percentage on screen (0-100). Lower = more off-screen to the left
+
+    # Right decorative image (e.g., cookie)
+    image_right = "herocookie.png"
+    image_right_visibility = 100     # Percentage on screen (0-100). Lower = more off-screen to the right
+
   # Color scheme - SoCal Coastal Island Vibe
   # NOTE: This must come AFTER all simple key-value pairs in [params]
   [params.colors]

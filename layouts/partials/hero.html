@@ -1,13 +1,32 @@
 <section class="hero">
+    {{/* Decorative images - desktop only, configured in hugo.toml */}}
+    {{ with site.Params.hero }}
+        {{ if .image_left }}
+        <div class="hero-decor hero-decor-left" style="--visibility: {{ .image_left_visibility | default 70 }};">
+            <img src="{{ .image_left | relURL }}" alt="" aria-hidden="true" />
+        </div>
+        {{ end }}
+
+        {{ if .image_right }}
+        <div class="hero-decor hero-decor-right" style="--visibility: {{ .image_right_visibility | default 70 }};">
+            <img src="{{ .image_right | relURL }}" alt="" aria-hidden="true" />
+        </div>
+        {{ end }}
+    {{ end }}
+
     <div class="hero-content">
         <h1 class="hero-title">{{ site.Title }}</h1>
         {{ with .Params.tagline }}
         <p class="hero-tagline">{{ . }}</p>
         {{ else }}
         <p class="hero-tagline">Handcrafted cookies baked with love</p>
-        {{ end }} {{ with .Content }}
+        {{ end }}
+
+        {{ with .Content }}
         <div class="hero-description">{{ . }}</div>
-        {{ end }} {{ with .Params.cta }}
+        {{ end }}
+
+        {{ with .Params.cta }}
         <a href="{{ "menu/" | relURL }}" class="btn hero-cta">{{ . }}</a>
         {{ else }}
         <a href="{{ "menu/" | relURL }}" class="btn hero-cta">View Our Menu</a>
