@@ -9,20 +9,44 @@
   :root {
     {{- with site.Params.colors }}
     /* Primary colors */
-    --color-primary: {{ .primary | default "#D4A574" }};
-    --color-primary-hover: {{ .primary_hover | default "#A67B5B" }};
+    --color-primary: {{ .primary | default "#2A9D8F" }};
+    --color-primary-hover: {{ .primary_hover | default "#238B7E" }};
 
     /* Secondary colors */
-    --color-secondary: {{ .secondary | default "#5D4037" }};
-    --color-secondary-dark: {{ .secondary_dark | default "#3E2723" }};
+    --color-secondary: {{ .secondary | default "#5C4033" }};
+    --color-secondary-dark: {{ .secondary_dark | default "#3D2B1F" }};
 
     /* Tertiary colors */
-    --color-tertiary: {{ .tertiary | default "#FDF6E3" }};
-    --color-tertiary-light: {{ .tertiary_light | default "#FFFBF5" }};
-    --color-tertiary-medium: {{ .tertiary_medium | default "#F5E6C8" }};
+    --color-tertiary: {{ .tertiary | default "#FBF8F3" }};
+    --color-tertiary-light: {{ .tertiary_light | default "#FDFCFA" }};
+    --color-tertiary-medium: {{ .tertiary_medium | default "#E8E4DC" }};
 
     /* Accent color */
-    --color-accent: {{ .accent | default "#E8B04B" }};
+    --color-accent: {{ .accent | default "#E9B44C" }};
+
+    /* Text colors */
+    --color-text-light: {{ .text_light | default "#6D5D53" }};
+
+    /* Card/surface colors */
+    --color-card-bg: {{ .card_bg | default "#FFFFFF" }};
+
+    /* Header colors */
+    --color-header-bg: {{ .header_bg | default .tertiary | default "#FBF8F3" }};
+    --color-header-text: {{ .header_text | default .secondary | default "#5C4033" }};
+
+    /* Footer colors */
+    --color-footer-bg: {{ .footer_bg | default .secondary_dark | default "#3D2B1F" }};
+    --color-footer-text: {{ .footer_text | default .tertiary | default "#FBF8F3" }};
+    --color-footer-heading: {{ .footer_heading | default .accent | default "#E9B44C" }};
+
+    /* Button colors */
+    --color-btn-bg: {{ .btn_bg | default .primary | default "#2A9D8F" }};
+    --color-btn-text: {{ .btn_text | default .tertiary_light | default "#FDFCFA" }};
+    --color-btn-hover-bg: {{ .btn_hover_bg | default .secondary | default "#5C4033" }};
+    --color-btn-nav-bg: {{ .btn_nav_bg | default .accent | default "#E9B44C" }};
+
+    /* Overlay color */
+    --color-overlay: {{ .overlay | default "rgba(38, 70, 83, 0.5)" }};
     {{- end }}
   }
 </style>

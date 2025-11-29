@@ -18,7 +18,6 @@
 
     /* Semantic color mappings */
     --color-text: var(--color-secondary-dark);
-    --color-text-light: #6d5d53;
     --color-background: var(--color-tertiary-light);
     --color-heading: var(--color-secondary);
 
@@ -125,8 +124,8 @@ h4 {
     font-size: 1rem;
     font-weight: 600;
     text-align: center;
-    color: var(--color-tertiary-light);
-    background-color: var(--color-primary);
+    color: var(--color-btn-text);
+    background-color: var(--color-btn-bg);
     border: none;
     border-radius: var(--radius-md);
     cursor: pointer;
@@ -134,8 +133,8 @@ h4 {
 }
 
 .btn:hover {
-    background-color: var(--color-secondary);
-    color: var(--color-tertiary-light);
+    background-color: var(--color-btn-hover-bg);
+    color: var(--color-btn-text);
     transform: translateY(-2px);
     box-shadow: var(--shadow-medium);
 }
@@ -147,7 +146,7 @@ h4 {
 
 .btn-nav {
     padding: 0.5rem 1.25rem;
-    background-color: var(--color-accent);
+    background-color: var(--color-btn-nav-bg);
 }
 
 /* ----------------- Header ----------------- */
@@ -155,7 +154,7 @@ h4 {
     position: sticky;
     top: 0;
     z-index: 100;
-    background-color: var(--color-tertiary);
+    background-color: var(--color-header-bg);
     box-shadow: var(--shadow-soft);
 }
 
@@ -174,7 +173,7 @@ h4 {
     font-family: var(--font-heading);
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--color-secondary);
+    color: var(--color-header-text);
     text-decoration: none;
 }
 
@@ -200,7 +199,7 @@ h4 {
 
 .main-nav a {
     font-weight: 500;
-    color: var(--color-text);
+    color: var(--color-header-text);
 }
 
 .main-nav a:hover {
@@ -240,7 +239,7 @@ body.mobile-nav-open {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(62, 39, 35, 0.5);
+    background-color: var(--color-overlay);
     z-index: 998;
     opacity: 0;
     visibility: hidden;
@@ -340,7 +339,7 @@ body.mobile-nav-open {
     color: var(--color-primary);
 }
 
-/* Mobile nav CTA button */
+/* Mobile nav CTA button - matches desktop nav button (golden) */
 .mobile-nav-cta {
     padding: var(--space-md) var(--space-lg);
 }
@@ -348,6 +347,11 @@ body.mobile-nav-open {
 .mobile-nav-cta .btn {
     width: 100%;
     text-align: center;
+    background-color: var(--color-btn-nav-bg);
+}
+
+.mobile-nav-cta .btn:hover {
+    background-color: var(--color-btn-hover-bg);
 }
 
 /* Mobile nav footer with contact info */
@@ -453,7 +457,7 @@ body.mobile-nav-open {
 }
 
 .menu-card {
-    background-color: white;
+    background-color: var(--color-card-bg);
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-soft);
@@ -688,7 +692,7 @@ body.mobile-nav-open {
 
 .list-item {
     padding: var(--space-md);
-    background-color: white;
+    background-color: var(--color-card-bg);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-soft);
 }
@@ -696,6 +700,16 @@ body.mobile-nav-open {
 .list-item h2 {
     font-size: 1.25rem;
     margin-bottom: var(--space-xs);
+}
+
+.list-item h2 a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.list-item h2 a:hover {
+    color: var(--color-primary);
 }
 
 .list-item .price {
@@ -737,8 +751,8 @@ body.mobile-nav-open {
 
 /* ----------------- Footer ----------------- */
 .site-footer {
-    background-color: var(--color-secondary-dark);
-    color: var(--color-tertiary);
+    background-color: var(--color-footer-bg);
+    color: var(--color-footer-text);
     padding: var(--space-xl) 0 var(--space-md);
 }
 
@@ -750,17 +764,17 @@ body.mobile-nav-open {
 }
 
 .footer-brand h3 {
-    color: var(--color-accent);
+    color: var(--color-footer-heading);
     margin-bottom: var(--space-xs);
 }
 
 .footer-brand p {
-    color: var(--color-tertiary-medium);
+    color: var(--color-footer-text);
     opacity: 0.9;
 }
 
 .site-footer h4 {
-    color: var(--color-accent);
+    color: var(--color-footer-heading);
     font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -768,11 +782,11 @@ body.mobile-nav-open {
 }
 
 .site-footer a {
-    color: var(--color-tertiary);
+    color: var(--color-footer-text);
 }
 
 .site-footer a:hover {
-    color: var(--color-accent);
+    color: var(--color-footer-heading);
 }
 
 .footer-contact p,

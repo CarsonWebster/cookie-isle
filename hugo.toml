@@ -41,24 +41,48 @@ buildExpired = false
   # Call to action link (for Order Now button)
   contact_url = "contact"
 
-  # Color scheme - customize your site colors here
+  # Color scheme - SoCal Coastal Island Vibe
   # NOTE: This must come AFTER all simple key-value pairs in [params]
   [params.colors]
-    # Primary colors (main brand colors)
-    primary = "#D4A574"           # Caramel - buttons, accents, links
-    primary_hover = "#A67B5B"     # Cinnamon - hover states
+    # Primary colors (ocean teal - buttons, accents, links)
+    primary = "#2A9D8F"           # Ocean teal - main action color
+    primary_hover = "#238B7E"     # Deeper teal - hover states
 
-    # Secondary colors (supporting colors)
-    secondary = "#5D4037"         # Chocolate - headings, text emphasis
-    secondary_dark = "#3E2723"    # Dark chocolate - footer, dark backgrounds
+    # Secondary colors (warm brown from logo text)
+    secondary = "#5C4033"         # Warm brown - headings, text emphasis
+    secondary_dark = "#3D2B1F"    # Dark driftwood - footer, dark backgrounds
 
-    # Tertiary colors (backgrounds, subtle elements)
-    tertiary = "#FDF6E3"          # Cream - header, cards
-    tertiary_light = "#FFFBF5"    # Warm white - page background
-    tertiary_medium = "#F5E6C8"   # Butter - hero gradient, highlights
+    # Tertiary colors (sandy beach & sky tones)
+    tertiary = "#FBF8F3"          # Soft sand - header, cards
+    tertiary_light = "#FDFCFA"    # Beach white - page background
+    tertiary_medium = "#E8E4DC"   # Warm sand - hero gradient, highlights
 
-    # Accent color
-    accent = "#E8B04B"            # Golden - special highlights, decorations
+    # Accent color (sunset golden, cookie warmth)
+    accent = "#E9B44C"            # Golden sun/cookie - special highlights
+
+    # Text colors
+    text_light = "#5D6B6A"        # Muted teal-gray - secondary text
+
+    # Card/surface colors
+    card_bg = "#FFFFFF"           # White - card backgrounds
+
+    # Overlay color (for mobile nav background)
+    overlay = "rgba(38, 70, 83, 0.6)"  # Deep ocean with transparency
+
+    # Header colors
+    header_bg = "#FBF8F3"         # Soft sand background
+    header_text = "#5C4033"       # Warm brown text
+
+    # Footer colors
+    footer_bg = "#264653"         # Deep ocean blue-green
+    footer_text = "#FBF8F3"       # Soft sand text
+    footer_heading = "#E9B44C"    # Golden sun headings
+
+    # Button colors
+    btn_bg = "#2A9D8F"            # Ocean teal
+    btn_text = "#FDFCFA"          # Beach white
+    btn_hover_bg = "#264653"      # Deep ocean on hover
+    btn_nav_bg = "#E9B44C"        # Golden "Order Now" button
 
 # Main navigation menu
 [menus]
