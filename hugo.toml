@@ -13,6 +13,11 @@ buildExpired = false
   page = ["HTML"]
   section = ["HTML"]
 
+# Cache settings (required for GitHub Actions builds)
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
+
 # Site parameters
 [params]
   description = "Fresh-baked cookies made with love at our cozy micro-bakery"
