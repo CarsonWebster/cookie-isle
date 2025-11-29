@@ -4,12 +4,16 @@
         {{/* Hero image for menu items */}}
         {{ if eq .Section "menu" }}
         <div class="menu-item-hero">
-            {{ with .Params.image }}
+            {{ with .Params.hero_image }}
+            <img src="{{ . | relURL }}" alt="{{ $.Title }}" />
+            {{ else }}
+            {{ with $.Params.image }}
             <img src="{{ . | relURL }}" alt="{{ $.Title }}" />
             {{ else }}
             <div class="menu-item-hero-placeholder">
                 <span>🍪</span>
             </div>
+            {{ end }}
             {{ end }}
         </div>
         {{ end }}

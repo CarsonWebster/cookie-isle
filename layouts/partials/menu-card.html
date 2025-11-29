@@ -1,16 +1,20 @@
 <article class="menu-card">
-    {{ with .Params.image }}
-    <div class="menu-card-image">
-        <img src="{{ . }}" alt="{{ $.Title }}" />
-    </div>
-    {{ else }}
-    <div class="menu-card-image menu-card-placeholder">
-        <span>🍪</span>
-    </div>
-    {{ end }}
+    <a href="{{ .RelPermalink }}" class="menu-card-image-link">
+        {{ with .Params.image }}
+        <div class="menu-card-image">
+            <img src="{{ . | relURL }}" alt="{{ $.Title }}" />
+        </div>
+        {{ else }}
+        <div class="menu-card-image menu-card-placeholder">
+            <span>🍪</span>
+        </div>
+        {{ end }}
+    </a>
 
     <div class="menu-card-content">
-        <h3 class="menu-card-title">{{ .Title }}</h3>
+        <h3 class="menu-card-title">
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h3>
 
         {{ with .Params.price }}
         <span class="menu-card-price">{{ . }}</span>
@@ -23,7 +27,5 @@
             {{ end }}
         </div>
         {{ end }}
-
-        <a href="{{ .RelPermalink }}" class="menu-card-link">View Details</a>
     </div>
 </article>
