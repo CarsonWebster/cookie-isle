@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on The Cookie Isle</title>
+    <link>http://192.168.0.219:1313/tags/</link>
+    <description>Recent content in Tags on The Cookie Isle</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 28 Nov 2025 14:00:00 -0800</lastBuildDate>
+    <atom:link href="http://192.168.0.219:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Classic</title>
+      <link>http://192.168.0.219:1313/tags/classic/</link>
+      <pubDate>Fri, 28 Nov 2025 14:00:00 -0800</pubDate>
+      <guid>http://192.168.0.219:1313/tags/classic/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Oatmeal</title>
+      <link>http://192.168.0.219:1313/tags/oatmeal/</link>
+      <pubDate>Fri, 28 Nov 2025 14:00:00 -0800</pubDate>
+      <guid>http://192.168.0.219:1313/tags/oatmeal/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Wholesome</title>
+      <link>http://192.168.0.219:1313/tags/wholesome/</link>
+      <pubDate>Fri, 28 Nov 2025 14:00:00 -0800</pubDate>
+      <guid>http://192.168.0.219:1313/tags/wholesome/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Caramel</title>
+      <link>http://192.168.0.219:1313/tags/caramel/</link>
+      <pubDate>Fri, 28 Nov 2025 13:12:39 -0800</pubDate>
+      <guid>http://192.168.0.219:1313/tags/caramel/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Salted</title>
+      <link>http://192.168.0.219:1313/tags/salted/</link>
+      <pubDate>Fri, 28 Nov 2025 13:12:39 -0800</pubDate>
+      <guid>http://192.168.0.219:1313/tags/salted/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Signature</title>
+      <link>http://192.168.0.219:1313/tags/signature/</link>
+      <pubDate>Fri, 28 Nov 2025 13:12:39 -0800</pubDate>
+      <guid>http://192.168.0.219:1313/tags/signature/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Bestseller</title>
+      <link>http://192.168.0.219:1313/tags/bestseller/</link>
+      <pubDate>Fri, 28 Nov 2025 13:12:28 -0800</pubDate>
+      <guid>http://192.168.0.219:1313/tags/bestseller/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Chocolate</title>
+      <link>http://192.168.0.219:1313/tags/chocolate/</link>
+      <pubDate>Fri, 28 Nov 2025 13:12:28 -0800</pubDate>
+      <guid>http://192.168.0.219:1313/tags/chocolate/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

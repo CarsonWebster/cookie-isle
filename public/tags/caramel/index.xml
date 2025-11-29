@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Caramel on The Cookie Isle</title>
+    <link>http://192.168.0.219:1313/tags/caramel/</link>
+    <description>Recent content in Caramel on The Cookie Isle</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 28 Nov 2025 13:12:39 -0800</lastBuildDate>
+    <atom:link href="http://192.168.0.219:1313/tags/caramel/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Salted Caramel Bliss</title>
+      <link>http://192.168.0.219:1313/menu/saltedcarmel/</link>
+      <pubDate>Fri, 28 Nov 2025 13:12:39 -0800</pubDate>
+      <guid>http://192.168.0.219:1313/menu/saltedcarmel/</guid>
+      <description>&lt;p&gt;Our Salted Caramel Bliss cookie is a perfect harmony of sweet and savory. Rich, buttery caramel is swirled throughout the dough and topped with flaky Maldon sea salt that adds just the right crunch.&lt;/p&gt;&#xA;&lt;p&gt;Each cookie is finished with a drizzle of house-made caramel sauce and a final sprinkle of salt crystals. This cookie pairs beautifully with a hot cup of coffee or a cold glass of milk.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Best enjoyed:&lt;/strong&gt; Slightly warmed to let the caramel get extra gooey.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

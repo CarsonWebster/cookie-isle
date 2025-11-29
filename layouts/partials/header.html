@@ -1,0 +1,123 @@
+<header class="site-header">
+    <div class="container">
+        <a href="{{ "/" | relURL }}" class="logo">
+            {{ with site.Params.logo }}
+            <img src="{{ . }}" alt="{{ site.Title }}" class="logo-image" />
+            {{ else }}
+            <span class="logo-icon">🍪</span>
+            <span class="logo-text">{{ site.Title }}</span>
+            {{ end }}
+        </a>
+
+        {{/* Desktop Navigation */}}
+        <nav class="main-nav">
+            <ul>
+                <li><a href="{{ "/" | relURL }}">Home</a></li>
+                <li><a href="{{ "/menu/" | relURL }}">Menu</a></li>
+                <li><a href="{{ "/about/" | relURL }}">About</a></li>
+                {{ with site.Params.contact_url }}
+                <li><a href="{{ . }}" class="btn btn-nav">Order Now</a></li>
+                {{ end }}
+            </ul>
+        </nav>
+
+        {{/* Mobile Menu Toggle Button */}}
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+
+{{/* Mobile Navigation Overlay */}}
+<div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
+
+{{/* Mobile Slide-out Navigation */}}
+<nav class="mobile-nav" id="mobile-nav" aria-hidden="true">
+    <div class="mobile-nav-header">
+        <a href="{{ "/" | relURL }}" class="logo">
+            {{ with site.Params.logo }}
+            <img src="{{ . }}" alt="{{ site.Title }}" class="logo-image" />
+            {{ else }}
+            <span class="logo-icon">🍪</span>
+            <span class="logo-text">{{ site.Title }}</span>
+            {{ end }}
+        </a>
+        <button class="mobile-nav-close" aria-label="Close menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <ul class="mobile-nav-links">
+        <li><a href="{{ "/" | relURL }}">Home</a></li>
+        <li><a href="{{ "/menu/" | relURL }}">Menu</a></li>
+        <li><a href="{{ "/about/" | relURL }}">About</a></li>
+    </ul>
+
+    {{ with site.Params.contact_url }}
+    <div class="mobile-nav-cta">
+        <a href="{{ . }}" class="btn">Order Now</a>
+    </div>
+    {{ end }}
+
+    <div class="mobile-nav-footer">
+        {{ with site.Params.phone }}
+        <a href="tel:{{ . }}" class="mobile-nav-contact">
+            <span>📞</span> {{ . }}
+        </a>
+        {{ end }}
+        {{ with site.Params.email }}
+        <a href="mailto:{{ . }}" class="mobile-nav-contact">
+            <span>✉️</span> {{ . }}
+        </a>
+        {{ end }}
+    </div>
+</nav>
+
+{{/* Mobile Navigation JavaScript */}}
+<script>
+(function() {
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    const closeBtn = document.querySelector('.mobile-nav-close');
+    const overlay = document.getElementById('mobile-nav-overlay');
+    const mobileNav = document.getElementById('mobile-nav');
+    const body = document.body;
+
+    function openMenu() {
+        mobileNav.classList.add('is-open');
+        overlay.classList.add('is-visible');
+        body.classList.add('mobile-nav-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        mobileNav.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeMenu() {
+        mobileNav.classList.remove('is-open');
+        overlay.classList.remove('is-visible');
+        body.classList.remove('mobile-nav-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        mobileNav.setAttribute('aria-hidden', 'true');
+    }
+
+    toggle.addEventListener('click', openMenu);
+    closeBtn.addEventListener('click', closeMenu);
+    overlay.addEventListener('click', closeMenu);
+
+    // Close menu when clicking a link
+    const navLinks = mobileNav.querySelectorAll('a');
+    navLinks.forEach(function(link) {
+        link.addEventListener('click', closeMenu);
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileNav.classList.contains('is-open')) {
+            closeMenu();
+        }
+    });
+})();
+</script>

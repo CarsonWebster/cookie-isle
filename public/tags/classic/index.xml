@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Classic on The Cookie Isle</title>
+    <link>http://192.168.0.219:1313/tags/classic/</link>
+    <description>Recent content in Classic on The Cookie Isle</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 28 Nov 2025 14:00:00 -0800</lastBuildDate>
+    <atom:link href="http://192.168.0.219:1313/tags/classic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Chocolate Chip</title>
+      <link>http://192.168.0.219:1313/menu/cholocatechip/</link>
+      <pubDate>Fri, 28 Nov 2025 13:12:28 -0800</pubDate>
+      <guid>http://192.168.0.219:1313/menu/cholocatechip/</guid>
+      <description>&lt;p&gt;The cookie that started it all. Our classic chocolate chip cookie features a perfect balance of crispy edges and a soft, chewy center. Each cookie is generously studded with premium semi-sweet chocolate chips and finished with a sprinkle of flaky sea salt.&lt;/p&gt;&#xA;&lt;p&gt;Baked fresh daily using real butter and pure vanilla extract.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Oatmeal Raisin</title>
+      <link>http://192.168.0.219:1313/menu/oatmeal-raisin/</link>
+      <pubDate>Fri, 28 Nov 2025 14:00:00 -0800</pubDate>
+      <guid>http://192.168.0.219:1313/menu/oatmeal-raisin/</guid>
+      <description>&lt;p&gt;Our Oatmeal Raisin cookie is comfort in every bite. Made with hearty rolled oats and plump, juicy raisins, this cookie strikes the perfect balance between chewy and satisfying.&lt;/p&gt;&#xA;&lt;p&gt;A touch of warm cinnamon brings it all together, making this a timeless favorite for those who appreciate the classics.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Perfect for:&lt;/strong&gt; Breakfast on the go or an afternoon pick-me-up with tea.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

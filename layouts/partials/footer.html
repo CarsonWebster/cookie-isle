@@ -1,0 +1,36 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <h3>{{ site.Title }}</h3>
+        <p>Handcrafted cookies baked with love.</p>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Visit Us</h4>
+        {{ with site.Params.address }}
+          <p>{{ . }}</p>
+        {{ end }}
+        {{ with site.Params.email }}
+          <p><a href="mailto:{{ . }}">{{ . }}</a></p>
+        {{ end }}
+        {{ with site.Params.phone }}
+          <p><a href="tel:{{ . }}">{{ . }}</a></p>
+        {{ end }}
+      </div>
+
+      <div class="footer-hours">
+        <h4>Hours</h4>
+        {{ with site.Params.hours }}
+          {{ range . }}
+            <p>{{ . }}</p>
+          {{ end }}
+        {{ end }}
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {{ now.Year }} {{ site.Title }}. All rights reserved.</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,18 @@
+{{/* Menu Grid Partial Usage: - {{ partial "menu-grid.html" (dict "context" .
+"featured_only" true) }} - Show only featured items - {{ partial
+"menu-grid.html" (dict "context" . "featured_only" false) }} - Show all items -
+{{ partial "menu-grid.html" . }} - Show all items (backwards compatible) */}}
+{{- $featuredOnly := false -}} {{- $ctx := . -}} {{/* Check if we're receiving a
+dict with options */}} {{- if reflect.IsMap . -}} {{- $featuredOnly =
+.featured_only | default false -}} {{- $ctx = .context | default . -}} {{- end
+-}}
+
+<div class="menu-grid">
+    {{- $menuItems := where site.RegularPages "Section" "menu" -}} {{/* Filter
+    to featured items only if requested */}} {{- if $featuredOnly -}} {{-
+    $menuItems = where $menuItems ".Params.featured" true -}} {{- end -}} {{- if
+    $menuItems -}} {{- range $menuItems -}} {{ partial "menu-card.html" . }} {{-
+    end -}} {{- else -}}
+    <p class="no-items">Our menu is being prepared. Check back soon!</p>
+    {{- end -}}
+</div>

@@ -1,0 +1,55 @@
+{{ define "main" }}
+<article class="single-page">
+    <div class="container">
+        {{/* Hero image for menu items */}}
+        {{ if eq .Section "menu" }}
+        <div class="menu-item-hero">
+            {{ with .Params.image }}
+            <img src="{{ . }}" alt="{{ $.Title }}" />
+            {{ else }}
+            <div class="menu-item-hero-placeholder">
+                <span>🍪</span>
+            </div>
+            {{ end }}
+        </div>
+        {{ end }}
+
+        <header class="page-header">
+            <h1>{{ .Title }}</h1>
+            {{ with .Params.subtitle }}
+            <p class="subtitle">{{ . }}</p>
+            {{ end }}
+        </header>
+
+        <div class="page-content">{{ .Content }}</div>
+
+        {{ if eq .Section "menu" }}
+        <div class="menu-item-details">
+            {{ with .Params.price }}
+            <p class="price">{{ . }}</p>
+            {{ end }}
+            {{ with .Params.ingredients }}
+            <div class="ingredients">
+                <h3>Ingredients</h3>
+                <p>{{ . }}</p>
+            </div>
+            {{ end }}
+            {{ with .Params.tags }}
+            <div class="menu-item-tags">
+                <h3>Tags</h3>
+                <div class="tags-list">
+                    {{ range . }}
+                    <span class="tag">{{ . }}</span>
+                    {{ end }}
+                </div>
+            </div>
+            {{ end }}
+        </div>
+        {{ end }}
+
+        <nav class="page-nav">
+            <a href="{{ if eq .Section "menu" }}/menu/{{ else }}/{{ end }}" class="btn">&larr; {{ if eq .Section "menu" }}Back to Menu{{ else }}Back Home{{ end }}</a>
+        </nav>
+    </div>
+</article>
+{{ end }}

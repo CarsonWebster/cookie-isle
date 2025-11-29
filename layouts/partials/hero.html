@@ -1,0 +1,16 @@
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">{{ site.Title }}</h1>
+        {{ with .Params.tagline }}
+        <p class="hero-tagline">{{ . }}</p>
+        {{ else }}
+        <p class="hero-tagline">Handcrafted cookies baked with love</p>
+        {{ end }} {{ with .Content }}
+        <div class="hero-description">{{ . }}</div>
+        {{ end }} {{ with .Params.cta }}
+        <a href="/menu/" class="btn hero-cta">{{ . }}</a>
+        {{ else }}
+        <a href="/menu/" class="btn hero-cta">View Our Menu</a>
+        {{ end }}
+    </div>
+</section>
