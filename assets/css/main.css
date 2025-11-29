@@ -14,15 +14,7 @@
      --color-tertiary, --color-tertiary-light, --color-tertiary-medium
      --color-accent
 
-     Below are fallback values in case they're not set */
-    --color-primary: #d4a574;
-    --color-primary-hover: #a67b5b;
-    --color-secondary: #5d4037;
-    --color-secondary-dark: #3e2723;
-    --color-tertiary: #fdf6e3;
-    --color-tertiary-light: #fffbf5;
-    --color-tertiary-medium: #f5e6c8;
-    --color-accent: #e8b04b;
+     Do NOT define color values here - they will override hugo.toml settings */
 
     /* Semantic color mappings */
     --color-text: var(--color-secondary-dark);
