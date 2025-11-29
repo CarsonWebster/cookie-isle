@@ -23,6 +23,16 @@ buildExpired = false
   description = "Fresh-baked cookies made with love at our cozy micro-bakery"
   author = "The Cookie Isle"
 
+  # Coming Soon / Pre-launch Mode
+  # Set to true to show only the coming soon page, false for full site
+  coming_soon = true
+  coming_soon_headline = "Coming Soon"
+  coming_soon_text = "We're busy baking up something special! The Cookie Isle is a cozy micro-bakery bringing fresh-baked happiness to our community. Sign up to be the first to know when we open our doors."
+
+  # Social media links (used on coming soon page and footer)
+  facebook = "https://facebook.com/thecookieisle"
+  instagram = "https://instagram.com/thecookieisle"
+
   # Logo (no leading slash for proper relURL handling)
   logo = "CookieIsleLogo.png"
 

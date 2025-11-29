@@ -4,12 +4,19 @@
   {{ partial "head.html" . }}
 </head>
 <body>
-  {{ partial "header.html" . }}
+  {{/* Check if coming soon mode is enabled */}}
+  {{ if site.Params.coming_soon }}
+    {{/* Render only the coming soon page */}}
+    {{ partial "coming-soon.html" . }}
+  {{ else }}
+    {{/* Render full site */}}
+    {{ partial "header.html" . }}
 
-  <main>
-    {{ block "main" . }}{{ end }}
-  </main>
+    <main>
+      {{ block "main" . }}{{ end }}
+    </main>
 
-  {{ partial "footer.html" . }}
+    {{ partial "footer.html" . }}
+  {{ end }}
 </body>
 </html>
