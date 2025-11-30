@@ -1,110 +1,334 @@
-baseURL = 'https://thecookieisle.com/'
-languageCode = 'en-us'
+################################################################################
+#                                                                              #
+#                        THE COOKIE ISLE - HUGO CONFIGURATION                  #
+#                                                                              #
+#   This file controls your entire website's settings. It's organized from    #
+#   most important (things you'll change often) to technical settings         #
+#   (things you probably won't need to touch).                                #
+#                                                                              #
+#   HOW TO READ THIS FILE:                                                    #
+#   - Lines starting with # are comments (notes for humans, ignored by Hugo)  #
+#   - Settings look like: name = "value"                                      #
+#   - Text values are wrapped in quotes: "like this"                          #
+#   - True/false values have no quotes: true or false                         #
+#   - Numbers have no quotes: 100                                             #
+#   - Lists are wrapped in brackets: ["item1", "item2"]                       #
+#   - Sections start with [section.name]                                      #
+#                                                                              #
+################################################################################
+
+
+################################################################################
+#                                                                              #
+#                    SECTION 1: BASIC SITE INFORMATION                         #
+#                    (You'll likely want to customize these)                   #
+#                                                                              #
+################################################################################
+
+# SITE TITLE
+# This appears in the browser tab, header logo area, footer, and throughout the site.
+# Used in: layouts/partials/header.html, layouts/partials/footer.html,
+#          layouts/partials/coming-soon.html, layouts/partials/hero.html
 title = 'The Cookie Isle'
 
-# Build settings
-buildDrafts = false
-buildFuture = false
-buildExpired = false
-
-# Output settings
-[outputs]
-  home = ["HTML"]
-  page = ["HTML"]
-  section = ["HTML"]
-
-# Cache settings (required for GitHub Actions builds)
-[caches]
-  [caches.images]
-    dir = ':cacheDir/images'
-
-# Site parameters
+# SITE DESCRIPTION
+# A brief description of your bakery. Used for search engine results (SEO)
+# and when people share your site on social media.
+# Used in: layouts/partials/head.html (meta description and Open Graph tags)
 [params]
   description = "Fresh-baked cookies made with love at our cozy cottage-bakery"
+
+  # AUTHOR NAME
+  # Used for SEO purposes
   author = "The Cookie Isle"
 
-  # Coming Soon / Pre-launch Mode
-  # Set to true to show only the coming soon page, false for full site
-  coming_soon = true
-  coming_soon_headline = "Coming Soon"
-  coming_soon_text = "We're busy baking up something special! The Cookie Isle is a cozy cottage-bakery bringing fresh-baked happiness to our community. Follow to be the first to know when we open our doors."
 
-  # Social media links (used on coming soon page and footer)
-  facebook = "https://facebook.com/thecookieisle"
-  instagram = "https://instagram.com/thecookieisle"
+################################################################################
+#                                                                              #
+#                    SECTION 2: CONTACT INFORMATION                            #
+#                    (Update these with your real business info)               #
+#                                                                              #
+################################################################################
 
-  # Logo (no leading slash for proper relURL handling)
-  logo = "CookieIsleLogo.png"
-
-  # Contact information (must be before nested tables like [params.colors])
+  # EMAIL ADDRESS
+  # Displayed in: footer, mobile navigation, and coming soon page
+  # Used in: layouts/partials/footer.html, layouts/partials/header.html,
+  #          layouts/partials/coming-soon.html
+  # When clicked, opens the visitor's email app
   email = "contact@thecookieisle.com"
+
+  # PHONE NUMBER
+  # Displayed in: footer and mobile navigation
+  # Used in: layouts/partials/footer.html, layouts/partials/header.html
+  # When clicked on mobile, opens the phone dialer
   phone = "(555) 123-COOKIE"
+
+  # PHYSICAL ADDRESS
+  # Displayed in the footer's "Visit Us" section
+  # Used in: layouts/partials/footer.html
   address = "123 Baker Street, Sweet Town, CA 90210"
 
-  # Business hours
+  # BUSINESS HOURS
+  # Each line appears on its own row in the footer
+  # Used in: layouts/partials/footer.html
+  # Format: Add as many lines as needed, each in quotes and separated by commas
   hours = [
     "Mon-Fri: 7am - 6pm",
     "Saturday: 8am - 5pm",
     "Sunday: 9am - 2pm"
   ]
 
-  # Call to action link (for Order Now button)
+
+################################################################################
+#                                                                              #
+#                    SECTION 3: SOCIAL MEDIA LINKS                             #
+#                    (Add your social media profile URLs here)                 #
+#                                                                              #
+################################################################################
+
+  # FACEBOOK PAGE URL
+  # Displayed as a clickable icon on the coming soon page
+  # Used in: layouts/partials/coming-soon.html
+  # Set to your Facebook page's full URL
+  facebook = "https://facebook.com/thecookieisle"
+
+  # INSTAGRAM PROFILE URL
+  # Displayed as a clickable icon on the coming soon page
+  # Used in: layouts/partials/coming-soon.html
+  # Set to your Instagram profile's full URL
+  instagram = "https://instagram.com/thecookieisle"
+
+
+################################################################################
+#                                                                              #
+#                    SECTION 4: COMING SOON / PRE-LAUNCH MODE                  #
+#                    (Control whether site shows "Coming Soon" or full site)   #
+#                                                                              #
+################################################################################
+
+  # COMING SOON MODE TOGGLE
+  # - Set to "true" to show ONLY the coming soon page (hides the rest of site)
+  # - Set to "false" to show the full website with all pages
+  # Used in: layouts/_default/baseof.html (controls which layout to display)
+  #
+  # IMPORTANT: When you're ready to launch, change this from "true" to "false"
+  coming_soon = true
+
+  # COMING SOON HEADLINE
+  # The main headline text shown on the coming soon page
+  # Used in: layouts/partials/coming-soon.html
+  coming_soon_headline = "Coming Soon"
+
+  # COMING SOON MESSAGE
+  # The descriptive text shown below the headline on the coming soon page
+  # Explain what your bakery is about and encourage visitors to follow you
+  # Used in: layouts/partials/coming-soon.html
+  coming_soon_text = "We're busy baking up something special! The Cookie Isle is a cozy micro-bakery bringing fresh-baked happiness to our community. Sign up to be the first to know when we open our doors."
+
+
+################################################################################
+#                                                                              #
+#                    SECTION 5: IMAGES AND BRANDING                            #
+#                    (Logo and decorative images)                              #
+#                                                                              #
+################################################################################
+
+  # SITE LOGO
+  # The logo image file name. This file should be placed in the /static/ folder.
+  # Displayed in: header (all pages) and coming soon page
+  # Used in: layouts/partials/header.html, layouts/partials/coming-soon.html
+  #
+  # NOTE: Do NOT include a leading slash - just the filename
+  # The image should be placed at: /static/CookieIsleLogo.png
+  logo = "CookieIsleLogo.png"
+
+  # HERO SECTION DECORATIVE IMAGES
+  # These decorative images appear on the left and right sides of the homepage hero
+  # They are ONLY visible on large desktop screens (1200px and wider)
+  # Used in: layouts/partials/hero.html
+  [params.hero]
+
+    # LEFT DECORATIVE IMAGE
+    # Image file name (place in /static/ folder)
+    # Currently showing palm trees to reinforce the "isle" beach theme
+    image_left = "palmtree.png"
+
+    # LEFT IMAGE VISIBILITY (0-100)
+    # Controls how much of the left image is visible on screen
+    # 100 = fully on screen, 0 = completely off screen to the left
+    # Lower values push the image further off the left edge
+    image_left_visibility = 100
+
+    # RIGHT DECORATIVE IMAGE
+    # Image file name (place in /static/ folder)
+    # Currently showing a cookie to reinforce the bakery theme
+    image_right = "herocookie.png"
+
+    # RIGHT IMAGE VISIBILITY (0-100)
+    # Controls how much of the right image is visible on screen
+    # 100 = fully on screen, 0 = completely off screen to the right
+    # Lower values push the image further off the right edge
+    image_right_visibility = 100
+
+
+################################################################################
+#                                                                              #
+#                    SECTION 6: BUTTONS AND LINKS                              #
+#                    (Control where buttons link to)                           #
+#                                                                              #
+################################################################################
+
+  # ORDER NOW BUTTON LINK
+  # Where the "Order Now" button in the navigation links to
+  # Used in: layouts/partials/header.html (desktop and mobile nav)
+  #
+  # Common values:
+  #   "contact" - links to a contact page
+  #   "menu" - links to the menu page
+  #   Or any other page slug on your site
   contact_url = "contact"
 
-  # Hero section decorative images (desktop only, ≥1200px screens)
-  [params.hero]
-    # Left decorative image (e.g., palm trees)
-    image_left = "palmtree.png"
-    image_left_visibility = 100      # Percentage on screen (0-100). Lower = more off-screen to the left
 
-    # Right decorative image (e.g., cookie)
-    image_right = "herocookie.png"
-    image_right_visibility = 100     # Percentage on screen (0-100). Lower = more off-screen to the right
+################################################################################
+#                                                                              #
+#                    SECTION 7: COLOR SCHEME                                   #
+#                    (Customize your site's look and feel)                     #
+#                                                                              #
+################################################################################
 
-  # Color scheme - SoCal Coastal Island Vibe
-  # NOTE: This must come AFTER all simple key-value pairs in [params]
+  # COLOR SCHEME - SoCal Coastal Island Vibe
+  # These colors are applied throughout the entire website automatically.
+  # All colors use "hex codes" - the # followed by 6 characters (letters/numbers)
+  # You can find hex codes using tools like: https://htmlcolorcodes.com/
+  #
+  # Used in: layouts/partials/head.html (generates CSS variables)
+  # These CSS variables are then used in: assets/css/main.css
+  #
+  # NOTE: This section MUST come AFTER all the simple settings above
+
   [params.colors]
-    # Primary colors (ocean teal - buttons, accents, links)
-    primary = "#2A9D8F"           # Ocean teal - main action color
-    primary_hover = "#238B7E"     # Deeper teal - hover states
 
-    # Secondary colors (warm brown from logo text)
-    secondary = "#5C4033"         # Warm brown - headings, text emphasis
-    secondary_dark = "#3D2B1F"    # Dark driftwood - footer, dark backgrounds
+    # ═══════════════════════════════════════════════════════════════════════
+    # PRIMARY COLORS - Your main brand color (ocean teal)
+    # Used for: buttons, links, accents, and interactive elements
+    # ═══════════════════════════════════════════════════════════════════════
 
-    # Tertiary colors (sandy beach & sky tones)
-    tertiary = "#FBF8F3"          # Soft sand - header, cards
-    tertiary_light = "#FDFCFA"    # Beach white - page background
-    tertiary_medium = "#E8E4DC"   # Warm sand - hero gradient, highlights
+    # Main action color - used for most buttons and links
+    primary = "#2A9D8F"
 
-    # Accent color (sunset golden, cookie warmth)
-    accent = "#E9B44C"            # Golden sun/cookie - special highlights
+    # Slightly darker version - shown when hovering over buttons/links
+    primary_hover = "#238B7E"
 
-    # Text colors
-    text_light = "#5D6B6A"        # Muted teal-gray - secondary text
+    # ═══════════════════════════════════════════════════════════════════════
+    # SECONDARY COLORS - Warm brown tones (inspired by logo text)
+    # Used for: headings, important text, dark backgrounds
+    # ═══════════════════════════════════════════════════════════════════════
 
-    # Card/surface colors
-    card_bg = "#FFFFFF"           # White - card backgrounds
+    # Main heading color and text emphasis
+    secondary = "#5C4033"
 
-    # Overlay color (for mobile nav background)
-    overlay = "rgba(38, 70, 83, 0.6)"  # Deep ocean with transparency
+    # Darker version - used for footer background
+    secondary_dark = "#3D2B1F"
 
-    # Header colors
-    header_bg = "#FBF8F3"         # Soft sand background
-    header_text = "#5C4033"       # Warm brown text
+    # ═══════════════════════════════════════════════════════════════════════
+    # TERTIARY COLORS - Sandy beach and sky tones
+    # Used for: backgrounds, cards, subtle highlights
+    # ═══════════════════════════════════════════════════════════════════════
 
-    # Footer colors
-    footer_bg = "#264653"         # Deep ocean blue-green
-    footer_text = "#FBF8F3"       # Soft sand text
-    footer_heading = "#E9B44C"    # Golden sun headings
+    # Soft sand color - header background and card backgrounds
+    tertiary = "#FBF8F3"
 
-    # Button colors
-    btn_bg = "#2A9D8F"            # Ocean teal
-    btn_text = "#FDFCFA"          # Beach white
-    btn_hover_bg = "#264653"      # Deep ocean on hover
-    btn_nav_bg = "#E9B44C"        # Golden "Order Now" button
+    # Lightest background - main page background
+    tertiary_light = "#FDFCFA"
 
-# Main navigation menu
+    # Slightly darker sand - hero section gradient, subtle highlights
+    tertiary_medium = "#E8E4DC"
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # ACCENT COLOR - Golden sun/cookie warmth
+    # Used for: special highlights, "Order Now" button, footer headings
+    # ═══════════════════════════════════════════════════════════════════════
+
+    accent = "#E9B44C"
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # TEXT COLORS
+    # ═══════════════════════════════════════════════════════════════════════
+
+    # Secondary/muted text (paragraphs, descriptions)
+    text_light = "#5D6B6A"
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # SURFACE COLORS - Cards and containers
+    # ═══════════════════════════════════════════════════════════════════════
+
+    # Background color for cards (cookie menu items, etc.)
+    card_bg = "#FFFFFF"
+
+    # Semi-transparent overlay for mobile navigation background
+    overlay = "rgba(38, 70, 83, 0.6)"
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # HEADER COLORS - Top navigation bar
+    # Used in: layouts/partials/header.html styling
+    # ═══════════════════════════════════════════════════════════════════════
+
+    # Header background color
+    header_bg = "#FBF8F3"
+
+    # Header text and logo color
+    header_text = "#5C4033"
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # FOOTER COLORS - Bottom of every page
+    # Used in: layouts/partials/footer.html styling
+    # ═══════════════════════════════════════════════════════════════════════
+
+    # Footer background - deep ocean blue-green
+    footer_bg = "#264653"
+
+    # Footer paragraph text
+    footer_text = "#FBF8F3"
+
+    # Footer section headings (Visit Us, Hours, etc.)
+    footer_heading = "#E9B44C"
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # BUTTON COLORS
+    # Used in: various button elements throughout the site
+    # ═══════════════════════════════════════════════════════════════════════
+
+    # Standard button background
+    btn_bg = "#2A9D8F"
+
+    # Button text color
+    btn_text = "#FDFCFA"
+
+    # Button background when hovered
+    btn_hover_bg = "#264653"
+
+    # Special "Order Now" navigation button (uses accent gold)
+    btn_nav_bg = "#E9B44C"
+
+
+################################################################################
+#                                                                              #
+#                    SECTION 8: NAVIGATION MENU                                #
+#                    (Main menu items in the header)                           #
+#                                                                              #
+################################################################################
+
+# MAIN NAVIGATION MENU
+# These are the links that appear in the top navigation bar.
+# Used in: layouts/partials/header.html (desktop and mobile navigation)
+#
+# Each menu item has:
+#   - name: The text shown in the menu
+#   - url: Where the link goes (use "/" for homepage, "/page-name/" for other pages)
+#   - weight: Controls the order (lower numbers appear first, left to right)
+#
+# NOTE: The "Order Now" button is controlled separately by contact_url above
+
 [menus]
   [[menus.main]]
     name = "Home"
@@ -121,14 +345,89 @@ buildExpired = false
     url = "/about/"
     weight = 3
 
-# Markup settings
+
+################################################################################
+#                                                                              #
+#            ⚠️  SECTION 9: TECHNICAL SETTINGS - RARELY NEED TO CHANGE  ⚠️     #
+#                                                                              #
+#   The settings below control how Hugo builds your site. You typically       #
+#   won't need to modify these unless you're making structural changes        #
+#   to the website or troubleshooting build issues.                           #
+#                                                                              #
+################################################################################
+
+# BASE URL
+# The full URL where your website will be hosted.
+# Used for: generating absolute URLs, sitemaps, and canonical links
+#
+# ⚠️  IMPORTANT: Only change this if you're moving to a different domain!
+baseURL = 'https://thecookieisle.com/'
+
+# LANGUAGE CODE
+# The language of your website content (for SEO and accessibility)
+# 'en-us' = English (United States)
+languageCode = 'en-us'
+
+# ═══════════════════════════════════════════════════════════════════════════
+# BUILD SETTINGS
+# These control what content Hugo includes when building the site
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Don't publish pages marked as "draft = true"
+buildDrafts = false
+
+# Don't publish pages with future dates
+buildFuture = false
+
+# Don't publish pages that have expired
+buildExpired = false
+
+# ═══════════════════════════════════════════════════════════════════════════
+# OUTPUT SETTINGS
+# Defines what file types Hugo generates for different page types
+# ═══════════════════════════════════════════════════════════════════════════
+
+[outputs]
+  # Homepage generates HTML only
+  home = ["HTML"]
+
+  # Individual pages (like About, cookie detail pages) generate HTML only
+  page = ["HTML"]
+
+  # Section pages (like the Menu listing page) generate HTML only
+  section = ["HTML"]
+
+# ═══════════════════════════════════════════════════════════════════════════
+# CACHE SETTINGS
+# Required for GitHub Actions automated deployments to work properly
+# ═══════════════════════════════════════════════════════════════════════════
+
+[caches]
+  [caches.images]
+    # Where Hugo stores processed images during build
+    dir = ':cacheDir/images'
+
+# ═══════════════════════════════════════════════════════════════════════════
+# MARKUP SETTINGS
+# Controls how Hugo processes Markdown content
+# ═══════════════════════════════════════════════════════════════════════════
+
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]
+      # Set to false for security - prevents raw HTML in Markdown files
       unsafe = false
+
   [markup.highlight]
+    # Use CSS classes for code highlighting (not inline styles)
     noClasses = false
 
-# Permalink settings
+# ═══════════════════════════════════════════════════════════════════════════
+# PERMALINK SETTINGS
+# Controls the URL structure for different content types
+# ═══════════════════════════════════════════════════════════════════════════
+
 [permalinks]
+  # Menu items will have URLs like: /menu/chocolate-chip/
+  # The :contentbasename uses the filename (without .md extension)
   menu = '/menu/:contentbasename/'
