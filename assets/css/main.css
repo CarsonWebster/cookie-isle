@@ -197,6 +197,34 @@ h4 {
     list-style: none;
 }
 
+/* Header Social Icons */
+.header-social {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-left: var(--space-sm);
+}
+
+.header-social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: var(--color-header-text);
+    transition: all 0.3s ease;
+}
+
+.header-social-icon:hover {
+    color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+.header-social-icon svg {
+    display: block;
+}
+
 .main-nav a {
     font-weight: 500;
     color: var(--color-header-text);
@@ -376,6 +404,38 @@ body.mobile-nav-open {
 
 .mobile-nav-contact span {
     font-size: 1rem;
+}
+
+/* Mobile Nav Social Icons */
+.mobile-nav-social {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.mobile-social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: var(--color-tertiary-medium);
+    color: var(--color-secondary);
+    transition: all 0.3s ease;
+}
+
+.mobile-social-icon:hover {
+    background-color: var(--color-primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.mobile-social-icon svg {
+    display: block;
 }
 
 /* Hide mobile nav elements on desktop */
@@ -884,6 +944,35 @@ body.mobile-nav-open {
     opacity: 0.7;
 }
 
+/* Footer Social Icons */
+.footer-social-icons {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+}
+
+.footer-social .social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-footer-text);
+    transition: all 0.3s ease;
+}
+
+.footer-social .social-icon:hover {
+    transform: translateY(-3px);
+    background-color: var(--color-footer-heading);
+    color: var(--color-footer-bg);
+}
+
+.footer-social .social-icon svg {
+    display: block;
+}
+
 /* ----------------- Responsive ----------------- */
 @media (max-width: 768px) {
     :root {
@@ -905,7 +994,8 @@ body.mobile-nav-open {
         font-size: 1.25rem;
     }
 
-    .main-nav {
+    .main-nav,
+    .header-social {
         display: none;
     }
 
