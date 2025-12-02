@@ -16,8 +16,8 @@
         {{/* Coming Soon Headline */}}
         <h2 class="coming-soon-headline">{{ site.Params.coming_soon_headline | default "Coming Soon" }}</h2>
 
-        {{/* About Text */}}
-        <p class="coming-soon-text">{{ site.Params.coming_soon_text | default "Something delicious is on the way. Stay tuned!" }}</p>
+        {{/* About Text - uses markdownify to support Markdown formatting in hugo.toml */}}
+        <div class="coming-soon-text">{{ site.Params.coming_soon_text | default "Something delicious is on the way. Stay tuned!" | markdownify }}</div>
 
         {{/* Email */}}
         {{ with site.Params.email }}
@@ -104,6 +104,14 @@
         line-height: 1.7;
         color: var(--color-text-light);
         margin-bottom: 2rem;
+    }
+
+    .coming-soon-text p {
+        margin-bottom: 1rem;
+    }
+
+    .coming-soon-text p:last-child {
+        margin-bottom: 0;
     }
 
     .coming-soon-email {

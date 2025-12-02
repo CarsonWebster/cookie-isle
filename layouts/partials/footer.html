@@ -9,7 +9,7 @@
             <div class="footer-contact">
                 <h4>Visit Us</h4>
                 {{ with site.Params.address }}
-                <p>{{ . }}</p>
+                <div class="footer-address">{{ . | markdownify }}</div>
                 {{ end }} {{ with site.Params.email }}
                 <p><a href="mailto:{{ . }}">{{ . }}</a></p>
                 {{ end }} {{ with site.Params.phone }}

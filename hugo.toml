@@ -123,11 +123,18 @@ title = 'The Cookie Isle'
   # The descriptive text shown below the headline on the coming soon page
   # Explain what your bakery is about and encourage visitors to follow you
   # Used in: layouts/partials/coming-soon.html
+  #
+  # TIP: This field supports Markdown formatting!
+  # - Use a blank line between paragraphs to create separate <p> tags
+  # - Use **bold** or *italic* for emphasis
+  # - Use [link text](url) for links
   coming_soon_text = """
-  We're busy baking up something special!\n
-  The Cookie Isle is a cozy micro-bakery bringing fresh-baked happiness to our community. Sign up to be the first to know when we open our doors.\n
-  Located in Coronado, CA
-  """
+We're busy baking up something special!
+
+The Cookie Isle is a cozy micro-bakery bringing fresh-baked happiness to our community. Sign up to be the first to know when we open our doors.
+
+Located in Coronado, CA
+"""
 
 ################################################################################
 #                                                                              #
