@@ -52,7 +52,7 @@ Before making any changes, always get the latest version from GitHub. This is es
 
 3. **Pull the changes**
    - Click the **three dots menu (···)** again
-   - Select **Pull, Push** → **Pull**
+   - Select **Pull**
    - This downloads any new changes to your computer
 
 4. **You're now up to date!**
@@ -279,7 +279,7 @@ Before publishing, always preview your changes to make sure everything looks rig
 
 5. **Stop the server when done**
    - Click in the terminal
-   - Press `Ctrl + C` to stop the server
+   - Press `Ctrl + C` to stop the server or press trash can
 
 ---
 
