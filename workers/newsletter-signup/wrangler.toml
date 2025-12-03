@@ -5,7 +5,7 @@ compatibility_date = "2024-01-01"
 [vars]
 # Non-secret configuration - safe to commit
 # Add your allowed origins (comma-separated for multiple)
-ALLOWED_ORIGINS = "https://cookieisle.com,https://www.cookieisle.com,http://localhost:1313"
+ALLOWED_ORIGINS = "https://cookieisle.com,https://www.cookieisle.com,https://thecookieisle.com,https://www.thecookieisle.com,http://localhost:1313"
 
 # Secrets are added via CLI - DO NOT put actual secrets here!
 # Run this command after deployment:
