@@ -57,16 +57,28 @@ title = 'The Cookie Isle'
   # When clicked, opens the visitor's email app
   email = "contact@thecookieisle.com"
 
+  # EMAIL ENABLED TOGGLE
+  # Set to true to display the email, false to hide it
+  email_enabled = true
+
   # PHONE NUMBER
   # Displayed in: footer and mobile navigation
   # Used in: layouts/partials/footer.html, layouts/partials/header.html
   # When clicked on mobile, opens the phone dialer
   phone = "(555) 123-COOKIE"
 
+  # PHONE ENABLED TOGGLE
+  # Set to true to display the phone number, false to hide it
+  phone_enabled = false
+
   # PHYSICAL ADDRESS
   # Displayed in the footer's "Visit Us" section
   # Used in: layouts/partials/footer.html
   address = "123 Baker Street, Sweet Town, CA 90210"
+
+  # ADDRESS ENABLED TOGGLE
+  # Set to true to display the address, false to hide it
+  address_enabled = false
 
   # BUSINESS HOURS
   # Each line appears on its own row in the footer
@@ -77,6 +89,10 @@ title = 'The Cookie Isle'
     "Saturday: 8am - 5pm",
     "Sunday: 9am - 2pm"
   ]
+
+  # HOURS ENABLED TOGGLE
+  # Set to true to display business hours, false to hide them
+  hours_enabled = false
 
 
 ################################################################################
@@ -92,11 +108,19 @@ title = 'The Cookie Isle'
   # Set to your Facebook page's full URL
   facebook = "https://facebook.com/thecookieisle"
 
+  # FACEBOOK ENABLED TOGGLE
+  # Set to true to display the Facebook icon, false to hide it
+  facebook_enabled = false
+
   # INSTAGRAM PROFILE URL
   # Displayed as a clickable icon on the coming soon page
   # Used in: layouts/partials/coming-soon.html
   # Set to your Instagram profile's full URL
   instagram = "https://instagram.com/thecookieisle"
+
+  # INSTAGRAM ENABLED TOGGLE
+  # Set to true to display the Instagram icon, false to hide it
+  instagram_enabled = true
 
 
 ################################################################################

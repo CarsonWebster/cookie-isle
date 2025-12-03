@@ -8,30 +8,44 @@
 
             <div class="footer-contact">
                 <h4>Visit Us</h4>
-                {{ with site.Params.address }}
-                <div class="footer-address">{{ . | markdownify }}</div>
-                {{ end }} {{ with site.Params.email }}
-                <p><a href="mailto:{{ . }}">{{ . }}</a></p>
-                {{ end }} {{ with site.Params.phone }}
-                <p><a href="tel:{{ . }}">{{ . }}</a></p>
+                {{ if and site.Params.address_enabled site.Params.address }}
+                <div class="footer-address">
+                    {{ site.Params.address | markdownify }}
+                </div>
+                {{ end }} {{ if and site.Params.email_enabled site.Params.email
+                }}
+                <p>
+                    <a href="mailto:{{ site.Params.email }}"
+                        >{{ site.Params.email }}</a
+                    >
+                </p>
+                {{ end }} {{ if and site.Params.phone_enabled site.Params.phone
+                }}
+                <p>
+                    <a href="tel:{{ site.Params.phone }}"
+                        >{{ site.Params.phone }}</a
+                    >
+                </p>
                 {{ end }}
             </div>
 
+            {{ if and site.Params.hours_enabled site.Params.hours }}
             <div class="footer-hours">
                 <h4>Hours</h4>
-                {{ with site.Params.hours }} {{ range . }}
+                {{ range site.Params.hours }}
                 <p>{{ . }}</p>
-                {{ end }} {{ end }}
+                {{ end }}
             </div>
-
-            {{/* Social Media Section */}} {{ if or site.Params.facebook
-            site.Params.instagram }}
+            {{ end }} {{/* Social Media Section */}} {{ if or (and
+            site.Params.facebook_enabled site.Params.facebook) (and
+            site.Params.instagram_enabled site.Params.instagram) }}
             <div class="footer-social">
                 <h4>Follow Us</h4>
                 <div class="footer-social-icons">
-                    {{ with site.Params.facebook }}
+                    {{ if and site.Params.facebook_enabled site.Params.facebook
+                    }}
                     <a
-                        href="{{ . }}"
+                        href="{{ site.Params.facebook }}"
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Follow us on Facebook"
@@ -49,9 +63,10 @@
                             />
                         </svg>
                     </a>
-                    {{ end }} {{ with site.Params.instagram }}
+                    {{ end }} {{ if and site.Params.instagram_enabled
+                    site.Params.instagram }}
                     <a
-                        href="{{ . }}"
+                        href="{{ site.Params.instagram }}"
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Follow us on Instagram"
