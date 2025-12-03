@@ -22,3 +22,8 @@ node_modules/
 # Environment files
 .env
 .env.local
+
+# Cloudflare Workers
+workers/**/node_modules/
+workers/**/.wrangler/
+workers/**/.dev.vars

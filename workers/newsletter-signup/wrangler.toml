@@ -1,0 +1,15 @@
+name = "newsletter-signup"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+# Non-secret configuration - safe to commit
+# Add your allowed origins (comma-separated for multiple)
+ALLOWED_ORIGINS = "https://cookieisle.com,https://www.cookieisle.com,http://localhost:1313"
+
+# Secrets are added via CLI - DO NOT put actual secrets here!
+# Run this command after deployment:
+#   wrangler secret put GOOGLE_APPS_SCRIPT_URL
+#
+# The Google Apps Script URL is the web app URL you get after deploying
+# your Apps Script (looks like: https://script.google.com/macros/s/xxx/exec)

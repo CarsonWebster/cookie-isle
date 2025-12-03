@@ -19,6 +19,36 @@
         {{/* About Text - uses markdownify to support Markdown formatting in hugo.toml */}}
         <div class="coming-soon-text">{{ site.Params.coming_soon_text | default "Something delicious is on the way. Stay tuned!" | markdownify }}</div>
 
+        {{/* Newsletter Signup Form */}}
+        {{ if site.Params.newsletter_enabled }}
+        <div class="newsletter-signup">
+            <h3 class="newsletter-title">{{ site.Params.newsletter_headline | default "Get Notified When We Launch!" }}</h3>
+            <form id="newsletter-form" class="newsletter-form">
+                <div class="newsletter-input-group">
+                    <input
+                        type="email"
+                        id="newsletter-email"
+                        name="email"
+                        placeholder="{{ site.Params.newsletter_placeholder | default "Enter your email" }}"
+                        required
+                        autocomplete="email"
+                    />
+                    <button type="submit" id="newsletter-submit">
+                        <span class="btn-text">{{ site.Params.newsletter_button_text | default "Notify Me" }}</span>
+                        <span class="btn-loading" style="display: none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="30 70" stroke-linecap="round">
+                                    <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
+                                </circle>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+                <p id="newsletter-message" class="newsletter-message"></p>
+            </form>
+        </div>
+        {{ end }}
+
         {{/* Email */}}
         {{ if and site.Params.email_enabled site.Params.email }}
         <div class="coming-soon-email">
@@ -51,6 +81,68 @@
         </div>
     </div>
 </div>
+
+{{/* Newsletter JavaScript - only included when newsletter is enabled */}}
+{{ if site.Params.newsletter_enabled }}
+<script>
+(function() {
+    const WORKER_URL = '{{ site.Params.newsletter_worker_url | default "" }}';
+
+    if (!WORKER_URL) {
+        console.warn('Newsletter: worker URL not configured in hugo.toml');
+        return;
+    }
+
+    const form = document.getElementById('newsletter-form');
+    const emailInput = document.getElementById('newsletter-email');
+    const submitBtn = document.getElementById('newsletter-submit');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.btn-loading');
+    const messageEl = document.getElementById('newsletter-message');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = emailInput.value.trim();
+        if (!email) return;
+
+        // Show loading state
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'inline';
+        submitBtn.disabled = true;
+        messageEl.textContent = '';
+        messageEl.className = 'newsletter-message';
+
+        try {
+            const response = await fetch(WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                messageEl.textContent = data.message || 'Thanks for signing up!';
+                messageEl.classList.add('success');
+                emailInput.value = '';
+            } else {
+                messageEl.textContent = data.error || 'Something went wrong. Please try again.';
+                messageEl.classList.add('error');
+            }
+        } catch (error) {
+            messageEl.textContent = 'Network error. Please try again.';
+            messageEl.classList.add('error');
+        } finally {
+            // Reset button
+            btnText.style.display = 'inline';
+            btnLoading.style.display = 'none';
+            submitBtn.disabled = false;
+        }
+    });
+})();
+</script>
+{{ end }}
 
 <style>
     /* Coming Soon Page Styles */
@@ -112,6 +204,99 @@
 
     .coming-soon-text p:last-child {
         margin-bottom: 0;
+    }
+
+    /* Newsletter Signup Styles */
+    .newsletter-signup {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .newsletter-title {
+        font-family: var(--font-heading);
+        font-size: 1.25rem;
+        color: var(--color-secondary);
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+
+    .newsletter-form {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .newsletter-input-group {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .newsletter-input-group input[type="email"] {
+        flex: 1;
+        min-width: 200px;
+        padding: 0.875rem 1.25rem;
+        border: 2px solid transparent;
+        border-radius: 50px;
+        font-size: 1rem;
+        background-color: var(--color-card-bg);
+        color: var(--color-secondary);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .newsletter-input-group input[type="email"]:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+    }
+
+    .newsletter-input-group input[type="email"]::placeholder {
+        color: #999;
+    }
+
+    .newsletter-input-group button {
+        padding: 0.875rem 1.75rem;
+        background-color: var(--color-primary);
+        color: var(--color-btn-text);
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 130px;
+    }
+
+    .newsletter-input-group button:hover:not(:disabled) {
+        background-color: var(--color-primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .newsletter-input-group button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    .newsletter-message {
+        margin-top: 1rem;
+        font-size: 0.95rem;
+        min-height: 1.5em;
+    }
+
+    .newsletter-message.success {
+        color: #059669;
+    }
+
+    .newsletter-message.error {
+        color: #dc2626;
     }
 
     .coming-soon-email {
@@ -189,6 +374,22 @@
 
         .coming-soon-text {
             font-size: 1rem;
+        }
+
+        .newsletter-signup {
+            padding: 1.25rem;
+        }
+
+        .newsletter-title {
+            font-size: 1.1rem;
+        }
+
+        .newsletter-input-group input[type="email"] {
+            min-width: 100%;
+        }
+
+        .newsletter-input-group button {
+            width: 100%;
         }
 
         .coming-soon-email a {

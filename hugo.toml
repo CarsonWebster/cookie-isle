@@ -153,11 +153,43 @@ title = 'The Cookie Isle'
   # - Use **bold** or *italic* for emphasis
   # - Use [link text](url) for links
   coming_soon_text = """
-I'm busy baking up something special! 
+I'm busy baking up something special!
 The Cookie Isle is a cozy cottage bakery bringing fresh baked happiness to our community. Follow to be the first to know when we open!
 
 Located in Coronado, CA
 """
+
+  # NEWSLETTER SIGNUP (Coming Soon Page)
+  # Enable/disable the newsletter signup form on the coming soon page
+  # Set to "true" to show the form, "false" to hide it
+  # Used in: layouts/partials/coming-soon.html
+  newsletter_enabled = true
+
+  # NEWSLETTER WORKER URL
+  # The URL of your Cloudflare Worker that handles newsletter signups
+  # You'll get this URL after deploying the worker (see workers/newsletter-signup/)
+  # Example: "https://newsletter-signup.your-subdomain.workers.dev"
+  newsletter_worker_url = "https://newsletter-signup.alyssa-fdc.workers.dev"
+
+  # NEWSLETTER HEADLINE
+  # The heading text above the signup form
+  newsletter_headline = "Get Notified When We Launch!"
+
+  # NEWSLETTER PLACEHOLDER
+  # Placeholder text in the email input field
+  newsletter_placeholder = "Enter your email"
+
+  # NEWSLETTER BUTTON TEXT
+  # Text on the submit button
+  newsletter_button_text = "Notify Me"
+
+  # NEWSLETTER SUCCESS MESSAGE
+  # Message shown after successful signup
+  newsletter_success_message = "Thanks for signing up! We'll let you know when we launch."
+
+  # NEWSLETTER ERROR MESSAGE
+  # Message shown if signup fails
+  newsletter_error_message = "Something went wrong. Please try again."
 
 ################################################################################
 #                                                                              #
