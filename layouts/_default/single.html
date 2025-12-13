@@ -27,6 +27,12 @@
 
         <div class="page-content">{{ .Content }}</div>
 
+        {{/* Calendar Page: Embed calendar and subscribe buttons */}}
+        {{ if and (eq .File.BaseFileName "calendar") site.Params.calendar.calendar_enabled site.Params.calendar.calendar_page_enabled }}
+            {{ partial "calendar-embed.html" . }}
+            {{ partial "calendar-subscribe.html" . }}
+        {{ end }}
+
         {{ if eq .Section "menu" }}
         <div class="menu-item-details">
             {{ with .Params.price }}

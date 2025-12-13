@@ -9,4 +9,23 @@
         </div>
     </div>
 </section>
+
+{{/* Calendar Section - Optional Homepage Display */}}
+{{ if and site.Params.calendar.calendar_enabled site.Params.calendar.calendar_homepage_enabled }}
+<section class="calendar-section">
+    <div class="container">
+        <h2 class="section-title">{{ site.Params.calendar.calendar_homepage_title | default "Upcoming Events" }}</h2>
+        {{ partial "calendar-embed.html" . }}
+        {{ if site.Params.calendar.calendar_homepage_subscribe_enabled }}
+        {{ partial "calendar-subscribe.html" . }}
+        {{ end }}
+        {{ if site.Params.calendar.calendar_page_enabled }}
+        <div style="text-align: center; margin-top: var(--space-lg)">
+            <a href="{{ "calendar/" | relURL }}" class="btn">View Full Calendar</a>
+        </div>
+        {{ end }}
+    </div>
+</section>
+{{ end }}
+
 {{ end }}
