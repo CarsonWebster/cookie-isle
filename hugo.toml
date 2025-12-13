@@ -136,7 +136,7 @@ title = 'The Cookie Isle'
   # Used in: layouts/_default/baseof.html (controls which layout to display)
   #
   # IMPORTANT: When you're ready to launch, change this from "true" to "false"
-  coming_soon = true
+  coming_soon = false
 
   # COMING SOON HEADLINE
   # The main headline text shown on the coming soon page
@@ -256,7 +256,80 @@ Located in Coronado, CA
 
 ################################################################################
 #                                                                              #
-#                    SECTION 7: COLOR SCHEME                                   #
+#                    SECTION 7: GOOGLE CALENDAR INTEGRATION                    #
+#                    (Display events and let customers subscribe)              #
+#                                                                              #
+################################################################################
+
+  # GOOGLE CALENDAR FEATURE
+  # Display your public Google Calendar on your website and let customers
+  # subscribe to it in their own calendar apps (Google, Apple, Outlook, etc.)
+  #
+  # HOW TO SET UP:
+  # 1. In Google Calendar, make your calendar public:
+  #    - Go to calendar Settings > [Your Calendar] > Access permissions
+  #    - Check "Make available to public"
+  # 2. Get your embed URL:
+  #    - Go to Settings > [Your Calendar] > Integrate calendar
+  #    - Copy the iframe src URL from the "Embed code" section
+  #    - Paste it into calendar_embed_url below
+  # 3. Get your iCal URL:
+  #    - In the same location, find "Public address in iCal format"
+  #    - Copy that URL and paste it into calendar_ical_url below
+  #
+  # Used in: layouts/partials/calendar-embed.html,
+  #          layouts/partials/calendar-subscribe.html,
+  #          layouts/partials/header.html (navigation)
+
+  [params.calendar]
+
+    # CALENDAR MASTER TOGGLE
+    # Set to true to enable the calendar feature site-wide, false to disable
+    # When false, no calendar appears anywhere and navigation link is hidden
+    calendar_enabled = true
+
+    # GOOGLE CALENDAR EMBED URL
+    # The URL for embedding your calendar (from Google Calendar's embed code)
+    # Format: https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_ID&...
+    # Leave empty until you have your public calendar set up
+    calendar_embed_url = ""
+
+    # PUBLIC iCAL URL (for "Add to Calendar" subscribe buttons)
+    # The public iCal URL that lets users subscribe to your calendar
+    # Format: https://calendar.google.com/calendar/ical/CALENDAR_ID/public/basic.ics
+    # Leave empty until you have your public calendar set up
+    calendar_ical_url = ""
+
+    # CALENDAR PAGE SETTINGS
+    # Controls the dedicated /calendar/ page
+    # Page content (title, description, text) is set in content/calendar.md
+    calendar_page_enabled = true
+
+    # HOMEPAGE CALENDAR SECTION
+    # Optionally show a calendar preview on the homepage (below Featured Treats)
+    calendar_homepage_enabled = true
+    calendar_homepage_title = "Upcoming Events"
+
+    # HOMEPAGE SUBSCRIBE BUTTONS
+    # Show/hide the subscribe buttons on the homepage calendar section
+    # Set to false to show only the calendar embed on homepage (cleaner look)
+    calendar_homepage_subscribe_enabled = false
+
+    # "ADD TO CALENDAR" SUBSCRIBE BUTTON
+    # Shows buttons to let customers subscribe to your calendar
+    # They can add it to Google Calendar, Apple Calendar, Outlook, etc.
+    calendar_subscribe_enabled = true
+    calendar_subscribe_text = "Subscribe to Calendar"
+
+    # SUBSCRIBE BUTTON STYLE
+    # Choose the visual style for the subscribe button
+    # Options: "primary" (main teal button) or "secondary" (subtle gray button)
+    calendar_subscribe_style = "secondary"
+
+
+################################################################################
+#                                                                              #
+#                    SECTION 8: COLOR SCHEME                                   #
 #                    (Customize your site's look and feel)                     #
 #                                                                              #
 ################################################################################
@@ -378,7 +451,7 @@ Located in Coronado, CA
 
 ################################################################################
 #                                                                              #
-#                    SECTION 8: NAVIGATION MENU                                #
+#                    SECTION 9: NAVIGATION MENU                                #
 #                    (Main menu items in the header)                           #
 #                                                                              #
 ################################################################################
@@ -410,10 +483,18 @@ Located in Coronado, CA
     url = "/about/"
     weight = 3
 
+  # CALENDAR PAGE LINK
+  # Uncomment the lines below to add "Calendar" to your navigation menu
+  # Only appears when calendar_enabled = true in Section 7 above
+  # [[menus.main]]
+  #   name = "Calendar"
+  #   url = "/calendar/"
+  #   weight = 4
+
 
 ################################################################################
 #                                                                              #
-#            ⚠️  SECTION 9: TECHNICAL SETTINGS - RARELY NEED TO CHANGE  ⚠️     #
+#            ⚠️  SECTION 10: TECHNICAL SETTINGS - RARELY NEED TO CHANGE  ⚠️    #
 #                                                                              #
 #   The settings below control how Hugo builds your site. You typically       #
 #   won't need to modify these unless you're making structural changes        #

@@ -15,6 +15,9 @@
                 <li><a href="{{ site.Home.RelPermalink }}">Home</a></li>
                 <li><a href="{{ "menu/" | relURL }}">Menu</a></li>
                 <li><a href="{{ "about/" | relURL }}">About</a></li>
+                {{ if and site.Params.calendar.calendar_enabled site.Params.calendar.calendar_page_enabled }}
+                <li><a href="{{ "calendar/" | relURL }}">Calendar</a></li>
+                {{ end }}
                 {{ with site.Params.contact_url }}
                 <li><a href="{{ . | relURL }}" class="btn btn-nav">Order Now</a></li>
                 {{ end }}
@@ -74,6 +77,9 @@
         <li><a href="{{ site.Home.RelPermalink }}">Home</a></li>
         <li><a href="{{ "menu/" | relURL }}">Menu</a></li>
         <li><a href="{{ "about/" | relURL }}">About</a></li>
+        {{ if and site.Params.calendar.calendar_enabled site.Params.calendar.calendar_page_enabled }}
+        <li><a href="{{ "calendar/" | relURL }}">Calendar</a></li>
+        {{ end }}
     </ul>
 
     {{ with site.Params.contact_url }}

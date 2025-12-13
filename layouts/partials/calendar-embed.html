@@ -1,0 +1,37 @@
+{{/* Calendar Embed Partial Embeds a Google Calendar with responsive sizing that
+works across all devices. Shows a helpful placeholder when the embed URL is not
+yet configured. Requirements: - site.Params.calendar.calendar_enabled = true -
+site.Params.calendar.calendar_embed_url must be set for live calendar Usage: {{
+partial "calendar-embed.html" . }} */}} {{ if
+site.Params.calendar.calendar_enabled }}
+<div class="calendar-embed-container">
+    <div class="calendar-embed-wrapper">
+        {{ if site.Params.calendar.calendar_embed_url }} {{/* Live Google
+        Calendar embed */}}
+        <iframe
+            src="{{ site.Params.calendar.calendar_embed_url }}"
+            class="calendar-iframe"
+            frameborder="0"
+            scrolling="no"
+            title="Calendar"
+            loading="lazy"
+        ></iframe>
+        {{ else }} {{/* Placeholder when URL not configured */}}
+        <div class="calendar-placeholder">
+            <div class="calendar-placeholder-icon">📅</div>
+            <h3>Calendar Coming Soon</h3>
+            <p>
+                Our events calendar is being set up. Check back soon to see
+                upcoming events, pop-ups, and special offerings!
+            </p>
+            <p class="calendar-placeholder-note">
+                <small
+                    >Add your Google Calendar embed URL in hugo.toml to display
+                    your calendar here.</small
+                >
+            </p>
+        </div>
+        {{ end }}
+    </div>
+</div>
+{{ end }}
