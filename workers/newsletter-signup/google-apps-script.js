@@ -61,8 +61,8 @@ const CONFIG = {
 
   // Unsubscribe settings
   // This should be your Cloudflare Worker URL with /unsubscribe path
-  unsubscribeBaseUrl:
-    "https://newsletter-signup.alyssa-fdc.workers.dev/unsubscribe",
+  // Custom domain for unsubscribe links (cleaner than workers.dev URL)
+  unsubscribeBaseUrl: "https://newsletter.thecookieisle.com/unsubscribe",
 
   // IMPORTANT: This secret MUST match the UNSUBSCRIBE_SECRET in your Cloudflare Worker
   // Use a long random string (32+ characters recommended)

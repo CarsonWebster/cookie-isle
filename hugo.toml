@@ -136,7 +136,7 @@ title = 'The Cookie Isle'
   # Used in: layouts/_default/baseof.html (controls which layout to display)
   #
   # IMPORTANT: When you're ready to launch, change this from "true" to "false"
-  coming_soon = false
+  coming_soon = true
 
   # COMING SOON HEADLINE
   # The main headline text shown on the coming soon page

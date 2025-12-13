@@ -2,6 +2,16 @@ name = "newsletter-signup"
 main = "src/index.js"
 compatibility_date = "2024-01-01"
 
+# Disable the default workers.dev subdomain (newsletter-signup.alyssa-fdc.workers.dev)
+# All traffic should go through our custom domain instead
+workers_dev = false
+
+# Custom domain route - newsletter.thecookieisle.com
+# This was also configured in Cloudflare dashboard under Workers & Pages → Settings → Domains & Routes
+routes = [
+  { pattern = "newsletter.thecookieisle.com/*", zone_name = "thecookieisle.com" }
+]
+
 [vars]
 # Non-secret configuration - safe to commit
 # Add your allowed origins (comma-separated for multiple)
