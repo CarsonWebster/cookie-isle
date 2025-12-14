@@ -4,6 +4,7 @@ date = '2025-11-28T13:12:39-08:00'
 draft = false
 featured = true
 price = '$4.00'
+price_cents = 400
 description = 'Buttery caramel swirled throughout with a perfect touch of sea salt.'
 image = 'Saltedcaramelsingle.png'
 hero_image = 'Saltedcaramelmultiple.png'

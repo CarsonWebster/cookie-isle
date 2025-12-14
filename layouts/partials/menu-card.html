@@ -26,6 +26,16 @@
             <span class="tag">{{ . }}</span>
             {{ end }}
         </div>
+        {{ end }} {{ if site.Params.cart_enabled }}
+        <button
+            class="btn btn-add-to-cart"
+            data-add-to-cart
+            data-product="{{ .Title }}"
+            data-price-cents="{{ .Params.price_cents }}"
+            aria-label="Add {{ .Title }} to cart"
+        >
+            {{ site.Params.cart_button_text | default "Add to Cart" }}
+        </button>
         {{ end }}
     </div>
 </article>

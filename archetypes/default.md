@@ -24,6 +24,9 @@ weight = 10
 # Price displayed on the menu card (include dollar sign)
 price = "$0.00"
 
+# Price in cents for cart calculations (e.g., $3.50 = 350)
+price_cents = 0
+
 # DESCRIPTION
 # -----------
 # Short description shown on the menu card (1-2 sentences)

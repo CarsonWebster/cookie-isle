@@ -4,6 +4,7 @@ date = 2025-11-28T14:00:00-08:00
 draft = false
 featured = false
 price = "$3.25"
+price_cents = 325
 description = "A wholesome classic with hearty oats and plump raisins."
 image = "/images/cookies/oatmeal-raisin.jpg"
 ingredients = "Butter, flour, rolled oats, brown sugar, raisins, cinnamon, eggs, vanilla"

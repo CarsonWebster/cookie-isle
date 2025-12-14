@@ -4,6 +4,7 @@ date = 2025-11-28T13:12:28-08:00
 draft = false
 featured = true
 price = "$3.50"
+price_cents = 350
 description = "Our classic chocolate chip cookie loaded with premium semi-sweet chocolate chips."
 image = "ChocChipBowl.jpg"
 hero_image = "ChocChipRack.jpg"

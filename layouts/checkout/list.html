@@ -1,0 +1,237 @@
+{{ define "main" }}
+<section class="checkout-page">
+    <div class="container">
+        <h1 class="checkout-title">{{ site.Params.checkout_page_title | default "Your Cart" }}</h1>
+
+        {{/* Empty Cart State */}}
+        <div id="cart-empty" class="cart-empty" style="display: none;">
+            <div class="cart-empty-icon">🍪</div>
+            <p class="cart-empty-message">{{ site.Params.checkout_empty_message | default "Your cart is empty. Browse our delicious cookies!" }}</p>
+            <a href="{{ "menu/" | relURL }}" class="btn">Browse Menu</a>
+        </div>
+
+        {{/* Cart Contents */}}
+        <div id="cart-contents" class="cart-contents" style="display: none;">
+            {{/* Cart Items Table */}}
+            <div class="cart-items">
+                <div class="cart-header">
+                    <span class="cart-header-product">Product</span>
+                    <span class="cart-header-price">Price</span>
+                    <span class="cart-header-quantity">Quantity</span>
+                    <span class="cart-header-total">Total</span>
+                    <span class="cart-header-remove"></span>
+                </div>
+                <div id="cart-items-list" class="cart-items-list">
+                    {{/* Items rendered by JavaScript */}}
+                </div>
+            </div>
+
+            {{/* Max Order Warning */}}
+            <div id="max-order-warning" class="max-order-warning" style="display: none;">
+                <div class="warning-icon">⚠️</div>
+                <p class="warning-message"></p>
+            </div>
+
+            {{/* Cart Summary */}}
+            <div class="cart-summary">
+                <div class="cart-summary-row cart-summary-count">
+                    <span class="cart-summary-label">Total Cookies:</span>
+                    <span id="cart-count" class="cart-summary-value">0</span>
+                </div>
+                <div class="cart-summary-row cart-summary-total">
+                    <span class="cart-summary-label">Order Total:</span>
+                    <span id="cart-total" class="cart-summary-value">$0.00</span>
+                </div>
+            </div>
+
+            {{/* Continue Shopping Link */}}
+            <div class="cart-actions-top">
+                <a href="{{ "menu/" | relURL }}" class="cart-continue-shopping">&larr; Continue Shopping</a>
+            </div>
+
+            {{/* Pickup/Delivery Toggle */}}
+            {{ if or site.Params.pickup_enabled site.Params.delivery_enabled }}
+            <div class="checkout-form-section fulfillment-section">
+                <h2 class="checkout-form-title">How would you like to receive your order?</h2>
+                <div class="fulfillment-toggle" role="group" aria-label="Order fulfillment method">
+                    {{ if site.Params.pickup_enabled }}
+                    <button type="button"
+                            class="fulfillment-option active"
+                            data-fulfillment="pickup"
+                            aria-pressed="true">
+                        <span class="fulfillment-icon">📍</span>
+                        <span class="fulfillment-label">{{ site.Params.pickup_location | default "Local" }} Pickup</span>
+                    </button>
+                    {{ end }}
+                    {{ if site.Params.delivery_enabled }}
+                    <button type="button"
+                            class="fulfillment-option {{ if not site.Params.pickup_enabled }}active{{ end }}"
+                            data-fulfillment="delivery"
+                            aria-pressed="{{ if not site.Params.pickup_enabled }}true{{ else }}false{{ end }}">
+                        <span class="fulfillment-icon">🚗</span>
+                        <span class="fulfillment-label">{{ site.Params.delivery_area | default "Local" }} Delivery</span>
+                    </button>
+                    {{ end }}
+                </div>
+            </div>
+            {{ end }}
+
+            {{/* Customer Information Form */}}
+            <div class="checkout-form-section">
+                <h2 class="checkout-form-title">Your Information</h2>
+                <form id="checkout-form" class="checkout-form" novalidate>
+                    {{/* Hidden field for fulfillment type */}}
+                    <input type="hidden" id="fulfillment_type" name="fulfillment_type" value="{{ if site.Params.pickup_enabled }}pickup{{ else }}delivery{{ end }}">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first_name">First Name <span class="required">*</span></label>
+                            <input type="text" id="first_name" name="first_name" required autocomplete="given-name" placeholder="Jane">
+                            <span class="form-error" id="first_name-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="last_name">Last Name <span class="required">*</span></label>
+                            <input type="text" id="last_name" name="last_name" required autocomplete="family-name" placeholder="Doe">
+                            <span class="form-error" id="last_name-error"></span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required autocomplete="email" placeholder="jane@example.com">
+                            <span class="form-error" id="email-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone <span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" required autocomplete="tel" placeholder="(555) 123-4567">
+                            <span class="form-error" id="phone-error"></span>
+                        </div>
+                    </div>
+
+                    {{/* Delivery Address Fields - Hidden by default */}}
+                    {{ if site.Params.delivery_enabled }}
+                    <div id="delivery-address-section" class="delivery-address-section" style="display: none;">
+                        <h3 class="address-section-title">Delivery Address</h3>
+                        <div class="form-row">
+                            <div class="form-group form-group-full">
+                                <label for="street_address">Street Address <span class="required">*</span></label>
+                                <input type="text" id="street_address" name="street_address" autocomplete="street-address" placeholder="123 Main Street">
+                                <span class="form-error" id="street_address-error"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="apt_unit">Apt / Unit / Suite</label>
+                                <input type="text" id="apt_unit" name="apt_unit" autocomplete="address-line2" placeholder="Apt 4B">
+                                <span class="form-error" id="apt_unit-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="city">City <span class="required">*</span></label>
+                                <input type="text" id="city" name="city" autocomplete="address-level2" placeholder="Coronado">
+                                <span class="form-error" id="city-error"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="state">State <span class="required">*</span></label>
+                                <input type="text" id="state" name="state" autocomplete="address-level1" placeholder="CA" maxlength="2">
+                                <span class="form-error" id="state-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="zip_code">ZIP Code <span class="required">*</span></label>
+                                <input type="text" id="zip_code" name="zip_code" autocomplete="postal-code" placeholder="92118" maxlength="10" pattern="[0-9]{5}(-[0-9]{4})?">
+                                <span class="form-error" id="zip_code-error"></span>
+                            </div>
+                        </div>
+
+                        {{/* ZIP Code Warning */}}
+                        <div id="zip-warning" class="zip-warning" style="display: none;">
+                            <div class="zip-warning-content">
+                                <span class="zip-warning-icon">⚠️</span>
+                                <p class="zip-warning-message">{{ site.Params.delivery_zip_error | default "Sorry, we don't deliver to this ZIP code. Please select pickup instead." }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {{ end }}
+
+                    {{/* Form Error Messages */}}
+                    <div id="form-errors" class="form-errors" style="display: none;"></div>
+
+                    {{/* Submit Button */}}
+                    <div class="checkout-submit">
+                        <button type="submit" id="checkout-submit-btn" class="btn btn-checkout">
+                            Place Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{/* Order Success State */}}
+        <div id="checkout-success" class="checkout-success" style="display: none;">
+            <div class="checkout-success-icon">✓</div>
+            <h2 class="checkout-success-title">Order Submitted!</h2>
+            <p class="checkout-success-message">{{ site.Params.checkout_success_message | default "Thank you for your order! We'll be in touch soon." }}</p>
+            <div id="order-summary" class="order-summary">
+                {{/* Order summary rendered by JavaScript */}}
+            </div>
+            <a href="{{ site.Home.RelPermalink }}" class="btn">Back to Home</a>
+        </div>
+
+        {{/* Order Error State */}}
+        <div id="checkout-error" class="checkout-error" style="display: none;">
+            <div class="checkout-error-icon">!</div>
+            <h2 class="checkout-error-title">Oops!</h2>
+            <p class="checkout-error-message">{{ site.Params.checkout_error_message | default "Something went wrong. Please try again." }}</p>
+            <button id="checkout-retry" class="btn">Try Again</button>
+        </div>
+    </div>
+</section>
+
+{{/* Max Order Modal */}}
+<div id="max-order-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-icon">🍪</div>
+        <h2 class="modal-title">Large Order Request</h2>
+        <p class="modal-message" id="max-order-modal-message">
+            {{ $msg := site.Params.max_order_message | default "For orders of more than {threshold} cookies, please contact us at {email} to discuss your order." }}
+            {{ $msg = replace $msg "{threshold}" (string (site.Params.max_order_quantity | default 50)) }}
+            {{ $msg = replace $msg "{email}" site.Params.email }}
+            {{ $msg }}
+        </p>
+        <div class="modal-actions">
+            <a href="mailto:{{ site.Params.email }}?subject=Large Cookie Order Inquiry" class="btn btn-modal-primary">Contact Us</a>
+            <button type="button" class="btn btn-modal-secondary" id="max-order-modal-close">Go Back</button>
+        </div>
+    </div>
+</div>
+
+{{/* ZIP Code Error Modal */}}
+<div id="zip-error-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-icon">📍</div>
+        <h2 class="modal-title">Delivery Area</h2>
+        <p class="modal-message">{{ site.Params.delivery_zip_error | default "Sorry, we only deliver within our local area. Please select pickup instead, or contact us for special arrangements." }}</p>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-modal-primary" id="zip-modal-pickup">Switch to Pickup</button>
+            <button type="button" class="btn btn-modal-secondary" id="zip-modal-close">Update Address</button>
+        </div>
+    </div>
+</div>
+
+{{/* Pass configuration to JavaScript */}}
+<script>
+    window.CHECKOUT_CONFIG = {
+        workerUrl: "{{ site.Params.checkout_worker_url | default "" }}",
+        allowedZips: {{ site.Params.allowed_delivery_zips | default (slice "92118") | jsonify | safeJS }},
+        maxOrderQuantity: {{ site.Params.max_order_quantity | default 50 }},
+        maxOrderMessage: "{{ $msg := site.Params.max_order_message | default "For orders of more than {threshold} cookies, please contact us at {email} to discuss your order." }}{{ $msg = replace $msg "{threshold}" (string (site.Params.max_order_quantity | default 50)) }}{{ $msg = replace $msg "{email}" site.Params.email }}{{ $msg }}",
+        contactEmail: "{{ site.Params.email | default "" }}",
+        pickupEnabled: {{ site.Params.pickup_enabled | default true }},
+        deliveryEnabled: {{ site.Params.delivery_enabled | default true }}
+    };
+</script>
+
+{{/* Checkout-specific JavaScript */}}
+<script src="{{ "js/checkout.js" | relURL }}"></script>
+{{ end }}

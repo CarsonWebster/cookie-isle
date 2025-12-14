@@ -191,6 +191,79 @@ Located in Coronado, CA
   # Message shown if signup fails
   newsletter_error_message = "Something went wrong. Please try again."
 
+
+################################################################################
+#                                                                              #
+#                    SECTION 4B: SHOPPING CART & CHECKOUT                      #
+#                    (Configure the shopping cart system)                      #
+#                                                                              #
+################################################################################
+
+  # CART ENABLED TOGGLE
+  # Set to "true" to enable shopping cart functionality, "false" to disable
+  # When enabled, "Add to Cart" buttons appear on menu items
+  # Used in: layouts/partials/menu-card.html, layouts/_default/single.html
+  cart_enabled = true
+
+  # CHECKOUT WORKER URL (Future)
+  # The URL of your Cloudflare Worker that handles order submissions
+  # Leave empty until the worker is deployed
+  # Example: "https://orders.your-subdomain.workers.dev"
+  checkout_worker_url = ""
+
+  # CART BUTTON TEXT
+  # Text shown on the "Add to Cart" buttons
+  cart_button_text = "Add to Cart"
+
+  # CHECKOUT BUTTON TEXT
+  # Text shown on the checkout/cart button in the header
+  checkout_button_text = "Cart"
+
+  # CHECKOUT PAGE TITLE
+  # Title shown at the top of the checkout page
+  checkout_page_title = "Your Cart"
+
+  # CHECKOUT EMPTY MESSAGE
+  # Message shown when the cart is empty
+  checkout_empty_message = "Your cart is empty. Browse our delicious cookies!"
+
+  # CHECKOUT SUCCESS MESSAGE
+  # Message shown after successful order submission
+  checkout_success_message = "Thank you for your order! We'll be in touch soon."
+
+  # CHECKOUT ERROR MESSAGE
+  # Message shown if order submission fails
+  checkout_error_message = "Something went wrong. Please try again."
+
+  # PICKUP/DELIVERY OPTIONS
+  # Enable pickup and/or delivery options on checkout
+  pickup_enabled = true
+  delivery_enabled = true
+
+  # Pickup location name
+  pickup_location = "Coronado Island"
+
+  # Delivery area name
+  delivery_area = "Coronado Island"
+
+  # ALLOWED DELIVERY ZIP CODES
+  # List of ZIP codes where delivery is available
+  # Orders with ZIP codes not in this list will be rejected
+  allowed_delivery_zips = ["92118"]
+
+  # Message shown when ZIP code is not in delivery area
+  delivery_zip_error = "Sorry, we only deliver to Coronado Island (ZIP 92118). Please select pickup instead, or contact us for special arrangements."
+
+  # MAX ORDER QUANTITY
+  # Maximum total number of cookies allowed per order
+  # Orders exceeding this will be prompted to contact directly
+  max_order_quantity = 50
+
+  # Message shown when order exceeds max quantity
+  # Use {threshold} and {email} as placeholders
+  max_order_message = "For orders of more than {threshold} cookies, please contact us at {email} to discuss your order."
+
+
 ################################################################################
 #                                                                              #
 #                    SECTION 5: IMAGES AND BRANDING                            #

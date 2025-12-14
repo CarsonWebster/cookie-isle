@@ -17,6 +17,19 @@
     </main>
 
     {{ partial "footer.html" . }}
+
+    {{/* Cart JavaScript - only load when cart is enabled */}}
+    {{ if site.Params.cart_enabled }}
+    {{/* Cart configuration for non-checkout pages */}}
+    <script>
+      window.CART_CONFIG = {
+        maxOrderQuantity: {{ site.Params.max_order_quantity | default 50 }},
+        contactEmail: "{{ site.Params.email | default "" }}"
+      };
+    </script>
+    <script src="{{ "js/cart.js" | relURL }}"></script>
+    <script src="{{ "js/cart-ui.js" | relURL }}"></script>
+    {{ end }}
   {{ end }}
 </body>
 </html>
