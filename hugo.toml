@@ -292,13 +292,13 @@ Located in Coronado, CA
     # The URL for embedding your calendar (from Google Calendar's embed code)
     # Format: https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_ID&...
     # Leave empty until you have your public calendar set up
-    calendar_embed_url = ""
+    calendar_embed_url = "https://calendar.google.com/calendar/embed?src=c_5099568f04822947c2b6fbf47ad6667e9d9902df5c16e5c82ee5261c348079ae%40group.calendar.google.com&ctz=America%2FLos_Angeles"
 
     # PUBLIC iCAL URL (for "Add to Calendar" subscribe buttons)
     # The public iCal URL that lets users subscribe to your calendar
     # Format: https://calendar.google.com/calendar/ical/CALENDAR_ID/public/basic.ics
     # Leave empty until you have your public calendar set up
-    calendar_ical_url = ""
+    calendar_ical_url = "https://calendar.google.com/calendar/ical/c_5099568f04822947c2b6fbf47ad6667e9d9902df5c16e5c82ee5261c348079ae%40group.calendar.google.com/public/basic.ics"
 
     # CALENDAR PAGE SETTINGS
     # Controls the dedicated /calendar/ page
