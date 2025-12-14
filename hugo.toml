@@ -167,9 +167,8 @@ Located in Coronado, CA
 
   # NEWSLETTER WORKER URL
   # The URL of your Cloudflare Worker that handles newsletter signups
-  # You'll get this URL after deploying the worker (see workers/newsletter-signup/)
-  # Example: "https://newsletter-signup.your-subdomain.workers.dev"
-  newsletter_worker_url = "https://newsletter-signup.alyssa-fdc.workers.dev"
+  # Custom domain configured in Cloudflare Workers & Pages → Settings → Domains & Routes
+  newsletter_worker_url = "https://newsletter.thecookieisle.com"
 
   # NEWSLETTER HEADLINE
   # The heading text above the signup form

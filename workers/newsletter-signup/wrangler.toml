@@ -18,8 +18,12 @@ routes = [
 ALLOWED_ORIGINS = "https://cookieisle.com,https://www.cookieisle.com,https://thecookieisle.com,https://www.thecookieisle.com,http://localhost:1313"
 
 # Secrets are added via CLI - DO NOT put actual secrets here!
-# Run this command after deployment:
+# Run these commands after deployment:
 #   wrangler secret put GOOGLE_APPS_SCRIPT_URL
+#   wrangler secret put UNSUBSCRIBE_SECRET
 #
-# The Google Apps Script URL is the web app URL you get after deploying
-# your Apps Script (looks like: https://script.google.com/macros/s/xxx/exec)
+# GOOGLE_APPS_SCRIPT_URL: The web app URL from your deployed Apps Script
+#   (looks like: https://script.google.com/macros/s/xxx/exec)
+#
+# UNSUBSCRIBE_SECRET: A random 32+ character string for HMAC token generation
+#   Must match CONFIG.unsubscribeSecret in google-apps-script.js
