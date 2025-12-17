@@ -20,6 +20,7 @@
     dropWindowCookieLimit: 200,
     dropWindowSoldOutMessage: "Sold out for this date",
     taxRate: 0.0775,
+    smallOrderFeeThreshold: 10,
   };
 
   // DOM Elements
@@ -30,6 +31,9 @@
     cartTotal: null,
     cartSubtotal: null,
     cartTax: null,
+    cartFeeRow: null,
+    cartFee: null,
+    feeNote: null,
     cartCount: null,
     checkoutForm: null,
     checkoutSubmitBtn: null,
@@ -94,6 +98,9 @@
     elements.cartTotal = document.getElementById("cart-total");
     elements.cartSubtotal = document.getElementById("cart-subtotal");
     elements.cartTax = document.getElementById("cart-tax");
+    elements.cartFeeRow = document.getElementById("cart-fee-row");
+    elements.cartFee = document.getElementById("cart-fee");
+    elements.feeNote = document.getElementById("fee-note");
     elements.cartCount = document.getElementById("cart-count");
     elements.checkoutForm = document.getElementById("checkout-form");
     elements.checkoutSubmitBtn = document.getElementById("checkout-submit-btn");
@@ -543,14 +550,19 @@
     });
   }
 
-  /**
-   * Update the cart total display
-   */
   function updateCartTotal() {
     const subtotalCents = CookieCart.getCartTotalCents();
     const subtotal = subtotalCents / 100;
     const tax = subtotal * CONFIG.taxRate;
-    const total = subtotal + tax;
+    
+    let fee = 0;
+    // Apply fee if subtotal is greater than 0 but less than threshold
+    if (subtotal > 0 && subtotal < CONFIG.smallOrderFeeThreshold) {
+        // Fee is 3% of (subtotal + tax) + $0.30
+        fee = ((subtotal + tax) * 0.03) + 0.30;
+    }
+
+    const total = subtotal + tax + fee;
 
     // Format currency helper
     const fmt = (n) =>
@@ -565,6 +577,17 @@
     if (elements.cartTax) {
       elements.cartTax.textContent = fmt(tax);
     }
+    
+    // Handle Fee Display
+    if (fee > 0) {
+        if (elements.cartFeeRow) elements.cartFeeRow.style.display = "flex"; // Assuming flex layout for rows
+        if (elements.cartFee) elements.cartFee.textContent = fmt(fee);
+        if (elements.feeNote) elements.feeNote.style.display = "block";
+    } else {
+        if (elements.cartFeeRow) elements.cartFeeRow.style.display = "none";
+        if (elements.feeNote) elements.feeNote.style.display = "none";
+    }
+
     if (elements.cartTotal) {
       elements.cartTotal.textContent = fmt(total);
     }
@@ -821,20 +844,34 @@
       };
     });
 
+    // Calculate amounts including fee
+    const subtotal = CookieCart.getCartTotalCents() / 100;
+    const tax = subtotal * CONFIG.taxRate;
+    let fee = 0;
+    if (subtotal > 0 && subtotal < CONFIG.smallOrderFeeThreshold) {
+        fee = ((subtotal + tax) * 0.03) + 0.30;
+    }
+    const total = subtotal + tax + fee;
+
+    // Create a FormData object from the checkout form
+    const checkoutForm = document.getElementById("checkout-form");
+    const formData = new FormData(checkoutForm);
+
     const payload = {
       customer: {
-        first_name: document.getElementById("first_name").value.trim(),
-        last_name: document.getElementById("last_name").value.trim(),
-        email: document.getElementById("email").value.trim(),
-        phone: document.getElementById("phone").value.trim(),
+        first_name: formData.get("first_name"),
+        last_name: formData.get("last_name"),
+        email: formData.get("email"),
+        phone: formData.get("phone"),
       },
       fulfillment: {
         type: currentFulfillment,
       },
       order: order,
-      subtotal: CookieCart.getCartTotalCents() / 100,
-      tax: (CookieCart.getCartTotalCents() / 100) * CONFIG.taxRate,
-      total: (CookieCart.getCartTotalCents() / 100) * (1 + CONFIG.taxRate),
+      subtotal: subtotal,
+      tax: tax,
+      fee: fee,
+      total: total,
       submitted_at: new Date().toISOString(),
     };
 

@@ -46,10 +46,17 @@
                     <span class="cart-summary-label">Tax ({{ mul (site.Params.sales_tax_rate | default 0.0775) 100 }}%):</span>
                     <span id="cart-tax" class="cart-summary-value">$0.00</span>
                 </div>
+                <div class="cart-summary-row cart-summary-fee" id="cart-fee-row" style="display: none;">
+                    <span class="cart-summary-label">Small Order Fee:</span>
+                    <span id="cart-fee" class="cart-summary-value">$0.00</span>
+                </div>
                 <div class="cart-summary-row cart-summary-total">
                     <span class="cart-summary-label">Order Total:</span>
                     <span id="cart-total" class="cart-summary-value">$0.00</span>
                 </div>
+                <p id="fee-note" class="fee-note" style="display: none; font-size: 0.85em; color: #666; margin-top: 0.5rem; font-style: italic;">
+                    * A small order fee applies to orders under ${{ site.Params.small_order_fee_threshold | default 10 }}.
+                </p>
             </div>
 
             {{/* Continue Shopping Link */}}
@@ -289,7 +296,8 @@
         calendarSlotsWorkerUrl: "{{ site.Params.calendar_slots_worker_url | default "" }}",
         dropWindowCookieLimit: {{ site.Params.drop_window_cookie_limit | default 200 }},
         dropWindowSoldOutMessage: "{{ site.Params.drop_window_sold_out_message | default "Sold out for this date" }}",
-        taxRate: {{ site.Params.sales_tax_rate | default 0.0775 }}
+        taxRate: {{ site.Params.sales_tax_rate | default 0.0775 }},
+        smallOrderFeeThreshold: {{ site.Params.small_order_fee_threshold | default 10 }}
     };
 </script>
 

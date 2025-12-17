@@ -278,6 +278,10 @@ drop_window_sold_out_message = "Sold out for this date"
 # Sales tax rate (decimal)
 sales_tax_rate = 0.0775
 
+# Small order fee threshold ($)
+# Orders under this amount (subtotal) will incur a processing fee
+small_order_fee_threshold = 10
+
 
 ################################################################################
 #                                                                              #
