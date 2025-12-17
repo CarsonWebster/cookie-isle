@@ -227,6 +227,23 @@ function getAllowedOrigin(request, env) {
     if (allowedOrigins.includes(origin)) {
         return origin;
     }
+
+    // Allow subdomains/aliases for preview environments
+    // This allows any subdomain of cookieisle.com, thecookieisle.com, and cookie-isle.pages.dev
+    try {
+        const url = new URL(origin);
+        const hostname = url.hostname;
+        if (hostname.endsWith("cookieisle.com") || 
+            hostname.endsWith("thecookieisle.com") || 
+            hostname.endsWith("cookie-isle.pages.dev") || 
+            hostname === "localhost" || 
+            hostname === "127.0.0.1") {
+            return origin;
+        }
+    } catch (e) {
+        // Invalid origin URL, ignore
+    }
+
     // Return first allowed origin as fallback
     return allowedOrigins[0] || "";
 }
