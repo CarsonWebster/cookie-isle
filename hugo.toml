@@ -283,6 +283,20 @@ sales_tax_rate = 0.0775
 small_order_fee_threshold = 10
 
 
+
+
+# PROMO CODES
+# Key-value store of available promo codes
+# type: "flat" ($ off) or "percent" (% off)
+[params.promo_codes]
+  [params.promo_codes.LAUNCH]
+  type = "flat"
+  value = 5.00
+
+  [params.promo_codes.CHRISTMAS]
+  type = "percent"
+  value = 25.0
+
 ################################################################################
 #                                                                              #
 #                    SECTION 5: IMAGES AND BRANDING                            #

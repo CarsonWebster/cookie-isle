@@ -21,6 +21,7 @@
     dropWindowSoldOutMessage: "Sold out for this date",
     taxRate: 0.0775,
     smallOrderFeeThreshold: 10,
+    promoCodes: {},
   };
 
   // DOM Elements
@@ -31,7 +32,16 @@
     cartTotal: null,
     cartSubtotal: null,
     cartTax: null,
+    cartTax: null,
+    cartDiscountRow: null,
+    cartDiscount: null,
     cartFeeRow: null,
+    cartFee: null,
+    feeNote: null,
+    promoInput: null,
+    promoBtn: null,
+    promoMessage: null,
+    cartCount: null,
     cartFee: null,
     feeNote: null,
     cartCount: null,
@@ -73,6 +83,9 @@
   // Track if ZIP is valid for delivery
   let isZipValid = true;
 
+  // Active promo code
+  let activePromo = null;
+
   /**
    * Initialize the checkout page
    */
@@ -98,9 +111,14 @@
     elements.cartTotal = document.getElementById("cart-total");
     elements.cartSubtotal = document.getElementById("cart-subtotal");
     elements.cartTax = document.getElementById("cart-tax");
+    elements.cartDiscountRow = document.getElementById("cart-discount-row");
+    elements.cartDiscount = document.getElementById("cart-discount");
     elements.cartFeeRow = document.getElementById("cart-fee-row");
     elements.cartFee = document.getElementById("cart-fee");
     elements.feeNote = document.getElementById("fee-note");
+    elements.promoInput = document.getElementById("promo-input");
+    elements.promoBtn = document.getElementById("apply-promo-btn");
+    elements.promoMessage = document.getElementById("promo-message");
     elements.cartCount = document.getElementById("cart-count");
     elements.checkoutForm = document.getElementById("checkout-form");
     elements.checkoutSubmitBtn = document.getElementById("checkout-submit-btn");
@@ -188,6 +206,11 @@
       renderCart();
       checkMaxQuantityWarning();
     });
+
+    // Promo code button
+    if (elements.promoBtn) {
+      elements.promoBtn.addEventListener("click", handleApplyPromo);
+    }
   }
 
   /**
@@ -232,6 +255,55 @@
     // Update fulfillment slots to show relevant times
     if (window.FulfillmentSlots) {
       FulfillmentSlots.setFulfillmentType(newFulfillment);
+    }
+  }
+
+  /**
+   * Handle Promo Code Application
+   */
+  function handleApplyPromo() {
+    if (!elements.promoInput) return;
+
+    const rawCode = elements.promoInput.value.trim();
+    const lookupCode = rawCode.toLowerCase();
+    const messageEl = elements.promoMessage;
+
+    if (!rawCode) {
+        if (messageEl) {
+            messageEl.textContent = "Please enter a code.";
+            messageEl.style.display = "block";
+            messageEl.style.color = "#d63384";
+        }
+        return;
+    }
+
+    // Lookup using lowercase code (Hugo params keys are lowercased)
+    if (CONFIG.promoCodes && CONFIG.promoCodes[lookupCode]) {
+        // Valid code
+        const promoData = CONFIG.promoCodes[lookupCode];
+        
+        activePromo = {
+            code: rawCode.toUpperCase(), // Store nicely formatted code
+            type: promoData.type,
+            value: Number(promoData.value) // Ensure number
+        };
+        
+        if (messageEl) {
+            messageEl.textContent = `Code ${activePromo.code} applied!`;
+            messageEl.style.display = "block";
+            messageEl.style.color = "#2A9D8F";
+        }
+        
+        updateCartTotal();
+    } else {
+        // Invalid code
+        activePromo = null;
+        if (messageEl) {
+            messageEl.textContent = "Invalid promo code.";
+            messageEl.style.display = "block";
+            messageEl.style.color = "#d63384";
+        }
+        updateCartTotal();
     }
   }
 
@@ -553,16 +625,30 @@
   function updateCartTotal() {
     const subtotalCents = CookieCart.getCartTotalCents();
     const subtotal = subtotalCents / 100;
-    const tax = subtotal * CONFIG.taxRate;
-    
-    let fee = 0;
-    // Apply fee if subtotal is greater than 0 but less than threshold
-    if (subtotal > 0 && subtotal < CONFIG.smallOrderFeeThreshold) {
-        // Fee is 3% of (subtotal + tax) + $0.30
-        fee = ((subtotal + tax) * 0.03) + 0.30;
+
+    // Calculate Discount
+    let discount = 0;
+    if (activePromo && subtotal > 0) {
+        if (activePromo.type === 'flat') {
+            discount = activePromo.value;
+        } else if (activePromo.type === 'percent') {
+            discount = subtotal * (activePromo.value / 100);
+        }
+        // Cap discount at subtotal
+        if (discount > subtotal) discount = subtotal;
     }
 
-    const total = subtotal + tax + fee;
+    const taxableSubtotal = Math.max(0, subtotal - discount);
+    const tax = taxableSubtotal * CONFIG.taxRate;
+    
+    let fee = 0;
+    // Apply fee if taxable subtotal is greater than 0 but less than threshold
+    if (taxableSubtotal > 0 && taxableSubtotal < CONFIG.smallOrderFeeThreshold) {
+        // Fee is 3% of (taxableSubtotal + tax) + $0.30
+        fee = ((taxableSubtotal + tax) * 0.03) + 0.30;
+    }
+
+    const total = taxableSubtotal + tax + fee;
 
     // Format currency helper
     const fmt = (n) =>
@@ -574,13 +660,24 @@
     if (elements.cartSubtotal) {
       elements.cartSubtotal.textContent = fmt(subtotal);
     }
+    
+    // Handle Discount Display
+    if (elements.cartDiscountRow) {
+        if (discount > 0) {
+            elements.cartDiscountRow.style.display = "flex";
+            if (elements.cartDiscount) elements.cartDiscount.textContent = "-" + fmt(discount);
+        } else {
+            elements.cartDiscountRow.style.display = "none";
+        }
+    }
+
     if (elements.cartTax) {
       elements.cartTax.textContent = fmt(tax);
     }
     
     // Handle Fee Display
     if (fee > 0) {
-        if (elements.cartFeeRow) elements.cartFeeRow.style.display = "flex"; // Assuming flex layout for rows
+        if (elements.cartFeeRow) elements.cartFeeRow.style.display = "flex";
         if (elements.cartFee) elements.cartFee.textContent = fmt(fee);
         if (elements.feeNote) elements.feeNote.style.display = "block";
     } else {
@@ -846,12 +943,26 @@
 
     // Calculate amounts including fee
     const subtotal = CookieCart.getCartTotalCents() / 100;
-    const tax = subtotal * CONFIG.taxRate;
-    let fee = 0;
-    if (subtotal > 0 && subtotal < CONFIG.smallOrderFeeThreshold) {
-        fee = ((subtotal + tax) * 0.03) + 0.30;
+    
+    // Re-calculate Logic for Payload (Mirror updateCartTotal)
+    let discount = 0;
+    if (activePromo && subtotal > 0) {
+        if (activePromo.type === 'flat') {
+            discount = activePromo.value;
+        } else if (activePromo.type === 'percent') {
+            discount = subtotal * (activePromo.value / 100);
+        }
+        if (discount > subtotal) discount = subtotal;
     }
-    const total = subtotal + tax + fee;
+    
+    const taxableSubtotal = Math.max(0, subtotal - discount);
+    const tax = taxableSubtotal * CONFIG.taxRate;
+    
+    let fee = 0;
+    if (taxableSubtotal > 0 && taxableSubtotal < CONFIG.smallOrderFeeThreshold) {
+        fee = ((taxableSubtotal + tax) * 0.03) + 0.30;
+    }
+    const total = taxableSubtotal + tax + fee;
 
     // Create a FormData object from the checkout form
     const checkoutForm = document.getElementById("checkout-form");
@@ -869,6 +980,8 @@
       },
       order: order,
       subtotal: subtotal,
+      promo_code: activePromo ? activePromo.code : null,
+      discount: discount,
       tax: tax,
       fee: fee,
       total: total,

@@ -38,9 +38,23 @@
                     <span class="cart-summary-label">Total Cookies:</span>
                     <span id="cart-count" class="cart-summary-value">0</span>
                 </div>
+
+                <!-- Promo Code -->
+                <div class="promo-code-section" style="margin: 1rem 0; padding: 10px 0; border-top: 1px dashed #eee; border-bottom: 1px dashed #eee;">
+                    <div class="promo-input-group" style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="promo-input" placeholder="Promo Code" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <button type="button" id="apply-promo-btn" style="padding: 8px 16px; background: #eee; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">Apply</button>
+                    </div>
+                    <p id="promo-message" style="display: none; margin: 5px 0 0; font-size: 0.85em;"></p>
+                </div>
+
                 <div class="cart-summary-row cart-summary-subtotal">
                     <span class="cart-summary-label">Subtotal:</span>
                     <span id="cart-subtotal" class="cart-summary-value">$0.00</span>
+                </div>
+                <div class="cart-summary-row cart-summary-discount" id="cart-discount-row" style="display: none; color: #2A9D8F;">
+                    <span class="cart-summary-label">Discount:</span>
+                    <span id="cart-discount" class="cart-summary-value">-$0.00</span>
                 </div>
                 <div class="cart-summary-row cart-summary-tax">
                     <span class="cart-summary-label">Tax ({{ mul (site.Params.sales_tax_rate | default 0.0775) 100 }}%):</span>
@@ -297,7 +311,8 @@
         dropWindowCookieLimit: {{ site.Params.drop_window_cookie_limit | default 200 }},
         dropWindowSoldOutMessage: "{{ site.Params.drop_window_sold_out_message | default "Sold out for this date" }}",
         taxRate: {{ site.Params.sales_tax_rate | default 0.0775 }},
-        smallOrderFeeThreshold: {{ site.Params.small_order_fee_threshold | default 10 }}
+        smallOrderFeeThreshold: {{ site.Params.small_order_fee_threshold | default 10 }},
+        promoCodes: {{ site.Params.promo_codes | jsonify | safeJS }}
     };
 </script>
 
