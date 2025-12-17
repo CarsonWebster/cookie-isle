@@ -165,7 +165,7 @@ newsletter_enabled = true
 # The URL of your Cloudflare Worker that handles newsletter signups
 # You'll get this URL after deploying the worker (see workers/newsletter-signup/)
 # Example: "https://newsletter-signup.your-subdomain.workers.dev"
-newsletter_worker_url = "https://newsletter-signup.alyssa-fdc.workers.dev"
+newsletter_worker_url = "https://newsletter.thecookieisle.com"
 
 # NEWSLETTER HEADLINE
 # The heading text above the signup form
@@ -266,7 +266,7 @@ max_order_message = "For orders of more than {threshold} cookies, please contact
 # The URL of your Cloudflare Worker that fetches calendar slots
 # Leave empty until the worker is deployed
 # Example: "https://calendar-slots.your-subdomain.workers.dev"
-calendar_slots_worker_url = "https://calendar-slots.alyssa-fdc.workers.dev"
+calendar_slots_worker_url = "https://calendar-slots.thecookieisle.com"
 
 # Maximum cookies per day before slots are marked as "sold out"
 # When total orders for a day exceed this limit, all slots for that day are disabled
