@@ -1,0 +1,17 @@
+{
+  "name": "calendar-slots",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloudflare Worker for fetching and parsing Google Calendar iCal feed for fulfillment slots",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "dependencies": {
+    "hugo": "^0.0.3"
+  }
+}

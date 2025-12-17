@@ -38,6 +38,14 @@
                     <span class="cart-summary-label">Total Cookies:</span>
                     <span id="cart-count" class="cart-summary-value">0</span>
                 </div>
+                <div class="cart-summary-row cart-summary-subtotal">
+                    <span class="cart-summary-label">Subtotal:</span>
+                    <span id="cart-subtotal" class="cart-summary-value">$0.00</span>
+                </div>
+                <div class="cart-summary-row cart-summary-tax">
+                    <span class="cart-summary-label">Tax ({{ mul (site.Params.sales_tax_rate | default 0.0775) 100 }}%):</span>
+                    <span id="cart-tax" class="cart-summary-value">$0.00</span>
+                </div>
                 <div class="cart-summary-row cart-summary-total">
                     <span class="cart-summary-label">Order Total:</span>
                     <span id="cart-total" class="cart-summary-value">$0.00</span>
@@ -55,24 +63,62 @@
                 <h2 class="checkout-form-title">How would you like to receive your order?</h2>
                 <div class="fulfillment-toggle" role="group" aria-label="Order fulfillment method">
                     {{ if site.Params.pickup_enabled }}
-                    <button type="button"
-                            class="fulfillment-option active"
-                            data-fulfillment="pickup"
-                            aria-pressed="true">
+                    <button type="button" class="fulfillment-option active" data-fulfillment="pickup"
+                        aria-pressed="true">
                         <span class="fulfillment-icon">📍</span>
-                        <span class="fulfillment-label">{{ site.Params.pickup_location | default "Local" }} Pickup</span>
+                        <span class="fulfillment-label">{{ site.Params.pickup_location | default "Local" }}
+                            Pickup</span>
                     </button>
                     {{ end }}
                     {{ if site.Params.delivery_enabled }}
                     <button type="button"
-                            class="fulfillment-option {{ if not site.Params.pickup_enabled }}active{{ end }}"
-                            data-fulfillment="delivery"
-                            aria-pressed="{{ if not site.Params.pickup_enabled }}true{{ else }}false{{ end }}">
+                        class="fulfillment-option {{ if not site.Params.pickup_enabled }}active{{ end }}"
+                        data-fulfillment="delivery"
+                        aria-pressed="{{ if not site.Params.pickup_enabled }}true{{ else }}false{{ end }}">
                         <span class="fulfillment-icon">🚗</span>
-                        <span class="fulfillment-label">{{ site.Params.delivery_area | default "Local" }} Delivery</span>
+                        <span class="fulfillment-label">{{ site.Params.delivery_area | default "Local" }}
+                            Delivery</span>
                     </button>
                     {{ end }}
                 </div>
+            </div>
+            {{ end }}
+
+            {{/* Fulfillment Time Slot Selection */}}
+            {{ if site.Params.calendar_slots_worker_url }}
+            <div id="fulfillment-slots-section" class="checkout-form-section slots-section">
+                <h2 class="checkout-form-title">Select a Time</h2>
+
+                {{/* Loading State */}}
+                <div id="slots-loading" class="slots-loading">
+                    <div class="slots-loading-spinner"></div>
+                    <span>Loading available times...</span>
+                </div>
+
+                {{/* Error State */}}
+                <div id="slots-error" class="slots-error" style="display: none;">
+                    <span class="slots-error-icon">⚠️</span>
+                    <p>Unable to load time slots. Please try again later.</p>
+                    <button type="button" id="slots-retry-btn" class="btn btn-secondary">Retry</button>
+                </div>
+
+                {{/* No Slots State */}}
+                <div id="slots-empty" class="slots-empty" style="display: none;">
+                    <span class="slots-empty-icon">📅</span>
+                    <p>No available time slots at the moment. Please check back soon!</p>
+                </div>
+
+                {{/* Slots Container - Populated by JavaScript */}}
+                <div id="slots-container" class="slots-container" style="display: none;">
+                </div>
+
+                {{/* Hidden field to store selected slot data */}}
+                <input type="hidden" id="fulfillment_slot_id" name="fulfillment_slot_id" value="">
+                <input type="hidden" id="fulfillment_slot_date" name="fulfillment_slot_date" value="">
+                <input type="hidden" id="fulfillment_slot_start" name="fulfillment_slot_start" value="">
+                <input type="hidden" id="fulfillment_slot_end" name="fulfillment_slot_end" value="">
+
+                <span class="form-error" id="fulfillment_slot-error" style="display: none;"></span>
             </div>
             {{ end }}
 
@@ -81,29 +127,34 @@
                 <h2 class="checkout-form-title">Your Information</h2>
                 <form id="checkout-form" class="checkout-form" novalidate>
                     {{/* Hidden field for fulfillment type */}}
-                    <input type="hidden" id="fulfillment_type" name="fulfillment_type" value="{{ if site.Params.pickup_enabled }}pickup{{ else }}delivery{{ end }}">
+                    <input type="hidden" id="fulfillment_type" name="fulfillment_type"
+                        value="{{ if site.Params.pickup_enabled }}pickup{{ else }}delivery{{ end }}">
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="first_name">First Name <span class="required">*</span></label>
-                            <input type="text" id="first_name" name="first_name" required autocomplete="given-name" placeholder="Jane">
+                            <input type="text" id="first_name" name="first_name" required autocomplete="given-name"
+                                placeholder="Jane">
                             <span class="form-error" id="first_name-error"></span>
                         </div>
                         <div class="form-group">
                             <label for="last_name">Last Name <span class="required">*</span></label>
-                            <input type="text" id="last_name" name="last_name" required autocomplete="family-name" placeholder="Doe">
+                            <input type="text" id="last_name" name="last_name" required autocomplete="family-name"
+                                placeholder="Doe">
                             <span class="form-error" id="last_name-error"></span>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="email">Email <span class="required">*</span></label>
-                            <input type="email" id="email" name="email" required autocomplete="email" placeholder="jane@example.com">
+                            <input type="email" id="email" name="email" required autocomplete="email"
+                                placeholder="jane@example.com">
                             <span class="form-error" id="email-error"></span>
                         </div>
                         <div class="form-group">
                             <label for="phone">Phone <span class="required">*</span></label>
-                            <input type="tel" id="phone" name="phone" required autocomplete="tel" placeholder="(555) 123-4567">
+                            <input type="tel" id="phone" name="phone" required autocomplete="tel"
+                                placeholder="(555) 123-4567">
                             <span class="form-error" id="phone-error"></span>
                         </div>
                     </div>
@@ -115,31 +166,36 @@
                         <div class="form-row">
                             <div class="form-group form-group-full">
                                 <label for="street_address">Street Address <span class="required">*</span></label>
-                                <input type="text" id="street_address" name="street_address" autocomplete="street-address" placeholder="123 Main Street">
+                                <input type="text" id="street_address" name="street_address"
+                                    autocomplete="street-address" placeholder="123 Main Street">
                                 <span class="form-error" id="street_address-error"></span>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="apt_unit">Apt / Unit / Suite</label>
-                                <input type="text" id="apt_unit" name="apt_unit" autocomplete="address-line2" placeholder="Apt 4B">
+                                <input type="text" id="apt_unit" name="apt_unit" autocomplete="address-line2"
+                                    placeholder="Apt 4B">
                                 <span class="form-error" id="apt_unit-error"></span>
                             </div>
                             <div class="form-group">
                                 <label for="city">City <span class="required">*</span></label>
-                                <input type="text" id="city" name="city" autocomplete="address-level2" placeholder="Coronado">
+                                <input type="text" id="city" name="city" autocomplete="address-level2"
+                                    placeholder="Coronado">
                                 <span class="form-error" id="city-error"></span>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="state">State <span class="required">*</span></label>
-                                <input type="text" id="state" name="state" autocomplete="address-level1" placeholder="CA" maxlength="2">
+                                <input type="text" id="state" name="state" autocomplete="address-level1"
+                                    placeholder="CA" maxlength="2">
                                 <span class="form-error" id="state-error"></span>
                             </div>
                             <div class="form-group">
                                 <label for="zip_code">ZIP Code <span class="required">*</span></label>
-                                <input type="text" id="zip_code" name="zip_code" autocomplete="postal-code" placeholder="92118" maxlength="10" pattern="[0-9]{5}(-[0-9]{4})?">
+                                <input type="text" id="zip_code" name="zip_code" autocomplete="postal-code"
+                                    placeholder="92118" maxlength="10" pattern="[0-9]{5}(-[0-9]{4})?">
                                 <span class="form-error" id="zip_code-error"></span>
                             </div>
                         </div>
@@ -200,7 +256,8 @@
             {{ $msg }}
         </p>
         <div class="modal-actions">
-            <a href="mailto:{{ site.Params.email }}?subject=Large Cookie Order Inquiry" class="btn btn-modal-primary">Contact Us</a>
+            <a href="mailto:{{ site.Params.email }}?subject=Large Cookie Order Inquiry"
+                class="btn btn-modal-primary">Contact Us</a>
             <button type="button" class="btn btn-modal-secondary" id="max-order-modal-close">Go Back</button>
         </div>
     </div>
@@ -225,13 +282,20 @@
         workerUrl: "{{ site.Params.checkout_worker_url | default "" }}",
         allowedZips: {{ site.Params.allowed_delivery_zips | default (slice "92118") | jsonify | safeJS }},
         maxOrderQuantity: {{ site.Params.max_order_quantity | default 50 }},
-        maxOrderMessage: "{{ $msg := site.Params.max_order_message | default "For orders of more than {threshold} cookies, please contact us at {email} to discuss your order." }}{{ $msg = replace $msg "{threshold}" (string (site.Params.max_order_quantity | default 50)) }}{{ $msg = replace $msg "{email}" site.Params.email }}{{ $msg }}",
+        maxOrderMessage: "For orders of more than {{ site.Params.max_order_quantity | default 50 }} cookies, please contact us at {{ site.Params.email }} to discuss your order.",
         contactEmail: "{{ site.Params.email | default "" }}",
         pickupEnabled: {{ site.Params.pickup_enabled | default true }},
-        deliveryEnabled: {{ site.Params.delivery_enabled | default true }}
+        deliveryEnabled: {{ site.Params.delivery_enabled | default true }},
+        calendarSlotsWorkerUrl: "{{ site.Params.calendar_slots_worker_url | default "" }}",
+        dropWindowCookieLimit: {{ site.Params.drop_window_cookie_limit | default 200 }},
+        dropWindowSoldOutMessage: "{{ site.Params.drop_window_sold_out_message | default "Sold out for this date" }}",
+        taxRate: {{ site.Params.sales_tax_rate | default 0.0775 }}
     };
 </script>
 
 {{/* Checkout-specific JavaScript */}}
+{{ if site.Params.calendar_slots_worker_url }}
+<script src="{{ "js/fulfillment-slots.js" | relURL }}"></script>
+{{ end }}
 <script src="{{ "js/checkout.js" | relURL }}"></script>
 {{ end }}

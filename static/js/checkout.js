@@ -16,6 +16,10 @@
     contactEmail: "",
     pickupEnabled: true,
     deliveryEnabled: true,
+    calendarSlotsWorkerUrl: "",
+    dropWindowCookieLimit: 200,
+    dropWindowSoldOutMessage: "Sold out for this date",
+    taxRate: 0.0775,
   };
 
   // DOM Elements
@@ -24,6 +28,8 @@
     cartContents: null,
     cartItemsList: null,
     cartTotal: null,
+    cartSubtotal: null,
+    cartTax: null,
     cartCount: null,
     checkoutForm: null,
     checkoutSubmitBtn: null,
@@ -71,6 +77,11 @@
     renderCart();
     attachEventListeners();
     checkMaxQuantityWarning();
+
+    // Initialize fulfillment slots if available
+    if (window.FulfillmentSlots) {
+      FulfillmentSlots.init(CONFIG, currentFulfillment);
+    }
   }
 
   /**
@@ -81,6 +92,8 @@
     elements.cartContents = document.getElementById("cart-contents");
     elements.cartItemsList = document.getElementById("cart-items-list");
     elements.cartTotal = document.getElementById("cart-total");
+    elements.cartSubtotal = document.getElementById("cart-subtotal");
+    elements.cartTax = document.getElementById("cart-tax");
     elements.cartCount = document.getElementById("cart-count");
     elements.checkoutForm = document.getElementById("checkout-form");
     elements.checkoutSubmitBtn = document.getElementById("checkout-submit-btn");
@@ -207,6 +220,11 @@
         clearZipWarning();
         isZipValid = true;
       }
+    }
+
+    // Update fulfillment slots to show relevant times
+    if (window.FulfillmentSlots) {
+      FulfillmentSlots.setFulfillmentType(newFulfillment);
     }
   }
 
@@ -529,8 +547,26 @@
    * Update the cart total display
    */
   function updateCartTotal() {
+    const subtotalCents = CookieCart.getCartTotalCents();
+    const subtotal = subtotalCents / 100;
+    const tax = subtotal * CONFIG.taxRate;
+    const total = subtotal + tax;
+
+    // Format currency helper
+    const fmt = (n) =>
+      new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(n);
+
+    if (elements.cartSubtotal) {
+      elements.cartSubtotal.textContent = fmt(subtotal);
+    }
+    if (elements.cartTax) {
+      elements.cartTax.textContent = fmt(tax);
+    }
     if (elements.cartTotal) {
-      elements.cartTotal.textContent = CookieCart.getCartTotalFormatted();
+      elements.cartTotal.textContent = fmt(total);
     }
   }
 
@@ -583,6 +619,13 @@
       // Validate ZIP code
       if (!validateZipCode()) {
         showZipErrorModal();
+        return;
+      }
+    }
+
+    // Validate fulfillment slot selection
+    if (window.FulfillmentSlots && FulfillmentSlots.isEnabled()) {
+      if (!FulfillmentSlots.validate()) {
         return;
       }
     }
@@ -789,7 +832,9 @@
         type: currentFulfillment,
       },
       order: order,
-      total: CookieCart.getCartTotalCents() / 100,
+      subtotal: CookieCart.getCartTotalCents() / 100,
+      tax: (CookieCart.getCartTotalCents() / 100) * CONFIG.taxRate,
+      total: (CookieCart.getCartTotalCents() / 100) * (1 + CONFIG.taxRate),
       submitted_at: new Date().toISOString(),
     };
 
@@ -802,6 +847,19 @@
         state: document.getElementById("state").value.trim(),
         zip: document.getElementById("zip_code").value.trim(),
       };
+    }
+
+    // Add fulfillment slot if selected
+    if (window.FulfillmentSlots && FulfillmentSlots.isEnabled()) {
+      const selectedSlot = FulfillmentSlots.getSelectedSlot();
+      if (selectedSlot) {
+        payload.fulfillment.slot = {
+          id: selectedSlot.id,
+          date: selectedSlot.date,
+          startTime: selectedSlot.startTime,
+          endTime: selectedSlot.endTime,
+        };
+      }
     }
 
     return payload;
@@ -872,6 +930,17 @@
 
     // Clear the cart
     CookieCart.clearCart();
+
+    // Record order for capacity tracking (localStorage MVP)
+    if (window.FulfillmentSlots && FulfillmentSlots.isEnabled()) {
+      const slot = orderPayload.fulfillment.slot;
+      if (slot && slot.date) {
+        const cookieCount = orderPayload.order.reduce(function (sum, item) {
+          return sum + item.qty;
+        }, 0);
+        FulfillmentSlots.recordOrder(slot.date, cookieCount);
+      }
+    }
 
     // Update cart badge
     if (window.CartUI) {

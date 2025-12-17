@@ -2099,6 +2099,212 @@ body.mobile-nav-open {
 }
 
 /* ==========================================================================
+   FULFILLMENT SLOTS (Calendar-based time selection)
+   ========================================================================== */
+
+.slots-section {
+    margin-bottom: var(--space-lg);
+}
+
+/* Loading State */
+.slots-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-xl);
+    color: var(--color-text);
+    font-size: 1rem;
+}
+
+.slots-loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--color-tertiary-medium, #ddd);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error State */
+.slots-error {
+    text-align: center;
+    padding: var(--space-lg);
+    background-color: #ffebee;
+    border-radius: var(--radius-md);
+}
+
+.slots-error-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: var(--space-sm);
+}
+
+.slots-error p {
+    margin: 0 0 var(--space-md) 0;
+    color: #c62828;
+}
+
+/* Empty State */
+.slots-empty {
+    text-align: center;
+    padding: var(--space-xl);
+    color: var(--color-text);
+}
+
+.slots-empty-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: var(--space-sm);
+    opacity: 0.5;
+}
+
+.slots-empty p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Slots Container */
+.slots-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+/* Day Group */
+.slots-day-group {
+    border: 1px solid var(--color-tertiary-medium, #ddd);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.slots-day-header {
+    background-color: var(--color-tertiary-light);
+    padding: var(--space-md);
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-heading);
+    border-bottom: 1px solid var(--color-tertiary-medium, #ddd);
+}
+
+.slots-day-options {
+    padding: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+/* Slot Option (Radio Button Label) */
+.slot-option {
+    display: flex;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.slot-option:hover {
+    background-color: var(--color-tertiary-light);
+}
+
+.slot-option input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin-right: var(--space-md);
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+.slot-option input[type="radio"]:checked + .slot-option-content {
+    color: var(--color-primary);
+}
+
+.slot-option:has(input[type="radio"]:checked) {
+    background-color: rgba(42, 157, 143, 0.08);
+    border-color: var(--color-primary);
+}
+
+.slot-option-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex: 1;
+}
+
+.slot-time {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-heading);
+}
+
+.slot-type {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--color-tertiary);
+    border-radius: var(--radius-full);
+    color: var(--color-text);
+    text-transform: capitalize;
+}
+
+.slot-type.pickup {
+    background-color: rgba(42, 157, 143, 0.15);
+    color: var(--color-primary);
+}
+
+.slot-type.delivery {
+    background-color: rgba(233, 180, 76, 0.2);
+    color: #b8860b;
+}
+
+/* Sold Out State */
+.slot-option.sold-out {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--color-tertiary-light);
+}
+
+.slot-option.sold-out:hover {
+    background-color: var(--color-tertiary-light);
+}
+
+.slot-option.sold-out input[type="radio"] {
+    pointer-events: none;
+}
+
+.slot-option.sold-out .slot-time::after {
+    content: " (Sold Out)";
+    color: #d32f2f;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.slots-day-sold-out {
+    padding: var(--space-md);
+    text-align: center;
+    background-color: #ffebee;
+    color: #c62828;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+/* No slots for current fulfillment type */
+.slots-day-no-options {
+    padding: var(--space-md);
+    text-align: center;
+    color: var(--color-text);
+    font-style: italic;
+}
+
+/* ==========================================================================
    MODALS
    ========================================================================== */
 

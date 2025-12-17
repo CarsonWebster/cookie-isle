@@ -36,11 +36,11 @@ title = 'The Cookie Isle'
 # and when people share your site on social media.
 # Used in: layouts/partials/head.html (meta description and Open Graph tags)
 [params]
-  description = "Fresh-baked cookies made with love at our cozy cottage-bakery"
+description = "Fresh-baked cookies made with love at our cozy cottage-bakery"
 
-  # AUTHOR NAME
-  # Used for SEO purposes
-  author = "The Cookie Isle"
+# AUTHOR NAME
+# Used for SEO purposes
+author = "The Cookie Isle"
 
 
 ################################################################################
@@ -50,49 +50,45 @@ title = 'The Cookie Isle'
 #                                                                              #
 ################################################################################
 
-  # EMAIL ADDRESS
-  # Displayed in: footer, mobile navigation, and coming soon page
-  # Used in: layouts/partials/footer.html, layouts/partials/header.html,
-  #          layouts/partials/coming-soon.html
-  # When clicked, opens the visitor's email app
-  email = "contact@thecookieisle.com"
+# EMAIL ADDRESS
+# Displayed in: footer, mobile navigation, and coming soon page
+# Used in: layouts/partials/footer.html, layouts/partials/header.html,
+#          layouts/partials/coming-soon.html
+# When clicked, opens the visitor's email app
+email = "contact@thecookieisle.com"
 
-  # EMAIL ENABLED TOGGLE
-  # Set to true to display the email, false to hide it
-  email_enabled = true
+# EMAIL ENABLED TOGGLE
+# Set to true to display the email, false to hide it
+email_enabled = true
 
-  # PHONE NUMBER
-  # Displayed in: footer and mobile navigation
-  # Used in: layouts/partials/footer.html, layouts/partials/header.html
-  # When clicked on mobile, opens the phone dialer
-  phone = "(555) 123-COOKIE"
+# PHONE NUMBER
+# Displayed in: footer and mobile navigation
+# Used in: layouts/partials/footer.html, layouts/partials/header.html
+# When clicked on mobile, opens the phone dialer
+phone = "(555) 123-COOKIE"
 
-  # PHONE ENABLED TOGGLE
-  # Set to true to display the phone number, false to hide it
-  phone_enabled = false
+# PHONE ENABLED TOGGLE
+# Set to true to display the phone number, false to hide it
+phone_enabled = false
 
-  # PHYSICAL ADDRESS
-  # Displayed in the footer's "Visit Us" section
-  # Used in: layouts/partials/footer.html
-  address = "123 Baker Street, Sweet Town, CA 90210"
+# PHYSICAL ADDRESS
+# Displayed in the footer's "Visit Us" section
+# Used in: layouts/partials/footer.html
+address = "123 Baker Street, Sweet Town, CA 90210"
 
-  # ADDRESS ENABLED TOGGLE
-  # Set to true to display the address, false to hide it
-  address_enabled = false
+# ADDRESS ENABLED TOGGLE
+# Set to true to display the address, false to hide it
+address_enabled = false
 
-  # BUSINESS HOURS
-  # Each line appears on its own row in the footer
-  # Used in: layouts/partials/footer.html
-  # Format: Add as many lines as needed, each in quotes and separated by commas
-  hours = [
-    "Mon-Fri: 7am - 6pm",
-    "Saturday: 8am - 5pm",
-    "Sunday: 9am - 2pm"
-  ]
+# BUSINESS HOURS
+# Each line appears on its own row in the footer
+# Used in: layouts/partials/footer.html
+# Format: Add as many lines as needed, each in quotes and separated by commas
+hours = ["Mon-Fri: 7am - 6pm", "Saturday: 8am - 5pm", "Sunday: 9am - 2pm"]
 
-  # HOURS ENABLED TOGGLE
-  # Set to true to display business hours, false to hide them
-  hours_enabled = false
+# HOURS ENABLED TOGGLE
+# Set to true to display business hours, false to hide them
+hours_enabled = false
 
 
 ################################################################################
@@ -102,25 +98,25 @@ title = 'The Cookie Isle'
 #                                                                              #
 ################################################################################
 
-  # FACEBOOK PAGE URL
-  # Displayed as a clickable icon on the coming soon page
-  # Used in: layouts/partials/coming-soon.html
-  # Set to your Facebook page's full URL
-  facebook = "https://facebook.com/thecookieisle"
+# FACEBOOK PAGE URL
+# Displayed as a clickable icon on the coming soon page
+# Used in: layouts/partials/coming-soon.html
+# Set to your Facebook page's full URL
+facebook = "https://facebook.com/thecookieisle"
 
-  # FACEBOOK ENABLED TOGGLE
-  # Set to true to display the Facebook icon, false to hide it
-  facebook_enabled = false
+# FACEBOOK ENABLED TOGGLE
+# Set to true to display the Facebook icon, false to hide it
+facebook_enabled = false
 
-  # INSTAGRAM PROFILE URL
-  # Displayed as a clickable icon on the coming soon page
-  # Used in: layouts/partials/coming-soon.html
-  # Set to your Instagram profile's full URL
-  instagram = "https://instagram.com/thecookieisle"
+# INSTAGRAM PROFILE URL
+# Displayed as a clickable icon on the coming soon page
+# Used in: layouts/partials/coming-soon.html
+# Set to your Instagram profile's full URL
+instagram = "https://instagram.com/thecookieisle"
 
-  # INSTAGRAM ENABLED TOGGLE
-  # Set to true to display the Instagram icon, false to hide it
-  instagram_enabled = true
+# INSTAGRAM ENABLED TOGGLE
+# Set to true to display the Instagram icon, false to hide it
+instagram_enabled = true
 
 
 ################################################################################
@@ -130,66 +126,66 @@ title = 'The Cookie Isle'
 #                                                                              #
 ################################################################################
 
-  # COMING SOON MODE TOGGLE
-  # - Set to "true" to show ONLY the coming soon page (hides the rest of site)
-  # - Set to "false" to show the full website with all pages
-  # Used in: layouts/_default/baseof.html (controls which layout to display)
-  #
-  # IMPORTANT: When you're ready to launch, change this from "true" to "false"
-  coming_soon = false
+# COMING SOON MODE TOGGLE
+# - Set to "true" to show ONLY the coming soon page (hides the rest of site)
+# - Set to "false" to show the full website with all pages
+# Used in: layouts/_default/baseof.html (controls which layout to display)
+#
+# IMPORTANT: When you're ready to launch, change this from "true" to "false"
+coming_soon = false
 
-  # COMING SOON HEADLINE
-  # The main headline text shown on the coming soon page
-  # Used in: layouts/partials/coming-soon.html
-  coming_soon_headline = "Coming Soon"
+# COMING SOON HEADLINE
+# The main headline text shown on the coming soon page
+# Used in: layouts/partials/coming-soon.html
+coming_soon_headline = "Coming Soon"
 
-  # COMING SOON MESSAGE
-  # The descriptive text shown below the headline on the coming soon page
-  # Explain what your bakery is about and encourage visitors to follow you
-  # Used in: layouts/partials/coming-soon.html
-  #
-  # TIP: This field supports Markdown formatting!
-  # - Use a blank line between paragraphs to create separate <p> tags
-  # - Use **bold** or *italic* for emphasis
-  # - Use [link text](url) for links
-  coming_soon_text = """
+# COMING SOON MESSAGE
+# The descriptive text shown below the headline on the coming soon page
+# Explain what your bakery is about and encourage visitors to follow you
+# Used in: layouts/partials/coming-soon.html
+#
+# TIP: This field supports Markdown formatting!
+# - Use a blank line between paragraphs to create separate <p> tags
+# - Use **bold** or *italic* for emphasis
+# - Use [link text](url) for links
+coming_soon_text = """
 I'm busy baking up something special!
 The Cookie Isle is a cozy cottage bakery bringing fresh baked happiness to our community. Follow to be the first to know when we open!
 
 Located in Coronado, CA
 """
 
-  # NEWSLETTER SIGNUP (Coming Soon Page)
-  # Enable/disable the newsletter signup form on the coming soon page
-  # Set to "true" to show the form, "false" to hide it
-  # Used in: layouts/partials/coming-soon.html
-  newsletter_enabled = true
+# NEWSLETTER SIGNUP (Coming Soon Page)
+# Enable/disable the newsletter signup form on the coming soon page
+# Set to "true" to show the form, "false" to hide it
+# Used in: layouts/partials/coming-soon.html
+newsletter_enabled = true
 
-  # NEWSLETTER WORKER URL
-  # The URL of your Cloudflare Worker that handles newsletter signups
-  # You'll get this URL after deploying the worker (see workers/newsletter-signup/)
-  # Example: "https://newsletter-signup.your-subdomain.workers.dev"
-  newsletter_worker_url = "https://newsletter-signup.alyssa-fdc.workers.dev"
+# NEWSLETTER WORKER URL
+# The URL of your Cloudflare Worker that handles newsletter signups
+# You'll get this URL after deploying the worker (see workers/newsletter-signup/)
+# Example: "https://newsletter-signup.your-subdomain.workers.dev"
+newsletter_worker_url = "https://newsletter-signup.alyssa-fdc.workers.dev"
 
-  # NEWSLETTER HEADLINE
-  # The heading text above the signup form
-  newsletter_headline = "Get Notified When We Launch!"
+# NEWSLETTER HEADLINE
+# The heading text above the signup form
+newsletter_headline = "Get Notified When We Launch!"
 
-  # NEWSLETTER PLACEHOLDER
-  # Placeholder text in the email input field
-  newsletter_placeholder = "Enter your email"
+# NEWSLETTER PLACEHOLDER
+# Placeholder text in the email input field
+newsletter_placeholder = "Enter your email"
 
-  # NEWSLETTER BUTTON TEXT
-  # Text on the submit button
-  newsletter_button_text = "Notify Me"
+# NEWSLETTER BUTTON TEXT
+# Text on the submit button
+newsletter_button_text = "Notify Me"
 
-  # NEWSLETTER SUCCESS MESSAGE
-  # Message shown after successful signup
-  newsletter_success_message = "Thanks for signing up! We'll let you know when we launch."
+# NEWSLETTER SUCCESS MESSAGE
+# Message shown after successful signup
+newsletter_success_message = "Thanks for signing up! We'll let you know when we launch."
 
-  # NEWSLETTER ERROR MESSAGE
-  # Message shown if signup fails
-  newsletter_error_message = "Something went wrong. Please try again."
+# NEWSLETTER ERROR MESSAGE
+# Message shown if signup fails
+newsletter_error_message = "Something went wrong. Please try again."
 
 
 ################################################################################
@@ -199,69 +195,88 @@ Located in Coronado, CA
 #                                                                              #
 ################################################################################
 
-  # CART ENABLED TOGGLE
-  # Set to "true" to enable shopping cart functionality, "false" to disable
-  # When enabled, "Add to Cart" buttons appear on menu items
-  # Used in: layouts/partials/menu-card.html, layouts/_default/single.html
-  cart_enabled = true
+# CART ENABLED TOGGLE
+# Set to "true" to enable shopping cart functionality, "false" to disable
+# When enabled, "Add to Cart" buttons appear on menu items
+# Used in: layouts/partials/menu-card.html, layouts/_default/single.html
+cart_enabled = true
 
-  # CHECKOUT WORKER URL (Future)
-  # The URL of your Cloudflare Worker that handles order submissions
-  # Leave empty until the worker is deployed
-  # Example: "https://orders.your-subdomain.workers.dev"
-  checkout_worker_url = ""
+# CHECKOUT WORKER URL (Future)
+# The URL of your Cloudflare Worker that handles order submissions
+# Leave empty until the worker is deployed
+# Example: "https://orders.your-subdomain.workers.dev"
+checkout_worker_url = ""
 
-  # CART BUTTON TEXT
-  # Text shown on the "Add to Cart" buttons
-  cart_button_text = "Add to Cart"
+# CART BUTTON TEXT
+# Text shown on the "Add to Cart" buttons
+cart_button_text = "Add to Cart"
 
-  # CHECKOUT BUTTON TEXT
-  # Text shown on the checkout/cart button in the header
-  checkout_button_text = "Cart"
+# CHECKOUT BUTTON TEXT
+# Text shown on the checkout/cart button in the header
+checkout_button_text = "Cart"
 
-  # CHECKOUT PAGE TITLE
-  # Title shown at the top of the checkout page
-  checkout_page_title = "Your Cart"
+# CHECKOUT PAGE TITLE
+# Title shown at the top of the checkout page
+checkout_page_title = "Your Cart"
 
-  # CHECKOUT EMPTY MESSAGE
-  # Message shown when the cart is empty
-  checkout_empty_message = "Your cart is empty. Browse our delicious cookies!"
+# CHECKOUT EMPTY MESSAGE
+# Message shown when the cart is empty
+checkout_empty_message = "Your cart is empty. Browse our delicious cookies!"
 
-  # CHECKOUT SUCCESS MESSAGE
-  # Message shown after successful order submission
-  checkout_success_message = "Thank you for your order! We'll be in touch soon."
+# CHECKOUT SUCCESS MESSAGE
+# Message shown after successful order submission
+checkout_success_message = "Thank you for your order! We'll be in touch soon."
 
-  # CHECKOUT ERROR MESSAGE
-  # Message shown if order submission fails
-  checkout_error_message = "Something went wrong. Please try again."
+# CHECKOUT ERROR MESSAGE
+# Message shown if order submission fails
+checkout_error_message = "Something went wrong. Please try again."
 
-  # PICKUP/DELIVERY OPTIONS
-  # Enable pickup and/or delivery options on checkout
-  pickup_enabled = true
-  delivery_enabled = true
+# PICKUP/DELIVERY OPTIONS
+# Enable pickup and/or delivery options on checkout
+pickup_enabled = true
+delivery_enabled = true
 
-  # Pickup location name
-  pickup_location = "Coronado Island"
+# Pickup location name
+pickup_location = "Coronado Island"
 
-  # Delivery area name
-  delivery_area = "Coronado Island"
+# Delivery area name
+delivery_area = "Coronado Island"
 
-  # ALLOWED DELIVERY ZIP CODES
-  # List of ZIP codes where delivery is available
-  # Orders with ZIP codes not in this list will be rejected
-  allowed_delivery_zips = ["92118"]
+# ALLOWED DELIVERY ZIP CODES
+# List of ZIP codes where delivery is available
+# Orders with ZIP codes not in this list will be rejected
+allowed_delivery_zips = ["92118"]
 
-  # Message shown when ZIP code is not in delivery area
-  delivery_zip_error = "Sorry, we only deliver to Coronado Island (ZIP 92118). Please select pickup instead, or contact us for special arrangements."
+# Message shown when ZIP code is not in delivery area
+delivery_zip_error = "Sorry, we only deliver to Coronado Island (ZIP 92118). Please select pickup instead, or contact us for special arrangements."
 
-  # MAX ORDER QUANTITY
-  # Maximum total number of cookies allowed per order
-  # Orders exceeding this will be prompted to contact directly
-  max_order_quantity = 50
+# MAX ORDER QUANTITY
+# Maximum total number of cookies allowed per order
+# Orders exceeding this will be prompted to contact directly
+max_order_quantity = 50
 
-  # Message shown when order exceeds max quantity
-  # Use {threshold} and {email} as placeholders
-  max_order_message = "For orders of more than {threshold} cookies, please contact us at {email} to discuss your order."
+# Message shown when order exceeds max quantity
+# Use {threshold} and {email} as placeholders
+max_order_message = "For orders of more than {threshold} cookies, please contact us at {email} to discuss your order."
+
+# FULFILLMENT SLOT SETTINGS
+# Calendar-based fulfillment time slots
+
+# Calendar Slots Worker URL
+# The URL of your Cloudflare Worker that fetches calendar slots
+# Leave empty until the worker is deployed
+# Example: "https://calendar-slots.your-subdomain.workers.dev"
+calendar_slots_worker_url = "https://calendar-slots.alyssa-fdc.workers.dev"
+
+# Maximum cookies per day before slots are marked as "sold out"
+# When total orders for a day exceed this limit, all slots for that day are disabled
+drop_window_cookie_limit = 200
+
+# Message shown when a day is sold out
+drop_window_sold_out_message = "Sold out for this date"
+
+# Sales tax rate (decimal)
+sales_tax_rate = 0.0775
 
 
 ################################################################################
@@ -271,42 +286,42 @@ Located in Coronado, CA
 #                                                                              #
 ################################################################################
 
-  # SITE LOGO
-  # The logo image file name. This file should be placed in the /static/ folder.
-  # Displayed in: header (all pages) and coming soon page
-  # Used in: layouts/partials/header.html, layouts/partials/coming-soon.html
-  #
-  # NOTE: Do NOT include a leading slash - just the filename
-  # The image should be placed at: /static/CookieIsleLogo.png
-  logo = "CookieIsleLogo.png"
+# SITE LOGO
+# The logo image file name. This file should be placed in the /static/ folder.
+# Displayed in: header (all pages) and coming soon page
+# Used in: layouts/partials/header.html, layouts/partials/coming-soon.html
+#
+# NOTE: Do NOT include a leading slash - just the filename
+# The image should be placed at: /static/CookieIsleLogo.png
+logo = "CookieIsleLogo.png"
 
-  # HERO SECTION DECORATIVE IMAGES
-  # These decorative images appear on the left and right sides of the homepage hero
-  # They are ONLY visible on large desktop screens (1200px and wider)
-  # Used in: layouts/partials/hero.html
-  [params.hero]
+# HERO SECTION DECORATIVE IMAGES
+# These decorative images appear on the left and right sides of the homepage hero
+# They are ONLY visible on large desktop screens (1200px and wider)
+# Used in: layouts/partials/hero.html
+[params.hero]
 
-    # LEFT DECORATIVE IMAGE
-    # Image file name (place in /static/ folder)
-    # Currently showing palm trees to reinforce the "isle" beach theme
-    image_left = "palmtree.png"
+# LEFT DECORATIVE IMAGE
+# Image file name (place in /static/ folder)
+# Currently showing palm trees to reinforce the "isle" beach theme
+image_left = "palmtree.png"
 
-    # LEFT IMAGE VISIBILITY (0-100)
-    # Controls how much of the left image is visible on screen
-    # 100 = fully on screen, 0 = completely off screen to the left
-    # Lower values push the image further off the left edge
-    image_left_visibility = 100
+# LEFT IMAGE VISIBILITY (0-100)
+# Controls how much of the left image is visible on screen
+# 100 = fully on screen, 0 = completely off screen to the left
+# Lower values push the image further off the left edge
+image_left_visibility = 100
 
-    # RIGHT DECORATIVE IMAGE
-    # Image file name (place in /static/ folder)
-    # Currently showing a cookie to reinforce the bakery theme
-    image_right = "herocookie.png"
+# RIGHT DECORATIVE IMAGE
+# Image file name (place in /static/ folder)
+# Currently showing a cookie to reinforce the bakery theme
+image_right = "herocookie.png"
 
-    # RIGHT IMAGE VISIBILITY (0-100)
-    # Controls how much of the right image is visible on screen
-    # 100 = fully on screen, 0 = completely off screen to the right
-    # Lower values push the image further off the right edge
-    image_right_visibility = 100
+# RIGHT IMAGE VISIBILITY (0-100)
+# Controls how much of the right image is visible on screen
+# 100 = fully on screen, 0 = completely off screen to the right
+# Lower values push the image further off the right edge
+image_right_visibility = 100
 
 
 ################################################################################
@@ -316,15 +331,15 @@ Located in Coronado, CA
 #                                                                              #
 ################################################################################
 
-  # ORDER NOW BUTTON LINK
-  # Where the "Order Now" button in the navigation links to
-  # Used in: layouts/partials/header.html (desktop and mobile nav)
-  #
-  # Common values:
-  #   "contact" - links to a contact page
-  #   "menu" - links to the menu page
-  #   Or any other page slug on your site
-  contact_url = "contact"
+# ORDER NOW BUTTON LINK
+# Where the "Order Now" button in the navigation links to
+# Used in: layouts/partials/header.html (desktop and mobile nav)
+#
+# Common values:
+#   "contact" - links to a contact page
+#   "menu" - links to the menu page
+#   Or any other page slug on your site
+contact_url = "contact"
 
 
 ################################################################################
@@ -334,70 +349,70 @@ Located in Coronado, CA
 #                                                                              #
 ################################################################################
 
-  # GOOGLE CALENDAR FEATURE
-  # Display your public Google Calendar on your website and let customers
-  # subscribe to it in their own calendar apps (Google, Apple, Outlook, etc.)
-  #
-  # HOW TO SET UP:
-  # 1. In Google Calendar, make your calendar public:
-  #    - Go to calendar Settings > [Your Calendar] > Access permissions
-  #    - Check "Make available to public"
-  # 2. Get your embed URL:
-  #    - Go to Settings > [Your Calendar] > Integrate calendar
-  #    - Copy the iframe src URL from the "Embed code" section
-  #    - Paste it into calendar_embed_url below
-  # 3. Get your iCal URL:
-  #    - In the same location, find "Public address in iCal format"
-  #    - Copy that URL and paste it into calendar_ical_url below
-  #
-  # Used in: layouts/partials/calendar-embed.html,
-  #          layouts/partials/calendar-subscribe.html,
-  #          layouts/partials/header.html (navigation)
+# GOOGLE CALENDAR FEATURE
+# Display your public Google Calendar on your website and let customers
+# subscribe to it in their own calendar apps (Google, Apple, Outlook, etc.)
+#
+# HOW TO SET UP:
+# 1. In Google Calendar, make your calendar public:
+#    - Go to calendar Settings > [Your Calendar] > Access permissions
+#    - Check "Make available to public"
+# 2. Get your embed URL:
+#    - Go to Settings > [Your Calendar] > Integrate calendar
+#    - Copy the iframe src URL from the "Embed code" section
+#    - Paste it into calendar_embed_url below
+# 3. Get your iCal URL:
+#    - In the same location, find "Public address in iCal format"
+#    - Copy that URL and paste it into calendar_ical_url below
+#
+# Used in: layouts/partials/calendar-embed.html,
+#          layouts/partials/calendar-subscribe.html,
+#          layouts/partials/header.html (navigation)
 
-  [params.calendar]
+[params.calendar]
 
-    # CALENDAR MASTER TOGGLE
-    # Set to true to enable the calendar feature site-wide, false to disable
-    # When false, no calendar appears anywhere and navigation link is hidden
-    calendar_enabled = true
+# CALENDAR MASTER TOGGLE
+# Set to true to enable the calendar feature site-wide, false to disable
+# When false, no calendar appears anywhere and navigation link is hidden
+calendar_enabled = true
 
-    # GOOGLE CALENDAR EMBED URL
-    # The URL for embedding your calendar (from Google Calendar's embed code)
-    # Format: https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_ID&...
-    # Leave empty until you have your public calendar set up
-    calendar_embed_url = "https://calendar.google.com/calendar/embed?src=c_5099568f04822947c2b6fbf47ad6667e9d9902df5c16e5c82ee5261c348079ae%40group.calendar.google.com&ctz=America%2FLos_Angeles"
+# GOOGLE CALENDAR EMBED URL
+# The URL for embedding your calendar (from Google Calendar's embed code)
+# Format: https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_ID&...
+# Leave empty until you have your public calendar set up
+calendar_embed_url = "https://calendar.google.com/calendar/embed?src=c_5099568f04822947c2b6fbf47ad6667e9d9902df5c16e5c82ee5261c348079ae%40group.calendar.google.com&ctz=America%2FLos_Angeles"
 
-    # PUBLIC iCAL URL (for "Add to Calendar" subscribe buttons)
-    # The public iCal URL that lets users subscribe to your calendar
-    # Format: https://calendar.google.com/calendar/ical/CALENDAR_ID/public/basic.ics
-    # Leave empty until you have your public calendar set up
-    calendar_ical_url = "https://calendar.google.com/calendar/ical/c_5099568f04822947c2b6fbf47ad6667e9d9902df5c16e5c82ee5261c348079ae%40group.calendar.google.com/public/basic.ics"
+# PUBLIC iCAL URL (for "Add to Calendar" subscribe buttons)
+# The public iCal URL that lets users subscribe to your calendar
+# Format: https://calendar.google.com/calendar/ical/CALENDAR_ID/public/basic.ics
+# Leave empty until you have your public calendar set up
+calendar_ical_url = "https://calendar.google.com/calendar/ical/c_5099568f04822947c2b6fbf47ad6667e9d9902df5c16e5c82ee5261c348079ae%40group.calendar.google.com/public/basic.ics"
 
-    # CALENDAR PAGE SETTINGS
-    # Controls the dedicated /calendar/ page
-    # Page content (title, description, text) is set in content/calendar.md
-    calendar_page_enabled = true
+# CALENDAR PAGE SETTINGS
+# Controls the dedicated /calendar/ page
+# Page content (title, description, text) is set in content/calendar.md
+calendar_page_enabled = true
 
-    # HOMEPAGE CALENDAR SECTION
-    # Optionally show a calendar preview on the homepage (below Featured Treats)
-    calendar_homepage_enabled = true
-    calendar_homepage_title = "Upcoming Events"
+# HOMEPAGE CALENDAR SECTION
+# Optionally show a calendar preview on the homepage (below Featured Treats)
+calendar_homepage_enabled = true
+calendar_homepage_title = "Upcoming Events"
 
-    # HOMEPAGE SUBSCRIBE BUTTONS
-    # Show/hide the subscribe buttons on the homepage calendar section
-    # Set to false to show only the calendar embed on homepage (cleaner look)
-    calendar_homepage_subscribe_enabled = false
+# HOMEPAGE SUBSCRIBE BUTTONS
+# Show/hide the subscribe buttons on the homepage calendar section
+# Set to false to show only the calendar embed on homepage (cleaner look)
+calendar_homepage_subscribe_enabled = false
 
-    # "ADD TO CALENDAR" SUBSCRIBE BUTTON
-    # Shows buttons to let customers subscribe to your calendar
-    # They can add it to Google Calendar, Apple Calendar, Outlook, etc.
-    calendar_subscribe_enabled = true
-    calendar_subscribe_text = "Subscribe to Calendar"
+# "ADD TO CALENDAR" SUBSCRIBE BUTTON
+# Shows buttons to let customers subscribe to your calendar
+# They can add it to Google Calendar, Apple Calendar, Outlook, etc.
+calendar_subscribe_enabled = true
+calendar_subscribe_text = "Subscribe to Calendar"
 
-    # SUBSCRIBE BUTTON STYLE
-    # Choose the visual style for the subscribe button
-    # Options: "primary" (main teal button) or "secondary" (subtle gray button)
-    calendar_subscribe_style = "secondary"
+# SUBSCRIBE BUTTON STYLE
+# Choose the visual style for the subscribe button
+# Options: "primary" (main teal button) or "secondary" (subtle gray button)
+calendar_subscribe_style = "secondary"
 
 
 ################################################################################
@@ -407,119 +422,119 @@ Located in Coronado, CA
 #                                                                              #
 ################################################################################
 
-  # COLOR SCHEME - SoCal Coastal Island Vibe
-  # These colors are applied throughout the entire website automatically.
-  # All colors use "hex codes" - the # followed by 6 characters (letters/numbers)
-  # You can find hex codes using tools like: https://htmlcolorcodes.com/
-  #
-  # Used in: layouts/partials/head.html (generates CSS variables)
-  # These CSS variables are then used in: assets/css/main.css
-  #
-  # NOTE: This section MUST come AFTER all the simple settings above
+# COLOR SCHEME - SoCal Coastal Island Vibe
+# These colors are applied throughout the entire website automatically.
+# All colors use "hex codes" - the # followed by 6 characters (letters/numbers)
+# You can find hex codes using tools like: https://htmlcolorcodes.com/
+#
+# Used in: layouts/partials/head.html (generates CSS variables)
+# These CSS variables are then used in: assets/css/main.css
+#
+# NOTE: This section MUST come AFTER all the simple settings above
 
-  [params.colors]
+[params.colors]
 
-    # ═══════════════════════════════════════════════════════════════════════
-    # PRIMARY COLORS - Your main brand color (ocean teal)
-    # Used for: buttons, links, accents, and interactive elements
-    # ═══════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════
+# PRIMARY COLORS - Your main brand color (ocean teal)
+# Used for: buttons, links, accents, and interactive elements
+# ═══════════════════════════════════════════════════════════════════════
 
-    # Main action color - used for most buttons and links
-    primary = "#2A9D8F"
+# Main action color - used for most buttons and links
+primary = "#2A9D8F"
 
-    # Slightly darker version - shown when hovering over buttons/links
-    primary_hover = "#238B7E"
+# Slightly darker version - shown when hovering over buttons/links
+primary_hover = "#238B7E"
 
-    # ═══════════════════════════════════════════════════════════════════════
-    # SECONDARY COLORS - Warm brown tones (inspired by logo text)
-    # Used for: headings, important text, dark backgrounds
-    # ═══════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════
+# SECONDARY COLORS - Warm brown tones (inspired by logo text)
+# Used for: headings, important text, dark backgrounds
+# ═══════════════════════════════════════════════════════════════════════
 
-    # Main heading color and text emphasis
-    secondary = "#5C4033"
+# Main heading color and text emphasis
+secondary = "#5C4033"
 
-    # Darker version - used for footer background
-    secondary_dark = "#3D2B1F"
+# Darker version - used for footer background
+secondary_dark = "#3D2B1F"
 
-    # ═══════════════════════════════════════════════════════════════════════
-    # TERTIARY COLORS - Sandy beach and sky tones
-    # Used for: backgrounds, cards, subtle highlights
-    # ═══════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════
+# TERTIARY COLORS - Sandy beach and sky tones
+# Used for: backgrounds, cards, subtle highlights
+# ═══════════════════════════════════════════════════════════════════════
 
-    # Soft sand color - header background and card backgrounds
-    tertiary = "#FBF8F3"
+# Soft sand color - header background and card backgrounds
+tertiary = "#FBF8F3"
 
-    # Lightest background - main page background
-    tertiary_light = "#FDFCFA"
+# Lightest background - main page background
+tertiary_light = "#FDFCFA"
 
-    # Slightly darker sand - hero section gradient, subtle highlights
-    tertiary_medium = "#E8E4DC"
+# Slightly darker sand - hero section gradient, subtle highlights
+tertiary_medium = "#E8E4DC"
 
-    # ═══════════════════════════════════════════════════════════════════════
-    # ACCENT COLOR - Golden sun/cookie warmth
-    # Used for: special highlights, "Order Now" button, footer headings
-    # ═══════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════
+# ACCENT COLOR - Golden sun/cookie warmth
+# Used for: special highlights, "Order Now" button, footer headings
+# ═══════════════════════════════════════════════════════════════════════
 
-    accent = "#E9B44C"
+accent = "#E9B44C"
 
-    # ═══════════════════════════════════════════════════════════════════════
-    # TEXT COLORS
-    # ═══════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════
+# TEXT COLORS
+# ═══════════════════════════════════════════════════════════════════════
 
-    # Secondary/muted text (paragraphs, descriptions)
-    text_light = "#5D6B6A"
+# Secondary/muted text (paragraphs, descriptions)
+text_light = "#5D6B6A"
 
-    # ═══════════════════════════════════════════════════════════════════════
-    # SURFACE COLORS - Cards and containers
-    # ═══════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════
+# SURFACE COLORS - Cards and containers
+# ═══════════════════════════════════════════════════════════════════════
 
-    # Background color for cards (cookie menu items, etc.)
-    card_bg = "#FFFFFF"
+# Background color for cards (cookie menu items, etc.)
+card_bg = "#FFFFFF"
 
-    # Semi-transparent overlay for mobile navigation background
-    overlay = "rgba(38, 70, 83, 0.6)"
+# Semi-transparent overlay for mobile navigation background
+overlay = "rgba(38, 70, 83, 0.6)"
 
-    # ═══════════════════════════════════════════════════════════════════════
-    # HEADER COLORS - Top navigation bar
-    # Used in: layouts/partials/header.html styling
-    # ═══════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════
+# HEADER COLORS - Top navigation bar
+# Used in: layouts/partials/header.html styling
+# ═══════════════════════════════════════════════════════════════════════
 
-    # Header background color
-    header_bg = "#FBF8F3"
+# Header background color
+header_bg = "#FBF8F3"
 
-    # Header text and logo color
-    header_text = "#5C4033"
+# Header text and logo color
+header_text = "#5C4033"
 
-    # ═══════════════════════════════════════════════════════════════════════
-    # FOOTER COLORS - Bottom of every page
-    # Used in: layouts/partials/footer.html styling
-    # ═══════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════
+# FOOTER COLORS - Bottom of every page
+# Used in: layouts/partials/footer.html styling
+# ═══════════════════════════════════════════════════════════════════════
 
-    # Footer background - deep ocean blue-green
-    footer_bg = "#264653"
+# Footer background - deep ocean blue-green
+footer_bg = "#264653"
 
-    # Footer paragraph text
-    footer_text = "#FBF8F3"
+# Footer paragraph text
+footer_text = "#FBF8F3"
 
-    # Footer section headings (Visit Us, Hours, etc.)
-    footer_heading = "#E9B44C"
+# Footer section headings (Visit Us, Hours, etc.)
+footer_heading = "#E9B44C"
 
-    # ═══════════════════════════════════════════════════════════════════════
-    # BUTTON COLORS
-    # Used in: various button elements throughout the site
-    # ═══════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════
+# BUTTON COLORS
+# Used in: various button elements throughout the site
+# ═══════════════════════════════════════════════════════════════════════
 
-    # Standard button background
-    btn_bg = "#2A9D8F"
+# Standard button background
+btn_bg = "#2A9D8F"
 
-    # Button text color
-    btn_text = "#FDFCFA"
+# Button text color
+btn_text = "#FDFCFA"
 
-    # Button background when hovered
-    btn_hover_bg = "#264653"
+# Button background when hovered
+btn_hover_bg = "#264653"
 
-    # Special "Order Now" navigation button (uses accent gold)
-    btn_nav_bg = "#E9B44C"
+# Special "Order Now" navigation button (uses accent gold)
+btn_nav_bg = "#E9B44C"
 
 
 ################################################################################
@@ -541,28 +556,28 @@ Located in Coronado, CA
 # NOTE: The "Order Now" button is controlled separately by contact_url above
 
 [menus]
-  [[menus.main]]
-    name = "Home"
-    url = "/"
-    weight = 1
+[[menus.main]]
+name = "Home"
+url = "/"
+weight = 1
 
-  [[menus.main]]
-    name = "Menu"
-    url = "/menu/"
-    weight = 2
+[[menus.main]]
+name = "Menu"
+url = "/menu/"
+weight = 2
 
-  [[menus.main]]
-    name = "About"
-    url = "/about/"
-    weight = 3
+[[menus.main]]
+name = "About"
+url = "/about/"
+weight = 3
 
-  # CALENDAR PAGE LINK
-  # Uncomment the lines below to add "Calendar" to your navigation menu
-  # Only appears when calendar_enabled = true in Section 7 above
-  # [[menus.main]]
-  #   name = "Calendar"
-  #   url = "/calendar/"
-  #   weight = 4
+# CALENDAR PAGE LINK
+# Uncomment the lines below to add "Calendar" to your navigation menu
+# Only appears when calendar_enabled = true in Section 7 above
+# [[menus.main]]
+#   name = "Calendar"
+#   url = "/calendar/"
+#   weight = 4
 
 
 ################################################################################
@@ -607,14 +622,14 @@ buildExpired = false
 # ═══════════════════════════════════════════════════════════════════════════
 
 [outputs]
-  # Homepage generates HTML only
-  home = ["HTML"]
+# Homepage generates HTML only
+home = ["HTML"]
 
-  # Individual pages (like About, cookie detail pages) generate HTML only
-  page = ["HTML"]
+# Individual pages (like About, cookie detail pages) generate HTML only
+page = ["HTML"]
 
-  # Section pages (like the Menu listing page) generate HTML only
-  section = ["HTML"]
+# Section pages (like the Menu listing page) generate HTML only
+section = ["HTML"]
 
 # ═══════════════════════════════════════════════════════════════════════════
 # CACHE SETTINGS
@@ -622,9 +637,9 @@ buildExpired = false
 # ═══════════════════════════════════════════════════════════════════════════
 
 [caches]
-  [caches.images]
-    # Where Hugo stores processed images during build
-    dir = ':cacheDir/images'
+[caches.images]
+# Where Hugo stores processed images during build
+dir = ':cacheDir/images'
 
 # ═══════════════════════════════════════════════════════════════════════════
 # MARKUP SETTINGS
@@ -632,14 +647,14 @@ buildExpired = false
 # ═══════════════════════════════════════════════════════════════════════════
 
 [markup]
-  [markup.goldmark]
-    [markup.goldmark.renderer]
-      # Set to false for security - prevents raw HTML in Markdown files
-      unsafe = false
+[markup.goldmark]
+[markup.goldmark.renderer]
+# Set to false for security - prevents raw HTML in Markdown files
+unsafe = false
 
-  [markup.highlight]
-    # Use CSS classes for code highlighting (not inline styles)
-    noClasses = false
+[markup.highlight]
+# Use CSS classes for code highlighting (not inline styles)
+noClasses = false
 
 # ═══════════════════════════════════════════════════════════════════════════
 # PERMALINK SETTINGS
@@ -647,6 +662,6 @@ buildExpired = false
 # ═══════════════════════════════════════════════════════════════════════════
 
 [permalinks]
-  # Menu items will have URLs like: /menu/chocolate-chip/
-  # The :contentbasename uses the filename (without .md extension)
-  menu = '/menu/:contentbasename/'
+# Menu items will have URLs like: /menu/chocolate-chip/
+# The :contentbasename uses the filename (without .md extension)
+menu = '/menu/:contentbasename/'

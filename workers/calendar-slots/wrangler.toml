@@ -1,0 +1,18 @@
+name = "calendar-slots"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+# Non-secret configuration - safe to commit
+# Add your allowed origins (comma-separated for multiple)
+ALLOWED_ORIGINS = "https://cookieisle.com,https://www.cookieisle.com,https://thecookieisle.com,https://www.thecookieisle.com,http://localhost:1313"
+
+# Google Calendar iCal URL (public, so not a secret)
+# This is the public iCal URL from your Google Calendar settings
+CALENDAR_ICAL_URL = "https://calendar.google.com/calendar/ical/c_5099568f04822947c2b6fbf47ad6667e9d9902df5c16e5c82ee5261c348079ae%40group.calendar.google.com/public/basic.ics"
+
+# Event title prefix to look for (events must start with this)
+EVENT_PREFIX = "Drop Window"
+
+# Cache duration in seconds (5 minutes)
+CACHE_TTL = "300"
