@@ -4,7 +4,7 @@ compatibility_date = "2024-01-01"
 
 [vars]
 # Allowed origins for CORS
-ALLOWED_ORIGINS = "https://cookieisle.com,https://www.cookieisle.com,https://thecookieisle.com,https://www.thecookieisle.com,http://localhost:1313"
+ALLOWED_ORIGINS = "https://cookieisle.com,https://www.cookieisle.com,https://thecookieisle.com,https://www.thecookieisle.com,http://localhost:1313,https://preview.cookie-isle.pages.dev"
 
 # Frontend URL for redirects (can be overridden by environment)
 FRONTEND_URL = "http://localhost:1313"

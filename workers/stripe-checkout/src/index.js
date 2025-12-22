@@ -6,10 +6,58 @@ const corsHeaders = {
     "Access-Control-Allow-Headers": "Content-Type, Stripe-Signature",
 };
 
+/**
+ * Check if the request origin is permitted
+ */
+function isOriginAllowed(origin, env) {
+    if (env.ALLOWED_ORIGINS === "*") return true;
+    if (!origin) return false;
+
+    const allowedOrigins = (env.ALLOWED_ORIGINS || "").split(",").map(o => o.trim());
+    if (allowedOrigins.includes(origin)) return true;
+
+    // Automatically allow any subdomain of the main site or Cloudflare Pages for preview branches
+    const trustedDomains = ["thecookieisle.com", "cookieisle.com", "pages.dev"];
+    try {
+        const url = new URL(origin);
+        return trustedDomains.some(domain =>
+            url.hostname === domain || url.hostname.endsWith("." + domain)
+        );
+    } catch (e) {
+        return false;
+    }
+}
+
+/**
+ * Helper to create a response with correct CORS headers
+ */
+function createCORSResponse(body, status, origin, contentType = "application/json") {
+    return new Response(typeof body === 'string' ? body : JSON.stringify(body), {
+        status: status,
+        headers: {
+            ...corsHeaders,
+            "Content-Type": contentType,
+            "Access-Control-Allow-Origin": origin || "*",
+        },
+    });
+}
+
 export default {
     async fetch(request, env, ctx) {
+        const origin = request.headers.get("Origin");
+        const isAllowed = isOriginAllowed(origin, env);
+
+        // Mirror the origin if allowed, otherwise fallback to the first allowed origin
+        const corsOrigin = isAllowed ? origin : (env.ALLOWED_ORIGINS.split(',')[0]?.trim() || "*");
+
         if (request.method === "OPTIONS") {
-            return handleOptions(request, env);
+            return new Response(null, {
+                headers: {
+                    ...corsHeaders,
+                    "Access-Control-Allow-Origin": corsOrigin,
+                    "Vary": "Origin"
+                }
+            });
         }
 
         const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
@@ -19,7 +67,10 @@ export default {
         const url = new URL(request.url);
 
         if (request.method === "POST" && url.pathname === "/session") {
-            return handleCreateSession(request, env, stripe);
+            if (!isAllowed) {
+                return createCORSResponse({ error: "Forbidden", message: "Origin not allowed" }, 403, corsOrigin);
+            }
+            return handleCreateSession(request, env, stripe, corsOrigin);
         }
 
         if (request.method === "POST" && url.pathname === "/webhook") {
@@ -30,32 +81,9 @@ export default {
     },
 };
 
-// ... CORS Helper ...
-function handleOptions(request, env) {
-    const origin = request.headers.get("Origin");
-    const allowedOrigins = (env.ALLOWED_ORIGINS || "").split(",");
-
-    if (allowedOrigins.includes(origin) || env.ALLOWED_ORIGINS === "*") {
-        return new Response(null, {
-            headers: {
-                ...corsHeaders,
-                "Access-Control-Allow-Origin": origin,
-            }
-        });
-    }
-    return new Response(null, { headers: corsHeaders });
-}
-
 // ... Session Creation ...
-async function handleCreateSession(request, env, stripe) {
+async function handleCreateSession(request, env, stripe, origin) {
     try {
-        const origin = request.headers.get("Origin");
-        const allowedOrigins = (env.ALLOWED_ORIGINS || "").split(",");
-
-        if (!allowedOrigins.includes(origin) && env.ALLOWED_ORIGINS !== "*") {
-            return new Response("Forbidden", { status: 403 });
-        }
-
         const { order: items, fulfillment, customer } = await request.json();
 
         if (!items || items.length === 0) {
@@ -92,19 +120,13 @@ async function handleCreateSession(request, env, stripe) {
             payment_method_types: ["card"],
             line_items: lineItems,
             mode: "payment",
-            success_url: `${env.FRONTEND_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${env.FRONTEND_URL}/checkout/cancel`,
+            success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${origin}/checkout/cancel`,
             metadata: metadata,
             customer_email: customer.email,
         });
 
-        return new Response(JSON.stringify({ url: session.url }), {
-            headers: {
-                ...corsHeaders,
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": origin
-            },
-        });
+        return createCORSResponse({ url: session.url }, 200, origin);
 
     } catch (err) {
         console.error("Stripe Error:", err);
@@ -122,10 +144,7 @@ async function handleCreateSession(request, env, stripe) {
             errorResponse = { error: "SOLD_OUT", message: err.raw.message };
         }
 
-        return new Response(JSON.stringify(errorResponse), {
-            status: status,
-            headers: { ...corsHeaders, "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-        });
+        return createCORSResponse(errorResponse, status, origin);
     }
 }
 
