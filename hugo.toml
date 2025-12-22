@@ -205,7 +205,8 @@ cart_enabled = true
 # The URL of your Cloudflare Worker that handles order submissions
 # Leave empty until the worker is deployed
 # Example: "https://orders.your-subdomain.workers.dev"
-checkout_worker_url = ""
+# For local development: http://localhost:8787/session
+stripe_checkout_worker_url = "https://stripe-checkout.alyssa-fdc.workers.dev/session"
 
 # CART BUTTON TEXT
 # Text shown on the "Add to Cart" buttons

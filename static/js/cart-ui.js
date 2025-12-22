@@ -102,6 +102,7 @@ const CartUI = (function () {
     const button = e.currentTarget;
     const product = button.dataset.product;
     const priceCents = parseInt(button.dataset.priceCents, 10);
+    const priceId = button.dataset.stripePriceId;
 
     if (!product || isNaN(priceCents)) {
       console.error("Invalid product data on Add to Cart button");
@@ -118,7 +119,7 @@ const CartUI = (function () {
     }
 
     // Add to cart
-    CookieCart.addToCart(product, priceCents, 1);
+    CookieCart.addToCart(product, priceCents, 1, priceId);
 
     // Show feedback
     showAddedToast(product);

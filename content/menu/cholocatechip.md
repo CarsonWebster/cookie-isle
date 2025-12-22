@@ -5,6 +5,7 @@ draft = false
 featured = true
 price = "$3.50"
 price_cents = 350
+stripe_price_id = "price_1Sh28WD2fyOJEz3a1Rox6bU4"
 description = "Our classic chocolate chip cookie loaded with premium semi-sweet chocolate chips."
 image = "ChocChipBowl.jpg"
 hero_image = "ChocChipRack.jpg"

@@ -5,6 +5,7 @@ draft = false
 featured = true
 price = '$4.00'
 price_cents = 400
+stripe_price_id = "price_1Sh2ArD2fyOJEz3aDG0rENt3"
 description = 'Buttery caramel swirled throughout with a perfect touch of sea salt.'
 image = 'Saltedcaramelsingle.png'
 hero_image = 'Saltedcaramelmultiple.png'

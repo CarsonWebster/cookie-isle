@@ -5,6 +5,7 @@ draft = false
 featured = false
 price = "$3.25"
 price_cents = 325
+stripe_price_id = "price_1Sh29aD2fyOJEz3aK6T1HIse"
 description = "A wholesome classic with hearty oats and plump raisins."
 image = "/images/cookies/oatmeal-raisin.jpg"
 ingredients = "Butter, flour, rolled oats, brown sugar, raisins, cinnamon, eggs, vanilla"

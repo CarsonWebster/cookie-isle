@@ -301,6 +301,7 @@
 <script>
     window.CHECKOUT_CONFIG = {
         workerUrl: "{{ site.Params.checkout_worker_url | default "" }}",
+        stripeCheckoutWorkerUrl: "{{ site.Params.stripe_checkout_worker_url | default "" }}",
         allowedZips: {{ site.Params.allowed_delivery_zips | default (slice "92118") | jsonify | safeJS }},
         maxOrderQuantity: {{ site.Params.max_order_quantity | default 50 }},
         maxOrderMessage: "For orders of more than {{ site.Params.max_order_quantity | default 50 }} cookies, please contact us at {{ site.Params.email }} to discuss your order.",

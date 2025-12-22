@@ -269,41 +269,41 @@
     const messageEl = elements.promoMessage;
 
     if (!rawCode) {
-        if (messageEl) {
-            messageEl.textContent = "Please enter a code.";
-            messageEl.style.display = "block";
-            messageEl.style.color = "#d63384";
-        }
-        return;
+      if (messageEl) {
+        messageEl.textContent = "Please enter a code.";
+        messageEl.style.display = "block";
+        messageEl.style.color = "#d63384";
+      }
+      return;
     }
 
     // Lookup using lowercase code (Hugo params keys are lowercased)
     if (CONFIG.promoCodes && CONFIG.promoCodes[lookupCode]) {
-        // Valid code
-        const promoData = CONFIG.promoCodes[lookupCode];
-        
-        activePromo = {
-            code: rawCode.toUpperCase(), // Store nicely formatted code
-            type: promoData.type,
-            value: Number(promoData.value) // Ensure number
-        };
-        
-        if (messageEl) {
-            messageEl.textContent = `Code ${activePromo.code} applied!`;
-            messageEl.style.display = "block";
-            messageEl.style.color = "#2A9D8F";
-        }
-        
-        updateCartTotal();
+      // Valid code
+      const promoData = CONFIG.promoCodes[lookupCode];
+
+      activePromo = {
+        code: rawCode.toUpperCase(), // Store nicely formatted code
+        type: promoData.type,
+        value: Number(promoData.value) // Ensure number
+      };
+
+      if (messageEl) {
+        messageEl.textContent = `Code ${activePromo.code} applied!`;
+        messageEl.style.display = "block";
+        messageEl.style.color = "#2A9D8F";
+      }
+
+      updateCartTotal();
     } else {
-        // Invalid code
-        activePromo = null;
-        if (messageEl) {
-            messageEl.textContent = "Invalid promo code.";
-            messageEl.style.display = "block";
-            messageEl.style.color = "#d63384";
-        }
-        updateCartTotal();
+      // Invalid code
+      activePromo = null;
+      if (messageEl) {
+        messageEl.textContent = "Invalid promo code.";
+        messageEl.style.display = "block";
+        messageEl.style.color = "#d63384";
+      }
+      updateCartTotal();
     }
   }
 
@@ -629,23 +629,23 @@
     // Calculate Discount
     let discount = 0;
     if (activePromo && subtotal > 0) {
-        if (activePromo.type === 'flat') {
-            discount = activePromo.value;
-        } else if (activePromo.type === 'percent') {
-            discount = subtotal * (activePromo.value / 100);
-        }
-        // Cap discount at subtotal
-        if (discount > subtotal) discount = subtotal;
+      if (activePromo.type === 'flat') {
+        discount = activePromo.value;
+      } else if (activePromo.type === 'percent') {
+        discount = subtotal * (activePromo.value / 100);
+      }
+      // Cap discount at subtotal
+      if (discount > subtotal) discount = subtotal;
     }
 
     const taxableSubtotal = Math.max(0, subtotal - discount);
     const tax = taxableSubtotal * CONFIG.taxRate;
-    
+
     let fee = 0;
     // Apply fee if taxable subtotal is greater than 0 but less than threshold
     if (taxableSubtotal > 0 && taxableSubtotal < CONFIG.smallOrderFeeThreshold) {
-        // Fee is 3% of (taxableSubtotal + tax) + $0.30
-        fee = ((taxableSubtotal + tax) * 0.03) + 0.30;
+      // Fee is 3% of (taxableSubtotal + tax) + $0.30
+      fee = ((taxableSubtotal + tax) * 0.03) + 0.30;
     }
 
     const total = taxableSubtotal + tax + fee;
@@ -660,29 +660,29 @@
     if (elements.cartSubtotal) {
       elements.cartSubtotal.textContent = fmt(subtotal);
     }
-    
+
     // Handle Discount Display
     if (elements.cartDiscountRow) {
-        if (discount > 0) {
-            elements.cartDiscountRow.style.display = "flex";
-            if (elements.cartDiscount) elements.cartDiscount.textContent = "-" + fmt(discount);
-        } else {
-            elements.cartDiscountRow.style.display = "none";
-        }
+      if (discount > 0) {
+        elements.cartDiscountRow.style.display = "flex";
+        if (elements.cartDiscount) elements.cartDiscount.textContent = "-" + fmt(discount);
+      } else {
+        elements.cartDiscountRow.style.display = "none";
+      }
     }
 
     if (elements.cartTax) {
       elements.cartTax.textContent = fmt(tax);
     }
-    
+
     // Handle Fee Display
     if (fee > 0) {
-        if (elements.cartFeeRow) elements.cartFeeRow.style.display = "flex";
-        if (elements.cartFee) elements.cartFee.textContent = fmt(fee);
-        if (elements.feeNote) elements.feeNote.style.display = "block";
+      if (elements.cartFeeRow) elements.cartFeeRow.style.display = "flex";
+      if (elements.cartFee) elements.cartFee.textContent = fmt(fee);
+      if (elements.feeNote) elements.feeNote.style.display = "block";
     } else {
-        if (elements.cartFeeRow) elements.cartFeeRow.style.display = "none";
-        if (elements.feeNote) elements.feeNote.style.display = "none";
+      if (elements.cartFeeRow) elements.cartFeeRow.style.display = "none";
+      if (elements.feeNote) elements.feeNote.style.display = "none";
     }
 
     if (elements.cartTotal) {
@@ -938,29 +938,30 @@
         product: item.product,
         qty: item.qty,
         price: item.price_cents / 100,
+        price_id: item.price_id
       };
     });
 
     // Calculate amounts including fee
     const subtotal = CookieCart.getCartTotalCents() / 100;
-    
+
     // Re-calculate Logic for Payload (Mirror updateCartTotal)
     let discount = 0;
     if (activePromo && subtotal > 0) {
-        if (activePromo.type === 'flat') {
-            discount = activePromo.value;
-        } else if (activePromo.type === 'percent') {
-            discount = subtotal * (activePromo.value / 100);
-        }
-        if (discount > subtotal) discount = subtotal;
+      if (activePromo.type === 'flat') {
+        discount = activePromo.value;
+      } else if (activePromo.type === 'percent') {
+        discount = subtotal * (activePromo.value / 100);
+      }
+      if (discount > subtotal) discount = subtotal;
     }
-    
+
     const taxableSubtotal = Math.max(0, subtotal - discount);
     const tax = taxableSubtotal * CONFIG.taxRate;
-    
+
     let fee = 0;
     if (taxableSubtotal > 0 && taxableSubtotal < CONFIG.smallOrderFeeThreshold) {
-        fee = ((taxableSubtotal + tax) * 0.03) + 0.30;
+      fee = ((taxableSubtotal + tax) * 0.03) + 0.30;
     }
     const total = taxableSubtotal + tax + fee;
 
@@ -1022,7 +1023,7 @@
     // Log the order payload (for development/testing)
     console.log("Order Payload:", JSON.stringify(orderPayload, null, 2));
 
-    const workerUrl = CONFIG.workerUrl;
+    const workerUrl = CONFIG.stripeCheckoutWorkerUrl || CONFIG.workerUrl;
 
     if (workerUrl) {
       // Real submission to Cloudflare Worker
@@ -1034,13 +1035,19 @@
         body: JSON.stringify(orderPayload),
       })
         .then(function (response) {
+          // Handle HTTP errors nicely
           if (!response.ok) {
-            throw new Error("Network response was not ok");
+            return response.json().then(data => {
+              throw new Error(data.message || data.error || "Order submission failed");
+            });
           }
           return response.json();
         })
         .then(function (data) {
-          if (data.success) {
+          if (data.url) {
+            // Redirect to Stripe Checkout
+            window.location.href = data.url;
+          } else if (data.success) {
             handleOrderSuccess(orderPayload);
           } else {
             handleOrderError(data.error || "Order submission failed");
@@ -1048,7 +1055,14 @@
         })
         .catch(function (error) {
           console.error("Order submission error:", error);
-          handleOrderError(error.message);
+
+          let msg = error.message;
+          // Clean up Stripe inventory errors for display
+          if (msg.includes("inventory")) {
+            msg = "Sorry, one or more items in your cart are no longer available.";
+          }
+
+          handleOrderError(msg);
         });
     } else {
       // Simulate success for development (no worker URL configured)

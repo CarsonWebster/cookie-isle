@@ -103,21 +103,27 @@ const CookieCart = (function () {
    * @param {string} product - Product name
    * @param {number} priceCents - Price in cents (integer)
    * @param {number} qty - Quantity to add (default 1)
+   * @param {string} priceId - Stripe Price ID (optional)
    * @returns {Array} Updated cart
    */
-  function addToCart(product, priceCents, qty = 1) {
+  function addToCart(product, priceCents, qty = 1, priceId = null) {
     const cart = getCart();
     const existingIndex = cart.findIndex((item) => item.product === product);
 
     if (existingIndex > -1) {
       // Update existing item quantity
       cart[existingIndex].qty += qty;
+      // Update price ID if provided and missing
+      if (priceId && !cart[existingIndex].price_id) {
+        cart[existingIndex].price_id = priceId;
+      }
     } else {
       // Add new item
       cart.push({
         product: product,
         price_cents: priceCents,
         qty: qty,
+        price_id: priceId
       });
     }
 
