@@ -37,6 +37,7 @@ title = 'The Cookie Isle'
 # Used in: layouts/partials/head.html (meta description and Open Graph tags)
 [params]
 description = "Fresh-baked cookies made with love at our cozy cottage-bakery"
+tagline = "Sugar and sand makes life grand!"
 
 # AUTHOR NAME
 # Used for SEO purposes

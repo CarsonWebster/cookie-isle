@@ -1,6 +1,5 @@
 ---
 title: "Welcome to The Cookie Isle"
-tagline: "Fresh-baked happiness, one cookie at a time"
 cta: "Explore Our Cookies"
 ---
 
