@@ -280,6 +280,11 @@ drop_window_sold_out_message = "Sold out for this date"
 # Sales tax rate (decimal)
 sales_tax_rate = 0.0775
 
+# Enable/disable sales tax calculation
+# Set to false if you handle tax through Stripe Tax or don't charge tax
+tax_enabled = false
+#sales_tax_rate = 0.0000
+
 # Small order fee threshold ($)
 # Orders under this amount (subtotal) will incur a processing fee
 small_order_fee_threshold = 10
@@ -287,17 +292,26 @@ small_order_fee_threshold = 10
 
 
 
-# PROMO CODES
-# Key-value store of available promo codes
-# type: "flat" ($ off) or "percent" (% off)
-[params.promo_codes]
-  [params.promo_codes.LAUNCH]
-  type = "flat"
-  value = 5.00
+# TIP SETTINGS
+# Allow customers to add an optional tip at checkout
+tip_enabled = true
 
-  [params.promo_codes.CHRISTMAS]
-  type = "percent"
-  value = 25.0
+# Preset tip percentages shown as quick-select buttons
+# These appear below the custom tip input field
+tip_percentages = [5, 10, 20]
+
+# GIFT BOX SETTINGS
+# Allow customers to request gift box packaging
+gift_box_enabled = true
+
+# Display price for gift box (shown to customer)
+gift_box_price = 3.00
+
+# Stripe Price ID for the gift box product
+# Create a product called "Gift Box" in Stripe Dashboard and copy the Price ID here
+# Example: "price_1ABC123def456GHI"
+# Leave empty until you've created the product in Stripe
+gift_box_price_id = "price_1ShNdrD2fyOJEz3alD8KqIOa"
 
 ################################################################################
 #                                                                              #

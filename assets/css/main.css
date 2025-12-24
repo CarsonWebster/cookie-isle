@@ -1616,6 +1616,18 @@ body.mobile-nav-open {
     color: var(--color-primary);
 }
 
+/* Tip Preset Buttons */
+.tip-preset-btn:hover {
+    background: var(--color-primary, #e76f51) !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(231, 111, 81, 0.3);
+}
+
+.tip-preset-btn:active {
+    transform: translateY(0);
+}
+
 /* Continue Shopping Link */
 .cart-actions-top {
     margin-bottom: var(--space-xl);

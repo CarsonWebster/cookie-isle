@@ -19,9 +19,14 @@
     calendarSlotsWorkerUrl: "",
     dropWindowCookieLimit: 200,
     dropWindowSoldOutMessage: "Sold out for this date",
+    taxEnabled: true,
     taxRate: 0.0775,
     smallOrderFeeThreshold: 10,
-    promoCodes: {},
+    tipEnabled: false,
+    tipPercentages: [5, 10, 20],
+    giftBoxEnabled: false,
+    giftBoxPrice: 3.0,
+    giftBoxPriceId: "",
   };
 
   // DOM Elements
@@ -32,18 +37,17 @@
     cartTotal: null,
     cartSubtotal: null,
     cartTax: null,
-    cartTax: null,
-    cartDiscountRow: null,
-    cartDiscount: null,
+    cartTipRow: null,
+    cartTip: null,
+    cartGiftboxRow: null,
+    cartGiftbox: null,
     cartFeeRow: null,
     cartFee: null,
     feeNote: null,
-    promoInput: null,
-    promoBtn: null,
-    promoMessage: null,
-    cartCount: null,
-    cartFee: null,
-    feeNote: null,
+    tipInput: null,
+    tipPresetBtns: null,
+    tipThanks: null,
+    giftBoxCheckbox: null,
     cartCount: null,
     checkoutForm: null,
     checkoutSubmitBtn: null,
@@ -83,8 +87,11 @@
   // Track if ZIP is valid for delivery
   let isZipValid = true;
 
-  // Active promo code
-  let activePromo = null;
+  // Current tip amount (in dollars)
+  let currentTipAmount = 0;
+
+  // Gift box selected
+  let giftBoxSelected = false;
 
   /**
    * Initialize the checkout page
@@ -111,14 +118,17 @@
     elements.cartTotal = document.getElementById("cart-total");
     elements.cartSubtotal = document.getElementById("cart-subtotal");
     elements.cartTax = document.getElementById("cart-tax");
-    elements.cartDiscountRow = document.getElementById("cart-discount-row");
-    elements.cartDiscount = document.getElementById("cart-discount");
+    elements.cartTipRow = document.getElementById("cart-tip-row");
+    elements.cartTip = document.getElementById("cart-tip");
+    elements.cartGiftboxRow = document.getElementById("cart-giftbox-row");
+    elements.cartGiftbox = document.getElementById("cart-giftbox");
     elements.cartFeeRow = document.getElementById("cart-fee-row");
     elements.cartFee = document.getElementById("cart-fee");
     elements.feeNote = document.getElementById("fee-note");
-    elements.promoInput = document.getElementById("promo-input");
-    elements.promoBtn = document.getElementById("apply-promo-btn");
-    elements.promoMessage = document.getElementById("promo-message");
+    elements.tipInput = document.getElementById("tip-input");
+    elements.tipPresetBtns = document.querySelectorAll(".tip-preset-btn");
+    elements.tipThanks = document.getElementById("tip-thanks");
+    elements.giftBoxCheckbox = document.getElementById("gift-box-checkbox");
     elements.cartCount = document.getElementById("cart-count");
     elements.checkoutForm = document.getElementById("checkout-form");
     elements.checkoutSubmitBtn = document.getElementById("checkout-submit-btn");
@@ -165,6 +175,24 @@
       elements.fulfillmentOptions.forEach(function (option) {
         option.addEventListener("click", handleFulfillmentChange);
       });
+    }
+
+    // Tip input
+    if (elements.tipInput) {
+      elements.tipInput.addEventListener("input", handleTipInput);
+      elements.tipInput.addEventListener("change", handleTipInput);
+    }
+
+    // Tip preset buttons
+    if (elements.tipPresetBtns) {
+      elements.tipPresetBtns.forEach(function (btn) {
+        btn.addEventListener("click", handleTipPreset);
+      });
+    }
+
+    // Gift box checkbox
+    if (elements.giftBoxCheckbox) {
+      elements.giftBoxCheckbox.addEventListener("change", handleGiftBoxChange);
     }
 
     // ZIP code validation on blur
@@ -259,52 +287,75 @@
   }
 
   /**
-   * Handle Promo Code Application
+   * Handle Tip Input Change
    */
-  function handleApplyPromo() {
-    if (!elements.promoInput) return;
+  function handleTipInput() {
+    if (!elements.tipInput) return;
 
-    const rawCode = elements.promoInput.value.trim();
-    const lookupCode = rawCode.toLowerCase();
-    const messageEl = elements.promoMessage;
+    const value = parseFloat(elements.tipInput.value) || 0;
+    currentTipAmount = Math.max(0, value);
 
-    if (!rawCode) {
-      if (messageEl) {
-        messageEl.textContent = "Please enter a code.";
-        messageEl.style.display = "block";
-        messageEl.style.color = "#d63384";
-      }
-      return;
+    // Clear preset button active states
+    if (elements.tipPresetBtns) {
+      elements.tipPresetBtns.forEach(function (btn) {
+        btn.style.background = "#fff";
+        btn.style.color = "var(--color-primary, #E76F51)";
+      });
     }
 
-    // Lookup using lowercase code (Hugo params keys are lowercased)
-    if (CONFIG.promoCodes && CONFIG.promoCodes[lookupCode]) {
-      // Valid code
-      const promoData = CONFIG.promoCodes[lookupCode];
-
-      activePromo = {
-        code: rawCode.toUpperCase(), // Store nicely formatted code
-        type: promoData.type,
-        value: Number(promoData.value) // Ensure number
-      };
-
-      if (messageEl) {
-        messageEl.textContent = `Code ${activePromo.code} applied!`;
-        messageEl.style.display = "block";
-        messageEl.style.color = "#2A9D8F";
-      }
-
-      updateCartTotal();
-    } else {
-      // Invalid code
-      activePromo = null;
-      if (messageEl) {
-        messageEl.textContent = "Invalid promo code.";
-        messageEl.style.display = "block";
-        messageEl.style.color = "#d63384";
-      }
-      updateCartTotal();
+    // Show/hide thanks message
+    if (elements.tipThanks) {
+      elements.tipThanks.style.display =
+        currentTipAmount > 0 ? "block" : "none";
     }
+
+    updateCartTotal();
+  }
+
+  /**
+   * Handle Tip Preset Button Click
+   */
+  function handleTipPreset(e) {
+    const percent = parseInt(e.target.dataset.percent, 10);
+    const subtotal = CookieCart.getCartTotalCents() / 100;
+    const tipAmount = subtotal * (percent / 100);
+
+    currentTipAmount = Math.round(tipAmount * 100) / 100; // Round to 2 decimals
+
+    // Update input field
+    if (elements.tipInput) {
+      elements.tipInput.value = currentTipAmount.toFixed(2);
+    }
+
+    // Update button styles
+    if (elements.tipPresetBtns) {
+      elements.tipPresetBtns.forEach(function (btn) {
+        if (btn === e.target) {
+          btn.style.background = "var(--color-primary, #E76F51)";
+          btn.style.color = "#fff";
+        } else {
+          btn.style.background = "#fff";
+          btn.style.color = "var(--color-primary, #E76F51)";
+        }
+      });
+    }
+
+    // Show thanks message
+    if (elements.tipThanks) {
+      elements.tipThanks.style.display =
+        currentTipAmount > 0 ? "block" : "none";
+    }
+
+    updateCartTotal();
+  }
+
+  /**
+   * Handle Gift Box Checkbox Change
+   */
+  function handleGiftBoxChange() {
+    if (!elements.giftBoxCheckbox) return;
+    giftBoxSelected = elements.giftBoxCheckbox.checked;
+    updateCartTotal();
   }
 
   /**
@@ -626,29 +677,24 @@
     const subtotalCents = CookieCart.getCartTotalCents();
     const subtotal = subtotalCents / 100;
 
-    // Calculate Discount
-    let discount = 0;
-    if (activePromo && subtotal > 0) {
-      if (activePromo.type === 'flat') {
-        discount = activePromo.value;
-      } else if (activePromo.type === 'percent') {
-        discount = subtotal * (activePromo.value / 100);
-      }
-      // Cap discount at subtotal
-      if (discount > subtotal) discount = subtotal;
-    }
+    // Get tip amount
+    const tip = currentTipAmount;
 
-    const taxableSubtotal = Math.max(0, subtotal - discount);
-    const tax = taxableSubtotal * CONFIG.taxRate;
+    // Get gift box amount
+    const giftBox = giftBoxSelected ? CONFIG.giftBoxPrice : 0;
+
+    // Calculate taxable amount (subtotal + gift box, tips are typically not taxed)
+    const taxableAmount = subtotal + giftBox;
+    const tax = CONFIG.taxEnabled ? taxableAmount * CONFIG.taxRate : 0;
 
     let fee = 0;
-    // Apply fee if taxable subtotal is greater than 0 but less than threshold
-    if (taxableSubtotal > 0 && taxableSubtotal < CONFIG.smallOrderFeeThreshold) {
-      // Fee is 3% of (taxableSubtotal + tax) + $0.30
-      fee = ((taxableSubtotal + tax) * 0.03) + 0.30;
+    // Apply fee if taxable amount is greater than 0 but less than threshold
+    if (taxableAmount > 0 && taxableAmount < CONFIG.smallOrderFeeThreshold) {
+      // Fee is 3% of (taxableAmount + tax) + $0.30
+      fee = (taxableAmount + tax) * 0.03 + 0.3;
     }
 
-    const total = taxableSubtotal + tax + fee;
+    const total = subtotal + tip + giftBox + tax + fee;
 
     // Format currency helper
     const fmt = (n) =>
@@ -661,17 +707,28 @@
       elements.cartSubtotal.textContent = fmt(subtotal);
     }
 
-    // Handle Discount Display
-    if (elements.cartDiscountRow) {
-      if (discount > 0) {
-        elements.cartDiscountRow.style.display = "flex";
-        if (elements.cartDiscount) elements.cartDiscount.textContent = "-" + fmt(discount);
+    // Handle Tip Display
+    if (elements.cartTipRow) {
+      if (tip > 0) {
+        elements.cartTipRow.style.display = "flex";
+        if (elements.cartTip) elements.cartTip.textContent = fmt(tip);
       } else {
-        elements.cartDiscountRow.style.display = "none";
+        elements.cartTipRow.style.display = "none";
       }
     }
 
-    if (elements.cartTax) {
+    // Handle Gift Box Display
+    if (elements.cartGiftboxRow) {
+      if (giftBox > 0) {
+        elements.cartGiftboxRow.style.display = "flex";
+        if (elements.cartGiftbox)
+          elements.cartGiftbox.textContent = fmt(giftBox);
+      } else {
+        elements.cartGiftboxRow.style.display = "none";
+      }
+    }
+
+    if (elements.cartTax && CONFIG.taxEnabled) {
       elements.cartTax.textContent = fmt(tax);
     }
 
@@ -938,32 +995,23 @@
         product: item.product,
         qty: item.qty,
         price: item.price_cents / 100,
-        price_id: item.price_id
+        price_id: item.price_id,
       };
     });
 
-    // Calculate amounts including fee
+    // Calculate amounts
     const subtotal = CookieCart.getCartTotalCents() / 100;
+    const tip = currentTipAmount;
+    const giftBox = giftBoxSelected ? CONFIG.giftBoxPrice : 0;
 
-    // Re-calculate Logic for Payload (Mirror updateCartTotal)
-    let discount = 0;
-    if (activePromo && subtotal > 0) {
-      if (activePromo.type === 'flat') {
-        discount = activePromo.value;
-      } else if (activePromo.type === 'percent') {
-        discount = subtotal * (activePromo.value / 100);
-      }
-      if (discount > subtotal) discount = subtotal;
-    }
-
-    const taxableSubtotal = Math.max(0, subtotal - discount);
-    const tax = taxableSubtotal * CONFIG.taxRate;
+    const taxableAmount = subtotal + giftBox;
+    const tax = CONFIG.taxEnabled ? taxableAmount * CONFIG.taxRate : 0;
 
     let fee = 0;
-    if (taxableSubtotal > 0 && taxableSubtotal < CONFIG.smallOrderFeeThreshold) {
-      fee = ((taxableSubtotal + tax) * 0.03) + 0.30;
+    if (taxableAmount > 0 && taxableAmount < CONFIG.smallOrderFeeThreshold) {
+      fee = (taxableAmount + tax) * 0.03 + 0.3;
     }
-    const total = taxableSubtotal + tax + fee;
+    const total = subtotal + tip + giftBox + tax + fee;
 
     // Create a FormData object from the checkout form
     const checkoutForm = document.getElementById("checkout-form");
@@ -981,8 +1029,13 @@
       },
       order: order,
       subtotal: subtotal,
-      promo_code: activePromo ? activePromo.code : null,
-      discount: discount,
+      tip: tip > 0 ? tip : null,
+      gift_box: giftBoxSelected
+        ? {
+            price: CONFIG.giftBoxPrice,
+            price_id: CONFIG.giftBoxPriceId,
+          }
+        : null,
       tax: tax,
       fee: fee,
       total: total,
@@ -1037,8 +1090,10 @@
         .then(function (response) {
           // Handle HTTP errors nicely
           if (!response.ok) {
-            return response.json().then(data => {
-              throw new Error(data.message || data.error || "Order submission failed");
+            return response.json().then((data) => {
+              throw new Error(
+                data.message || data.error || "Order submission failed",
+              );
             });
           }
           return response.json();
@@ -1059,7 +1114,8 @@
           let msg = error.message;
           // Clean up Stripe inventory errors for display
           if (msg.includes("inventory")) {
-            msg = "Sorry, one or more items in your cart are no longer available.";
+            msg =
+              "Sorry, one or more items in your cart are no longer available.";
           }
 
           handleOrderError(msg);

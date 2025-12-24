@@ -39,27 +39,64 @@
                     <span id="cart-count" class="cart-summary-value">0</span>
                 </div>
 
-                <!-- Promo Code -->
-                <div class="promo-code-section" style="margin: 1rem 0; padding: 10px 0; border-top: 1px dashed #eee; border-bottom: 1px dashed #eee;">
-                    <div class="promo-input-group" style="display: flex; gap: 0.5rem;">
-                        <input type="text" id="promo-input" placeholder="Promo Code" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <button type="button" id="apply-promo-btn" style="padding: 8px 16px; background: #eee; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">Apply</button>
+                {{/* Tip Section */}}
+                {{ if site.Params.tip_enabled }}
+                <div class="tip-section" style="margin: 1rem 0; padding: 15px; border: 2px solid var(--color-primary, #E76F51); border-radius: 8px; background: linear-gradient(135deg, #fff9f5 0%, #fff 100%);">
+                    <div class="tip-header" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <span style="font-size: 1.5rem;">💝</span>
+                        <span style="font-weight: 600; color: var(--color-heading, #333);">Add a Tip (Optional)</span>
                     </div>
-                    <p id="promo-message" style="display: none; margin: 5px 0 0; font-size: 0.85em;"></p>
+                    <div class="tip-input-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <span style="font-size: 1.1rem; font-weight: 600;">$</span>
+                        <input type="number" id="tip-input" min="0" step="0.01" placeholder="0.00"
+                            style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; max-width: 120px;">
+                    </div>
+                    <div class="tip-presets" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        {{ range site.Params.tip_percentages }}
+                        <button type="button" class="tip-preset-btn" data-percent="{{ . }}"
+                            style="flex: 1; min-width: 60px; padding: 8px 12px; border: 1px solid var(--color-primary, #E76F51); background: #fff; border-radius: 4px; cursor: pointer; font-weight: 600; color: var(--color-primary, #E76F51); transition: all 0.2s;">
+                            {{ . }}%
+                        </button>
+                        {{ end }}
+                    </div>
+                    <p class="tip-thanks" id="tip-thanks" style="display: none; margin-top: 10px; font-size: 0.9em; color: var(--color-primary, #E76F51); font-style: italic;">
+                        Thank you for your generosity! 🍪
+                    </p>
                 </div>
+                {{ end }}
+
+                {{/* Gift Box Option */}}
+                {{ if and site.Params.gift_box_enabled site.Params.gift_box_price_id }}
+                <div class="gift-box-section" style="margin: 1rem 0; padding: 12px; border: 1px dashed #ddd; border-radius: 8px; background: #fafafa;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="gift-box-checkbox" style="width: 20px; height: 20px; accent-color: var(--color-primary, #E76F51);">
+                        <span style="font-size: 1.25rem;">🎁</span>
+                        <span style="flex: 1;">
+                            <strong>Make it a Gift Box</strong>
+                            <span style="color: #666; font-size: 0.9em;"> (+${{ printf "%.2f" site.Params.gift_box_price }})</span>
+                        </span>
+                    </label>
+                </div>
+                {{ end }}
 
                 <div class="cart-summary-row cart-summary-subtotal">
                     <span class="cart-summary-label">Subtotal:</span>
                     <span id="cart-subtotal" class="cart-summary-value">$0.00</span>
                 </div>
-                <div class="cart-summary-row cart-summary-discount" id="cart-discount-row" style="display: none; color: #2A9D8F;">
-                    <span class="cart-summary-label">Discount:</span>
-                    <span id="cart-discount" class="cart-summary-value">-$0.00</span>
+                <div class="cart-summary-row cart-summary-tip" id="cart-tip-row" style="display: none; color: var(--color-primary, #E76F51);">
+                    <span class="cart-summary-label">Tip:</span>
+                    <span id="cart-tip" class="cart-summary-value">$0.00</span>
                 </div>
+                <div class="cart-summary-row cart-summary-giftbox" id="cart-giftbox-row" style="display: none;">
+                    <span class="cart-summary-label">Gift Box:</span>
+                    <span id="cart-giftbox" class="cart-summary-value">$0.00</span>
+                </div>
+                {{ if site.Params.tax_enabled }}
                 <div class="cart-summary-row cart-summary-tax">
                     <span class="cart-summary-label">Tax ({{ mul (site.Params.sales_tax_rate | default 0.0775) 100 }}%):</span>
                     <span id="cart-tax" class="cart-summary-value">$0.00</span>
                 </div>
+                {{ end }}
                 <div class="cart-summary-row cart-summary-fee" id="cart-fee-row" style="display: none;">
                     <span class="cart-summary-label">Small Order Fee:</span>
                     <span id="cart-fee" class="cart-summary-value">$0.00</span>
@@ -311,9 +348,14 @@
         calendarSlotsWorkerUrl: "{{ site.Params.calendar_slots_worker_url | default "" }}",
         dropWindowCookieLimit: {{ site.Params.drop_window_cookie_limit | default 200 }},
         dropWindowSoldOutMessage: "{{ site.Params.drop_window_sold_out_message | default "Sold out for this date" }}",
+        taxEnabled: {{ site.Params.tax_enabled | default true }},
         taxRate: {{ site.Params.sales_tax_rate | default 0.0775 }},
         smallOrderFeeThreshold: {{ site.Params.small_order_fee_threshold | default 10 }},
-        promoCodes: {{ site.Params.promo_codes | jsonify | safeJS }}
+        tipEnabled: {{ site.Params.tip_enabled | default false }},
+        tipPercentages: {{ site.Params.tip_percentages | default (slice 5 10 20) | jsonify | safeJS }},
+        giftBoxEnabled: {{ if and site.Params.gift_box_enabled site.Params.gift_box_price_id }}true{{ else }}false{{ end }},
+        giftBoxPrice: {{ site.Params.gift_box_price | default 3.00 }},
+        giftBoxPriceId: "{{ site.Params.gift_box_price_id | default "" }}"
     };
 </script>
 
