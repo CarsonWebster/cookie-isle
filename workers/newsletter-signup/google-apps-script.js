@@ -183,11 +183,14 @@ function handleSignup(email, data) {
   // Format timestamp in Pacific Time (24hr format)
   const timestamp = formatPacificTimestamp(data.timestamp);
 
+  // Get first name from signup data (if provided)
+  const firstName = data.first_name ? data.first_name.trim() : "";
+
   // Append the new row to the sheet with Subscribed = TRUE and Unsubscribe URL
   // Columns: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
   sheet.appendRow([
     email,
-    "", // First Name - left blank for manual entry
+    firstName,
     timestamp,
     data.source || "unknown",
     true,

@@ -44,7 +44,7 @@ export default {
  */
 async function handleSignup(request, env) {
   try {
-    const { email } = await request.json();
+    const { email, first_name } = await request.json();
 
     // Validate email
     if (!email || !isValidEmail(email)) {
@@ -70,8 +70,13 @@ async function handleSignup(request, env) {
       );
     }
 
+    // Normalize first name (trim whitespace, title case optional)
+    const normalizedFirstName = first_name ? first_name.trim() : "";
+
     // Forward to Google Apps Script
-    const result = await forwardToAppsScript(env, normalizedEmail, "signup");
+    const result = await forwardToAppsScript(env, normalizedEmail, "signup", {
+      first_name: normalizedFirstName,
+    });
 
     if (result.success) {
       // Check if this was a duplicate (already subscribed)
@@ -364,7 +369,12 @@ function htmlResponse(html, status) {
 /**
  * Forward email signup or unsubscribe to Google Apps Script
  */
-async function forwardToAppsScript(env, email, action = "signup") {
+async function forwardToAppsScript(
+  env,
+  email,
+  action = "signup",
+  extraData = {},
+) {
   try {
     const payload = {
       email: email,
@@ -374,6 +384,10 @@ async function forwardToAppsScript(env, email, action = "signup") {
 
     if (action === "signup") {
       payload.source = "coming-soon-page";
+      // Include first_name if provided
+      if (extraData.first_name) {
+        payload.first_name = extraData.first_name;
+      }
     }
 
     const response = await fetch(env.GOOGLE_APPS_SCRIPT_URL, {
