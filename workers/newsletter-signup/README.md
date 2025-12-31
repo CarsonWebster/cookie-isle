@@ -2,6 +2,8 @@
 
 A Cloudflare Worker that handles newsletter signups from the Cookie Isle "Coming Soon" page and forwards them to Google Sheets via Google Apps Script.
 
+Includes automatic **Unsubscribe URL generation** for use with Gmail Mail Merge campaigns.
+
 ## Architecture
 
 ```
@@ -13,6 +15,13 @@ Google Apps Script (writes to sheet)
     ↓
 Google Sheet (stores email + timestamp)
 ```
+
+## Features
+
+- **Newsletter Signups**: Collect emails from your website with duplicate detection
+- **Welcome Emails**: Automatically send welcome emails to new subscribers
+- **Unsubscribe Handling**: Secure HMAC-signed unsubscribe links
+- **Pre-generated Unsubscribe URLs**: Each subscriber gets a unique unsubscribe URL stored in the sheet, ready for Mail Merge
 
 This approach is simpler and more secure than using service account keys or Workload Identity Federation because:
 - No credentials to manage or rotate
@@ -34,8 +43,11 @@ This approach is simpler and more secure than using service account keys or Work
 2. Name it "Newsletter Signups" (or whatever you prefer)
 3. Add headers in Row 1:
    - **A1**: `Email`
-   - **B1**: `Timestamp`
-   - **C1**: `Source`
+   - **B1**: `First Name`
+   - **C1**: `Timestamp`
+   - **D1**: `Source`
+   - **E1**: `Subscribed`
+   - **F1**: `Unsubscribe URL`
 
 ### 2. Create the Google Apps Script
 
@@ -201,6 +213,53 @@ Or via Cloudflare Dashboard:
 2. Select your worker
 3. Click **Logs** tab
 
+## Sending Campaigns with Mail Merge
+
+Instead of a custom UI, this system uses **Gmail Mail Merge** (via add-ons like "Yet Another Mail Merge" or similar) to send campaigns. Each subscriber has a pre-generated unsubscribe URL stored in column F.
+
+### Sheet Columns
+
+| Column | Header | Description |
+|--------|--------|-------------|
+| A | Email | Subscriber's email address |
+| B | First Name | Fill in manually for personalization |
+| C | Timestamp | When they signed up (Pacific Time, 24hr format) |
+| D | Source | Where they signed up from |
+| E | Subscribed | TRUE/FALSE - managed automatically |
+| F | Unsubscribe URL | Auto-generated at signup, unique per subscriber |
+
+### How It Works
+
+1. When someone signs up, the Apps Script automatically generates their unique unsubscribe URL
+2. The URL is stored in column F and never changes
+3. When sending campaigns via Mail Merge, use `{{Unsubscribe URL}}` as a placeholder
+4. Each subscriber receives their personalized unsubscribe link
+
+### Sending a Campaign
+
+1. Create your email template in Gmail (as a draft or using Mail Merge add-on)
+2. Use these placeholders in your template:
+   - `{{First Name}}` - From column B
+   - `{{Email}}` - From column A  
+   - `{{Unsubscribe URL}}` - From column F (the pre-generated link)
+3. Use your Mail Merge add-on to send to all rows where `Subscribed` = TRUE
+
+### Timestamp Format
+
+Timestamps are automatically formatted in **Pacific Time** using 24-hour format:
+- Example: `2024-01-15 14:30:45`
+- This makes it easy to see when subscribers signed up in your local time
+
+### Backfilling Existing Subscribers
+
+If you have existing subscribers without unsubscribe URLs, run this in Apps Script:
+
+1. Go to **Extensions → Apps Script**
+2. Select `backfillUnsubscribeUrls` from the function dropdown
+3. Click **Run**
+
+This will generate URLs for all subscribers who don't have one yet.
+
 ## Security Notes
 
 - The Apps Script URL is kept secret - only your Worker knows it
@@ -208,3 +267,5 @@ Or via Cloudflare Dashboard:
 - Email validation prevents malformed input
 - Google Apps Script handles authentication to Sheets automatically
 - No API keys or service account credentials to manage
+- Unsubscribe tokens are HMAC-signed to prevent tampering
+- Unsubscribe URLs are permanent per subscriber (same URL works for all their emails)

@@ -3,7 +3,7 @@
  * With email notifications to owner, welcome email to subscriber, and unsubscribe support
  *
  * SETUP INSTRUCTIONS:
- * 1. Create a Google Sheet with headers in Row 1: Email | Timestamp | Source | Subscribed
+ * 1. Create a Google Sheet with headers in Row 1: Email | First Name | Timestamp | Source | Subscribed | Unsubscribe URL
  * 2. Go to Extensions → Apps Script
  * 3. Replace the default code with this entire file
  * 4. UPDATE THE CONFIGURATION SECTION BELOW with your details
@@ -13,6 +13,13 @@
  * NOTE: This script uses GmailApp (not MailApp) for proper alias/send-as support.
  * Make sure your senderEmail is configured in Gmail Settings → Accounts → "Send mail as"
  * with "Treat as an alias" turned ON.
+ *
+ * MAIL MERGE USAGE:
+ * The "Unsubscribe URL" column is auto-generated for each subscriber at signup time.
+ * Use {{Unsubscribe URL}} in your Mail Merge templates to insert the personalized unsubscribe link.
+ *
+ * COLUMN ORDER:
+ * A: Email | B: First Name | C: Timestamp | D: Source | E: Subscribed | F: Unsubscribe URL
  */
 
 // ============================================================================
@@ -67,7 +74,7 @@ const CONFIG = {
   // IMPORTANT: This secret MUST match the UNSUBSCRIBE_SECRET in your Cloudflare Worker
   // Use a long random string (32+ characters recommended)
   // Generate one at: https://generate-random.org/api-key-generator
-  unsubscribeSecret: "CHANGE_THIS_TO_YOUR_SECRET_KEY_MUST_MATCH_WORKER",
+  unsubscribeSecret: "bIsVQVLb8uyyCChmjhaijMhlCkQNSAgd",
 
   // Site colors (matching your Hugo site's SoCal coastal theme)
   colors: {
@@ -113,11 +120,13 @@ function doPost(e) {
 
 /**
  * Handle newsletter signup
+ *
+ * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
  */
 function handleSignup(email, data) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 
-  // Check for duplicate emails
+  // Check for duplicate emails (Column A)
   const emailColumn = sheet.getRange("A:A").getValues().flat();
   const existingRowIndex = emailColumn.findIndex(
     (e) => e.toString().toLowerCase() === email,
@@ -125,7 +134,8 @@ function handleSignup(email, data) {
 
   if (existingRowIndex !== -1) {
     // Email exists - check if they're unsubscribed and want to resubscribe
-    const subscribedCell = sheet.getRange(existingRowIndex + 1, 4);
+    // Subscribed is Column E (index 5)
+    const subscribedCell = sheet.getRange(existingRowIndex + 1, 5);
     const isSubscribed = subscribedCell.getValue();
 
     if (isSubscribed === false || isSubscribed === "FALSE") {
@@ -167,9 +177,22 @@ function handleSignup(email, data) {
     });
   }
 
-  // Append the new row to the sheet with Subscribed = TRUE
-  const timestamp = data.timestamp || new Date().toISOString();
-  sheet.appendRow([email, timestamp, data.source || "unknown", true]);
+  // Generate the unsubscribe URL for this subscriber
+  const unsubscribeUrl = generateUnsubscribeUrl(email);
+
+  // Format timestamp in Pacific Time (24hr format)
+  const timestamp = formatPacificTimestamp(data.timestamp);
+
+  // Append the new row to the sheet with Subscribed = TRUE and Unsubscribe URL
+  // Columns: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
+  sheet.appendRow([
+    email,
+    "", // First Name - left blank for manual entry
+    timestamp,
+    data.source || "unknown",
+    true,
+    unsubscribeUrl,
+  ]);
 
   // Get total active subscriber count
   const totalSubscribers = countActiveSubscribers(sheet);
@@ -229,6 +252,8 @@ function handleSignup(email, data) {
 
 /**
  * Handle unsubscribe request
+ *
+ * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
  */
 function handleUnsubscribe(email) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -247,8 +272,8 @@ function handleUnsubscribe(email) {
     });
   }
 
-  // Update the Subscribed column (column D = 4) to FALSE
-  const subscribedCell = sheet.getRange(rowIndex + 1, 4);
+  // Update the Subscribed column (Column E = 5) to FALSE
+  const subscribedCell = sheet.getRange(rowIndex + 1, 5);
   const currentValue = subscribedCell.getValue();
 
   if (currentValue === false || currentValue === "FALSE") {
@@ -270,6 +295,8 @@ function handleUnsubscribe(email) {
 
 /**
  * Count active (subscribed) subscribers
+ *
+ * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
  */
 function countActiveSubscribers(sheet) {
   const data = sheet.getDataRange().getValues();
@@ -277,7 +304,7 @@ function countActiveSubscribers(sheet) {
 
   // Start from row 1 to skip header (index 0)
   for (let i = 1; i < data.length; i++) {
-    const subscribed = data[i][3]; // Column D (index 3)
+    const subscribed = data[i][4]; // Column E (index 4)
     if (subscribed === true || subscribed === "TRUE" || subscribed === "") {
       // Count as subscribed if TRUE or if the column is empty (legacy rows)
       count++;
@@ -285,6 +312,34 @@ function countActiveSubscribers(sheet) {
   }
 
   return count;
+}
+
+/**
+ * Format timestamp in Pacific Time (24hr format)
+ * @param {string} isoTimestamp - Optional ISO timestamp string
+ * @returns {string} Formatted timestamp like "2024-01-15 14:30:45"
+ */
+function formatPacificTimestamp(isoTimestamp) {
+  const date = isoTimestamp ? new Date(isoTimestamp) : new Date();
+
+  // Format in Pacific timezone
+  const options = {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  };
+
+  const formatter = new Intl.DateTimeFormat("en-CA", options);
+  const parts = formatter.formatToParts(date);
+
+  // Build formatted string: YYYY-MM-DD HH:MM:SS
+  const getValue = (type) => parts.find((p) => p.type === type)?.value || "";
+  return `${getValue("year")}-${getValue("month")}-${getValue("day")} ${getValue("hour")}:${getValue("minute")}:${getValue("second")}`;
 }
 
 /**
@@ -563,19 +618,115 @@ function createJsonResponse(data) {
 }
 
 // ============================================================================
+// UTILITY FUNCTIONS - Run these manually from the Apps Script editor
+// ============================================================================
+
+/**
+ * UTILITY: Backfill Unsubscribe URLs for existing subscribers
+ * Run this ONCE after adding the "Unsubscribe URL" column to generate URLs
+ * for all existing subscribers who don't have one yet.
+ *
+ * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
+ */
+function backfillUnsubscribeUrls() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const data = sheet.getDataRange().getValues();
+
+  // Column indices (0-based)
+  const emailCol = 0; // Column A
+  const unsubUrlCol = 5; // Column F (Unsubscribe URL)
+
+  let updated = 0;
+  let skipped = 0;
+
+  console.log("=== Backfilling Unsubscribe URLs ===");
+  console.log("Total rows (including header):", data.length);
+
+  // Skip header row, process all data rows
+  for (let i = 1; i < data.length; i++) {
+    const email = data[i][emailCol];
+    const existingUrl = data[i][unsubUrlCol];
+
+    if (!email) {
+      skipped++;
+      continue;
+    }
+
+    // Only generate URL if it doesn't exist
+    if (!existingUrl || existingUrl === "") {
+      const unsubscribeUrl = generateUnsubscribeUrl(email);
+      sheet.getRange(i + 1, unsubUrlCol + 1).setValue(unsubscribeUrl);
+      updated++;
+      console.log(`✅ Generated URL for row ${i + 1}: ${email}`);
+    } else {
+      skipped++;
+    }
+  }
+
+  console.log("");
+  console.log("=== Backfill Complete ===");
+  console.log("URLs generated:", updated);
+  console.log("Rows skipped (already had URL or empty):", skipped);
+}
+
+/**
+ * UTILITY: Add column headers if missing
+ * Run this once to ensure all required columns exist
+ *
+ * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
+ */
+function setupColumnHeaders() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const expectedHeaders = [
+    "Email",
+    "First Name",
+    "Timestamp",
+    "Source",
+    "Subscribed",
+    "Unsubscribe URL",
+  ];
+
+  // Set headers in row 1
+  for (let i = 0; i < expectedHeaders.length; i++) {
+    sheet.getRange(1, i + 1).setValue(expectedHeaders[i]);
+  }
+
+  console.log("✅ Column headers set up:", expectedHeaders.join(" | "));
+}
+
+/**
+ * UTILITY: Set Subscribed=TRUE for all existing rows that don't have a value
+ * Run this after adding the Subscribed column to mark existing subscribers as active
+ *
+ * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
+ */
+function backfillSubscribedColumn() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const data = sheet.getDataRange().getValues();
+
+  let updated = 0;
+
+  // Skip header row
+  for (let i = 1; i < data.length; i++) {
+    const email = data[i][0]; // Column A
+    const subscribed = data[i][4]; // Column E (index 4)
+
+    if (email && (subscribed === "" || subscribed === undefined)) {
+      sheet.getRange(i + 1, 5).setValue(true); // Column E
+      updated++;
+    }
+  }
+
+  console.log("✅ Set Subscribed=TRUE for", updated, "existing subscribers");
+}
+
+// ============================================================================
 // TEST FUNCTIONS - Run these manually from the Apps Script editor
 // ============================================================================
 
 /**
  * TEST: Send a test email to verify alias works
  * Run this FIRST after setting up the script!
- *
- * How to run:
- * 1. Select 'testSendEmail' from the function dropdown (top toolbar)
- * 2. Click the Run button (play icon)
- * 3. Authorize when prompted (grant Gmail permissions)
- * 4. Check your email for the test message
- * 5. Verify the FROM address is correct
  */
 function testSendEmail() {
   if (CONFIG.ownerEmail === "your-email@example.com") {
@@ -673,7 +824,6 @@ function checkAliases() {
 
 /**
  * TEST: Preview the welcome email (sends to owner)
- * This will include the unsubscribe link at the bottom
  */
 function testWelcomeEmail() {
   if (CONFIG.ownerEmail === "your-email@example.com") {
@@ -703,25 +853,7 @@ function testWelcomeEmail() {
 }
 
 /**
- * TEST: Preview the owner notification email
- */
-function testOwnerNotification() {
-  if (CONFIG.ownerEmail === "your-email@example.com") {
-    console.error("ERROR: Please update CONFIG.ownerEmail first!");
-    return;
-  }
-
-  try {
-    sendOwnerNotification("test-subscriber@example.com", 42);
-    console.log("✅ Owner notification preview sent to:", CONFIG.ownerEmail);
-  } catch (error) {
-    console.error("❌ Failed to send owner notification:", error.message);
-  }
-}
-
-/**
  * TEST: Generate and display an unsubscribe URL
- * Use this to verify token generation is working
  */
 function testUnsubscribeUrl() {
   const testEmail = CONFIG.ownerEmail;
@@ -729,19 +861,6 @@ function testUnsubscribeUrl() {
   console.log("=== Unsubscribe URL Test ===");
   console.log("Test email:", testEmail);
   console.log("Unsubscribe base URL:", CONFIG.unsubscribeBaseUrl);
-
-  if (
-    CONFIG.unsubscribeSecret ===
-    "CHANGE_THIS_TO_YOUR_SECRET_KEY_MUST_MATCH_WORKER"
-  ) {
-    console.error("⚠️ WARNING: You haven't changed the unsubscribeSecret!");
-    console.error(
-      "Please update CONFIG.unsubscribeSecret with a unique secret key.",
-    );
-    console.error(
-      "This secret MUST match UNSUBSCRIBE_SECRET in your Cloudflare Worker.",
-    );
-  }
 
   const token = generateUnsubscribeToken(testEmail);
   const url = generateUnsubscribeUrl(testEmail);
@@ -756,193 +875,7 @@ function testUnsubscribeUrl() {
 }
 
 /**
- * TEST: Verify the unsubscribe token matches what the Worker would generate
- * This helps debug token mismatches
- */
-function testTokenGeneration() {
-  const testEmail = "test@example.com";
-
-  console.log("=== Token Generation Test ===");
-  console.log("Test email:", testEmail);
-  console.log(
-    "Secret (first 10 chars):",
-    CONFIG.unsubscribeSecret.substring(0, 10) + "...",
-  );
-
-  const token = generateUnsubscribeToken(testEmail);
-  console.log("Generated token:", token);
-  console.log("Token length:", token.length);
-
-  console.log("");
-  console.log("To verify this matches your Worker:");
-  console.log("1. Deploy the Worker with the same UNSUBSCRIBE_SECRET");
-  console.log(
-    "2. The Worker should generate the same token for the same email",
-  );
-}
-
-/**
- * TEST: Simulate a full signup (without actually adding to sheet)
- */
-function testFullSignupFlow() {
-  if (CONFIG.ownerEmail === "your-email@example.com") {
-    console.error("ERROR: Please update CONFIG.ownerEmail first!");
-    return;
-  }
-
-  console.log("=== Testing Full Signup Flow ===");
-  console.log(
-    "This will send both notification and welcome emails to:",
-    CONFIG.ownerEmail,
-  );
-
-  // Test owner notification
-  console.log("\n1. Sending owner notification...");
-  try {
-    sendOwnerNotification(CONFIG.ownerEmail, 99);
-    console.log("   ✅ Owner notification sent!");
-  } catch (e) {
-    console.error("   ❌ Owner notification failed:", e.message);
-  }
-
-  // Test welcome email
-  console.log("\n2. Sending welcome email (with unsubscribe link)...");
-  try {
-    if (CONFIG.welcomeEmailMode === "draft") {
-      sendWelcomeEmailFromDraft(CONFIG.ownerEmail);
-    } else {
-      sendWelcomeEmailHtml(CONFIG.ownerEmail);
-    }
-    console.log("   ✅ Welcome email sent!");
-  } catch (e) {
-    console.error("   ❌ Welcome email failed:", e.message);
-  }
-
-  console.log("\n=== Test Complete ===");
-  console.log("Check your inbox for both emails.");
-  console.log("Verify the FROM address and unsubscribe link on each email.");
-}
-
-/**
- * TEST: Test the unsubscribe flow manually
- * This adds a test email and then unsubscribes it
- */
-function testUnsubscribeFlow() {
-  const testEmail = "unsubscribe-test-" + Date.now() + "@example.com";
-
-  console.log("=== Testing Unsubscribe Flow ===");
-  console.log("Test email:", testEmail);
-
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-
-  // Step 1: Add test subscriber
-  console.log("\n1. Adding test subscriber...");
-  sheet.appendRow([testEmail, new Date().toISOString(), "test", true]);
-  console.log("   ✅ Added subscriber with Subscribed=TRUE");
-
-  // Step 2: Generate unsubscribe URL
-  console.log("\n2. Generating unsubscribe URL...");
-  const url = generateUnsubscribeUrl(testEmail);
-  console.log("   URL:", url);
-
-  // Step 3: Simulate unsubscribe
-  console.log("\n3. Simulating unsubscribe...");
-  const result = handleUnsubscribe(testEmail);
-  console.log("   Result:", JSON.parse(result.getContent()));
-
-  // Step 4: Verify the spreadsheet was updated
-  console.log("\n4. Verifying spreadsheet...");
-  const emailColumn = sheet.getRange("A:A").getValues().flat();
-  const rowIndex = emailColumn.findIndex(
-    (e) => e.toString().toLowerCase() === testEmail.toLowerCase(),
-  );
-
-  if (rowIndex !== -1) {
-    const subscribed = sheet.getRange(rowIndex + 1, 4).getValue();
-    console.log("   Subscribed value:", subscribed);
-    if (subscribed === false) {
-      console.log("   ✅ Unsubscribe successful! Row updated correctly.");
-    } else {
-      console.error("   ❌ Unsubscribe failed - value not updated");
-    }
-  }
-
-  console.log("\n=== Test Complete ===");
-  console.log("You can delete the test row manually if desired.");
-}
-
-/**
- * TEST: List all drafts (helpful for finding your template draft)
- */
-function listDrafts() {
-  const drafts = GmailApp.getDrafts();
-  console.log("=== Your Gmail Drafts ===");
-  console.log("Total drafts:", drafts.length);
-  drafts.forEach((draft, index) => {
-    const subject = draft.getMessage().getSubject();
-    console.log(`${index + 1}. "${subject}"`);
-  });
-  console.log("========================");
-  console.log(
-    "To use a draft as template, set CONFIG.draftSubjectSearch to match part of its subject line.",
-  );
-  console.log(
-    "Supported placeholders: {{EMAIL}}, {{DATE}}, {{BUSINESS_NAME}}, {{WEBSITE_URL}}, {{UNSUBSCRIBE_URL}}",
-  );
-}
-
-/**
- * TEST: Send welcome email to a specific external email address
- * Use this to test if external emails are working
- */
-function testExternalEmail() {
-  // CHANGE THIS to the external email you want to test with
-  const testEmail = "your-external-test-email@gmail.com"; // <-- CHANGE THIS
-
-  console.log("=== Testing External Email ===");
-  console.log("Sending welcome email to:", testEmail);
-  console.log("Sender:", CONFIG.senderEmail);
-  console.log("Mode:", CONFIG.welcomeEmailMode);
-
-  try {
-    console.log("Calling sendWelcomeEmailHtml...");
-    sendWelcomeEmailHtml(testEmail);
-    console.log("✅ Function completed without error");
-    console.log("Check the inbox of:", testEmail);
-    console.log("Also check spam/junk folder!");
-    console.log("Verify the unsubscribe link at the bottom works!");
-  } catch (error) {
-    console.error("❌ Error sending email:", error.message);
-    console.error("Error name:", error.name);
-    console.error("Stack:", error.stack);
-  }
-
-  // Also check remaining quota
-  const remainingQuota = MailApp.getRemainingDailyQuota();
-  console.log("Remaining daily email quota:", remainingQuota);
-}
-
-/**
- * Check email sending quota
- */
-function checkEmailQuota() {
-  const remainingQuota = MailApp.getRemainingDailyQuota();
-  console.log("=== Email Quota ===");
-  console.log("Remaining daily quota:", remainingQuota, "emails");
-
-  if (remainingQuota === 0) {
-    console.error("❌ You have NO remaining email quota for today!");
-    console.error("This is why emails are not being sent.");
-    console.error("Quota resets at midnight Pacific Time.");
-  } else if (remainingQuota < 10) {
-    console.warn("⚠️ Low email quota remaining!");
-  } else {
-    console.log("✅ Quota looks good");
-  }
-}
-
-/**
- * View signup statistics (now includes subscription status)
+ * View signup statistics
  */
 function viewStats() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -967,36 +900,4 @@ function viewStats() {
     "Spreadsheet URL:",
     SpreadsheetApp.getActiveSpreadsheet().getUrl(),
   );
-}
-
-/**
- * UTILITY: Add "Subscribed" column header if missing
- * Run this once after updating to the new script version
- */
-function addSubscribedColumnHeader() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const headerRow = sheet.getRange(1, 1, 1, 4).getValues()[0];
-
-  if (headerRow[3] !== "Subscribed") {
-    sheet.getRange(1, 4).setValue("Subscribed");
-    console.log("✅ Added 'Subscribed' header to column D");
-
-    // Set existing rows to TRUE (they were subscribed before this update)
-    const lastRow = sheet.getLastRow();
-    if (lastRow > 1) {
-      const range = sheet.getRange(2, 4, lastRow - 1, 1);
-      const values = [];
-      for (let i = 0; i < lastRow - 1; i++) {
-        values.push([true]);
-      }
-      range.setValues(values);
-      console.log(
-        "✅ Set Subscribed=TRUE for",
-        lastRow - 1,
-        "existing subscribers",
-      );
-    }
-  } else {
-    console.log("'Subscribed' column already exists");
-  }
 }
