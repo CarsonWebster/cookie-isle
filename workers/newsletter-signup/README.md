@@ -42,12 +42,12 @@ This approach is simpler and more secure than using service account keys or Work
 1. Go to [Google Sheets](https://sheets.google.com) and create a new spreadsheet
 2. Name it "Newsletter Signups" (or whatever you prefer)
 3. Add headers in Row 1:
-   - **A1**: `Email`
-   - **B1**: `First Name`
-   - **C1**: `Timestamp`
-   - **D1**: `Source`
-   - **E1**: `Subscribed`
-   - **F1**: `Unsubscribe URL`
+   - **A1**: `email`
+   - **B1**: `firstname`
+   - **C1**: `timestamp`
+   - **D1**: `source`
+   - **E1**: `subscribed`
+   - **F1**: `unsubscribeurl`
 
 ### 2. Create the Google Apps Script
 
@@ -221,12 +221,12 @@ Instead of a custom UI, this system uses **Gmail Mail Merge** (via add-ons like 
 
 | Column | Header | Description |
 |--------|--------|-------------|
-| A | Email | Subscriber's email address |
-| B | First Name | Fill in manually for personalization |
-| C | Timestamp | When they signed up (Pacific Time, 24hr format) |
-| D | Source | Where they signed up from |
-| E | Subscribed | TRUE/FALSE - managed automatically |
-| F | Unsubscribe URL | Auto-generated at signup, unique per subscriber |
+| A | email | Subscriber's email address |
+| B | firstname | Fill in manually for personalization |
+| C | timestamp | When they signed up (Pacific Time, 24hr format) |
+| D | source | Where they signed up from |
+| E | subscribed | TRUE/FALSE - managed automatically |
+| F | unsubscribeurl | Auto-generated at signup, unique per subscriber |
 
 ### How It Works
 
@@ -239,10 +239,10 @@ Instead of a custom UI, this system uses **Gmail Mail Merge** (via add-ons like 
 
 1. Create your email template in Gmail (as a draft or using Mail Merge add-on)
 2. Use these placeholders in your template:
-   - `{{First Name}}` - From column B
-   - `{{Email}}` - From column A  
-   - `{{Unsubscribe URL}}` - From column F (the pre-generated link)
-3. Use your Mail Merge add-on to send to all rows where `Subscribed` = TRUE
+   - `{{firstname}}` - From column B
+   - `{{email}}` - From column A  
+   - `{{unsubscribeurl}}` - From column F (the pre-generated link)
+3. Use your Mail Merge add-on to send to all rows where `subscribed` = TRUE
 
 ### Timestamp Format
 

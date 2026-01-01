@@ -3,7 +3,7 @@
  * With email notifications to owner, welcome email to subscriber, and unsubscribe support
  *
  * SETUP INSTRUCTIONS:
- * 1. Create a Google Sheet with headers in Row 1: Email | First Name | Timestamp | Source | Subscribed | Unsubscribe URL
+ * 1. Create a Google Sheet with headers in Row 1: email | firstname | timestamp | source | subscribed | unsubscribeurl
  * 2. Go to Extensions → Apps Script
  * 3. Replace the default code with this entire file
  * 4. UPDATE THE CONFIGURATION SECTION BELOW with your details
@@ -15,11 +15,11 @@
  * with "Treat as an alias" turned ON.
  *
  * MAIL MERGE USAGE:
- * The "Unsubscribe URL" column is auto-generated for each subscriber at signup time.
- * Use {{Unsubscribe URL}} in your Mail Merge templates to insert the personalized unsubscribe link.
+ * The "unsubscribeurl" column is auto-generated for each subscriber at signup time.
+ * Use {{unsubscribeurl}} in your Mail Merge templates to insert the personalized unsubscribe link.
  *
  * COLUMN ORDER:
- * A: Email | B: First Name | C: Timestamp | D: Source | E: Subscribed | F: Unsubscribe URL
+ * A: email | B: firstname | C: timestamp | D: source | E: subscribed | F: unsubscribeurl
  */
 
 // ============================================================================
@@ -121,7 +121,7 @@ function doPost(e) {
 /**
  * Handle newsletter signup
  *
- * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
+ * Column order: A=email | B=firstname | C=timestamp | D=source | E=subscribed | F=unsubscribeurl
  */
 function handleSignup(email, data) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -186,8 +186,8 @@ function handleSignup(email, data) {
   // Get first name from signup data (if provided)
   const firstName = data.first_name ? data.first_name.trim() : "";
 
-  // Append the new row to the sheet with Subscribed = TRUE and Unsubscribe URL
-  // Columns: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
+  // Append the new row to the sheet with subscribed = TRUE and unsubscribeurl
+  // Columns: A=email | B=firstname | C=timestamp | D=source | E=subscribed | F=unsubscribeurl
   sheet.appendRow([
     email,
     firstName,
@@ -256,7 +256,7 @@ function handleSignup(email, data) {
 /**
  * Handle unsubscribe request
  *
- * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
+ * Column order: A=email | B=firstname | C=timestamp | D=source | E=subscribed | F=unsubscribeurl
  */
 function handleUnsubscribe(email) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -299,7 +299,7 @@ function handleUnsubscribe(email) {
 /**
  * Count active (subscribed) subscribers
  *
- * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
+ * Column order: A=email | B=firstname | C=timestamp | D=source | E=subscribed | F=unsubscribeurl
  */
 function countActiveSubscribers(sheet) {
   const data = sheet.getDataRange().getValues();
@@ -625,11 +625,11 @@ function createJsonResponse(data) {
 // ============================================================================
 
 /**
- * UTILITY: Backfill Unsubscribe URLs for existing subscribers
- * Run this ONCE after adding the "Unsubscribe URL" column to generate URLs
+ * UTILITY: Backfill unsubscribe URLs for existing subscribers
+ * Run this ONCE after adding the "unsubscribeurl" column to generate URLs
  * for all existing subscribers who don't have one yet.
  *
- * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
+ * Column order: A=email | B=firstname | C=timestamp | D=source | E=subscribed | F=unsubscribeurl
  */
 function backfillUnsubscribeUrls() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -676,17 +676,17 @@ function backfillUnsubscribeUrls() {
  * UTILITY: Add column headers if missing
  * Run this once to ensure all required columns exist
  *
- * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
+ * Column order: A=email | B=firstname | C=timestamp | D=source | E=subscribed | F=unsubscribeurl
  */
 function setupColumnHeaders() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const expectedHeaders = [
-    "Email",
-    "First Name",
-    "Timestamp",
-    "Source",
-    "Subscribed",
-    "Unsubscribe URL",
+    "email",
+    "firstname",
+    "timestamp",
+    "source",
+    "subscribed",
+    "unsubscribeurl",
   ];
 
   // Set headers in row 1
@@ -698,10 +698,10 @@ function setupColumnHeaders() {
 }
 
 /**
- * UTILITY: Set Subscribed=TRUE for all existing rows that don't have a value
- * Run this after adding the Subscribed column to mark existing subscribers as active
+ * UTILITY: Set subscribed=TRUE for all existing rows that don't have a value
+ * Run this after adding the subscribed column to mark existing subscribers as active
  *
- * Column order: A=Email | B=First Name | C=Timestamp | D=Source | E=Subscribed | F=Unsubscribe URL
+ * Column order: A=email | B=firstname | C=timestamp | D=source | E=subscribed | F=unsubscribeurl
  */
 function backfillSubscribedColumn() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
