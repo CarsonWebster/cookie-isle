@@ -1,40 +1,33 @@
 {{ define "main" }}
 <article class="single-page">
     <div class="container">
-        {{/* Hero image for menu items */}}
         {{ if eq .Section "menu" }}
-        <div class="menu-item-hero">
-            {{ with .Params.hero_image }}
-            <img src="{{ . | relURL }}" alt="{{ $.Title }}" />
-            {{ else }}
-            {{ with $.Params.image }}
-            <img src="{{ . | relURL }}" alt="{{ $.Title }}" />
-            {{ else }}
-            <div class="menu-item-hero-placeholder">
-                <span>🍪</span>
+        {{/* Desktop: Side-by-side layout with title/description left, image right */}}
+        <div class="menu-item-top">
+            <div class="menu-item-info">
+                <header class="page-header">
+                    <h1>{{ .Title }}</h1>
+                    {{ with .Params.subtitle }}
+                    <p class="subtitle">{{ . }}</p>
+                    {{ end }}
+                </header>
+                <div class="page-content">{{ .Content }}</div>
             </div>
-            {{ end }}
-            {{ end }}
+            <div class="menu-item-hero">
+                {{ with .Params.hero_image }}
+                <img src="{{ . | relURL }}" alt="{{ $.Title }}" />
+                {{ else }}
+                {{ with $.Params.image }}
+                <img src="{{ . | relURL }}" alt="{{ $.Title }}" />
+                {{ else }}
+                <div class="menu-item-hero-placeholder">
+                    <span>🍪</span>
+                </div>
+                {{ end }}
+                {{ end }}
+            </div>
         </div>
-        {{ end }}
 
-        <header class="page-header">
-            <h1>{{ .Title }}</h1>
-            {{ with .Params.subtitle }}
-            <p class="subtitle">{{ . }}</p>
-            {{ end }}
-        </header>
-
-        <div class="page-content">{{ .Content }}</div>
-
-        {{/* Calendar Page: Embed calendar and subscribe buttons */}}
-        {{ if and (eq .File.BaseFileName "calendar") site.Params.calendar.calendar_enabled
-        site.Params.calendar.calendar_page_enabled }}
-        {{ partial "calendar-embed.html" . }}
-        {{ partial "calendar-subscribe.html" . }}
-        {{ end }}
-
-        {{ if eq .Section "menu" }}
         <div class="menu-item-details">
             {{ with .Params.price }}
             <p class="price">{{ . }}</p>
@@ -63,6 +56,23 @@
             </div>
             {{ end }}
         </div>
+        {{ else }}
+        {{/* Non-menu single pages */}}
+        <header class="page-header">
+            <h1>{{ .Title }}</h1>
+            {{ with .Params.subtitle }}
+            <p class="subtitle">{{ . }}</p>
+            {{ end }}
+        </header>
+
+        <div class="page-content">{{ .Content }}</div>
+
+        {{/* Calendar Page: Embed calendar and subscribe buttons */}}
+        {{ if and (eq .File.BaseFileName "calendar") site.Params.calendar.calendar_enabled
+        site.Params.calendar.calendar_page_enabled }}
+        {{ partial "calendar-embed.html" . }}
+        {{ partial "calendar-subscribe.html" . }}
+        {{ end }}
         {{ end }}
 
         <nav class="page-nav">
