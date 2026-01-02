@@ -23,14 +23,13 @@
         {{ if site.Params.newsletter_enabled }}
         <div class="newsletter-signup">
             <h3 class="newsletter-title">{{ site.Params.newsletter_headline | default "Get Notified When We Launch!" }}</h3>
-            <form id="newsletter-form" class="newsletter-form">
+            <form id="newsletter-form" class="newsletter-form" novalidate>
                 <div class="newsletter-email-group">
                     <input
                         type="email"
                         id="newsletter-email"
                         name="email"
                         placeholder="{{ site.Params.newsletter_placeholder | default "Enter your email" }}"
-                        required
                         autocomplete="email"
                     />
                 </div>
@@ -110,12 +109,39 @@
     const btnLoading = submitBtn.querySelector('.btn-loading');
     const messageEl = document.getElementById('newsletter-message');
 
+    // Email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const email = emailInput.value.trim();
         const firstName = nameInput.value.trim();
-        if (!email) return;
+
+        // Custom validation
+        messageEl.textContent = '';
+        messageEl.className = 'newsletter-message';
+
+        if (!email) {
+            messageEl.textContent = 'Please enter your email address.';
+            messageEl.classList.add('error');
+            emailInput.focus();
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            messageEl.textContent = 'Please enter a valid email address.';
+            messageEl.classList.add('error');
+            emailInput.focus();
+            return;
+        }
+
+        if (!firstName) {
+            messageEl.textContent = 'Please enter your name.';
+            messageEl.classList.add('error');
+            nameInput.focus();
+            return;
+        }
 
         // Show loading state
         btnText.style.display = 'none';
@@ -420,10 +446,11 @@
             font-size: 1.1rem;
         }
 
-        .newsletter-input-group input[type="email"] {
-            min-width: 100%;
+        .newsletter-input-group {
+            flex-direction: column;
         }
 
+        .newsletter-input-group input[type="text"],
         .newsletter-input-group button {
             width: 100%;
         }
