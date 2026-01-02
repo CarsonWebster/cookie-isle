@@ -338,7 +338,7 @@ logo = "CookieIsleLogo.png"
 # LEFT DECORATIVE IMAGE
 # Image file name (place in /static/ folder)
 # Currently showing palm trees to reinforce the "isle" beach theme
-image_left = "Palmtree.PNG"
+image_left = "Palmtree.png"
 
 # LEFT IMAGE VISIBILITY (0-100)
 # Controls how much of the left image is visible on screen
@@ -349,7 +349,7 @@ image_left_visibility = 100
 # RIGHT DECORATIVE IMAGE
 # Image file name (place in /static/ folder)
 # Currently showing a cookie to reinforce the bakery theme
-image_right = "Cookie.PNG"
+image_right = "Cookie.png"
 
 # RIGHT IMAGE VISIBILITY (0-100)
 # Controls how much of the right image is visible on screen
