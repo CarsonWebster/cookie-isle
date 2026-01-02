@@ -10,7 +10,7 @@ description = "A wholesome classic with hearty oats and plump raisins."
 image = "/images/cookies/oatmeal-raisin.jpg"
 ingredients = "Butter, flour, rolled oats, brown sugar, raisins, cinnamon, eggs, vanilla"
 tags = ["classic", "oatmeal", "wholesome"]
-weight = 3
+weight = 4
 +++
 
 Our Oatmeal Raisin cookie is comfort in every bite. Made with hearty rolled oats and plump, juicy raisins, this cookie strikes the perfect balance between chewy and satisfying.

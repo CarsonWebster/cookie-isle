@@ -10,7 +10,7 @@ description = 'Buttery caramel swirled throughout with a perfect touch of sea sa
 image = 'Saltedcaramelsingle.png'
 hero_image = 'Saltedcaramelmultiple.png'
 tags = ['signature', 'salted', 'caramel']
-weight = 2
+weight = 3
 ingredients = 'Butter, flour, brown sugar, caramel chips, sea salt, vanilla, eggs'
 +++
 

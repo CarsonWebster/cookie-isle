@@ -338,7 +338,7 @@ logo = "CookieIsleLogo.png"
 # LEFT DECORATIVE IMAGE
 # Image file name (place in /static/ folder)
 # Currently showing palm trees to reinforce the "isle" beach theme
-image_left = "palmtree.png"
+image_left = "Palmtree.PNG"
 
 # LEFT IMAGE VISIBILITY (0-100)
 # Controls how much of the left image is visible on screen
@@ -349,7 +349,7 @@ image_left_visibility = 100
 # RIGHT DECORATIVE IMAGE
 # Image file name (place in /static/ folder)
 # Currently showing a cookie to reinforce the bakery theme
-image_right = "herocookie.png"
+image_right = "Cookie.PNG"
 
 # RIGHT IMAGE VISIBILITY (0-100)
 # Controls how much of the right image is visible on screen
@@ -474,10 +474,10 @@ calendar_subscribe_style = "secondary"
 # ═══════════════════════════════════════════════════════════════════════
 
 # Main action color - used for most buttons and links
-primary = "#2A9D8F"
+primary = "#4CA2C2"
 
 # Slightly darker version - shown when hovering over buttons/links
-primary_hover = "#238B7E"
+primary_hover = "#173448"
 
 # ═══════════════════════════════════════════════════════════════════════
 # SECONDARY COLORS - Warm brown tones (inspired by logo text)
@@ -559,7 +559,7 @@ footer_heading = "#E9B44C"
 # ═══════════════════════════════════════════════════════════════════════
 
 # Standard button background
-btn_bg = "#2A9D8F"
+btn_bg = "#4CA2C2"
 
 # Button text color
 btn_text = "#FDFCFA"
