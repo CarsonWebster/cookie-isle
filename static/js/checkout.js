@@ -48,6 +48,9 @@
     tipPresetBtns: null,
     tipThanks: null,
     giftBoxCheckbox: null,
+    giftMessageContainer: null,
+    giftMessageInput: null,
+    giftMessageCount: null,
     cartCount: null,
     checkoutForm: null,
     checkoutSubmitBtn: null,
@@ -129,6 +132,11 @@
     elements.tipPresetBtns = document.querySelectorAll(".tip-preset-btn");
     elements.tipThanks = document.getElementById("tip-thanks");
     elements.giftBoxCheckbox = document.getElementById("gift-box-checkbox");
+    elements.giftMessageContainer = document.getElementById(
+      "gift-message-container",
+    );
+    elements.giftMessageInput = document.getElementById("gift-message");
+    elements.giftMessageCount = document.getElementById("gift-message-count");
     elements.cartCount = document.getElementById("cart-count");
     elements.checkoutForm = document.getElementById("checkout-form");
     elements.checkoutSubmitBtn = document.getElementById("checkout-submit-btn");
@@ -193,6 +201,14 @@
     // Gift box checkbox
     if (elements.giftBoxCheckbox) {
       elements.giftBoxCheckbox.addEventListener("change", handleGiftBoxChange);
+    }
+
+    // Gift message character count
+    if (elements.giftMessageInput) {
+      elements.giftMessageInput.addEventListener(
+        "input",
+        handleGiftMessageInput,
+      );
     }
 
     // ZIP code validation on blur
@@ -355,7 +371,24 @@
   function handleGiftBoxChange() {
     if (!elements.giftBoxCheckbox) return;
     giftBoxSelected = elements.giftBoxCheckbox.checked;
+
+    // Show/hide gift message input
+    if (elements.giftMessageContainer) {
+      elements.giftMessageContainer.style.display = giftBoxSelected
+        ? "block"
+        : "none";
+    }
+
     updateCartTotal();
+  }
+
+  /**
+   * Handle Gift Message Input (character count)
+   */
+  function handleGiftMessageInput() {
+    if (!elements.giftMessageInput || !elements.giftMessageCount) return;
+    const count = elements.giftMessageInput.value.length;
+    elements.giftMessageCount.textContent = count;
   }
 
   /**
@@ -1034,6 +1067,9 @@
         ? {
             price: CONFIG.giftBoxPrice,
             price_id: CONFIG.giftBoxPriceId,
+            message: elements.giftMessageInput
+              ? elements.giftMessageInput.value.trim()
+              : "",
           }
         : null,
       tax: tax,

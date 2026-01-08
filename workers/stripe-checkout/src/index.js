@@ -163,6 +163,7 @@ async function handleCreateSession(request, env, stripe, origin) {
       items_summary: items.map((i) => `${i.qty}x ${i.product}`).join(", "),
       tip_amount: tip ? `$${tip.toFixed(2)}` : "None",
       gift_box: gift_box ? "Yes" : "No",
+      gift_message: gift_box && gift_box.message ? gift_box.message : "",
     };
 
     const session = await stripe.checkout.sessions.create({

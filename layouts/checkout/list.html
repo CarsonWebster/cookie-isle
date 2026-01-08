@@ -76,6 +76,11 @@
                             <span style="color: #666; font-size: 0.9em;"> (+${{ printf "%.2f" site.Params.gift_box_price }})</span>
                         </span>
                     </label>
+                    <div id="gift-message-container" style="display: none; margin-top: 12px;">
+                        <label for="gift-message" style="display: block; font-size: 0.9em; color: #666; margin-bottom: 6px;">Gift Message (optional):</label>
+                        <textarea id="gift-message" name="gift_message" rows="3" maxlength="200" placeholder="Write a personal message to include with your gift..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.95em; resize: vertical;"></textarea>
+                        <div style="text-align: right; font-size: 0.8em; color: #999; margin-top: 4px;"><span id="gift-message-count">0</span>/200</div>
+                    </div>
                 </div>
                 {{ end }}
 
