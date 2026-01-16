@@ -58,3 +58,11 @@ export const orders = sqliteTable('orders', {
 	totalCents: integer('total_cents'),
 	createdAt: text('created_at').default(sql`(datetime('now'))`)
 });
+
+// Newsletter subscribers table
+export const newsletter = sqliteTable('newsletter', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	email: text('email').notNull().unique(),
+	source: text('source').default('website'),
+	subscribedAt: text('subscribed_at').default(sql`(datetime('now'))`)
+});
