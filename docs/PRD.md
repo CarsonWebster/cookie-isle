@@ -70,6 +70,7 @@ This fragmentation makes it difficult for a non-developer to manage content, vie
 
 | Layer | Technology | Documentation |
 |-------|------------|---------------|
+| Runtime | Bun | https://bun.sh/docs |
 | Framework | SvelteKit (Svelte 5 with runes) | https://svelte.dev/docs |
 | Styling | Tailwind CSS v4 | https://tailwindcss.com/docs |
 | Database | Cloudflare D1 (SQLite) | https://developers.cloudflare.com/d1/ |
@@ -157,7 +158,7 @@ All code MUST use TypeScript with strict mode enabled. The `tsconfig.json` must 
 2. Compile with zero TypeScript warnings
 3. Pass all existing unit tests
 4. Include new unit tests for new functionality
-5. Pass `pnpm check` (svelte-check)
+5. Pass `bun run check` (svelte-check)
 
 **Testing Stack:**
 - **Vitest** - Test runner
@@ -169,10 +170,12 @@ All code MUST use TypeScript with strict mode enabled. The `tsconfig.json` must 
 - Component tests: `*.test.svelte.ts`
 - Integration tests: `tests/integration/*.test.ts`
 
-**Required npm scripts:**
+**Required scripts (run with `bun run <script>`):**
 ```json
 {
   "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
     "test": "vitest",
     "test:unit": "vitest run",
     "test:watch": "vitest",
@@ -193,9 +196,9 @@ All code MUST use TypeScript with strict mode enabled. The `tsconfig.json` must 
 ### Code Quality Checklist (Per TODO)
 
 Before marking any TODO as complete:
-- [ ] Code compiles: `pnpm build` succeeds
-- [ ] Type check passes: `pnpm check` succeeds  
-- [ ] Tests pass: `pnpm test:unit` succeeds
+- [ ] Code compiles: `bun run build` succeeds
+- [ ] Type check passes: `bun run check` succeeds  
+- [ ] Tests pass: `bun run test:unit` succeeds
 - [ ] New code has tests with >80% coverage for new files
 - [ ] No `any` types (use proper typing)
 - [ ] No `@ts-ignore` comments (fix the actual issue)
@@ -265,7 +268,7 @@ Before marking any TODO as complete:
 | 0.5.2 | Tailwind configured via Vite plugin in `vite.config.ts` | Completed |
 | 0.5.3 | CSS file at `src/routes/layout.css` with `@import 'tailwindcss'` | Completed |
 | 0.5.4 | Layout at `src/routes/+layout.svelte` imports CSS | Completed |
-| 0.5.5 | Add custom theme colors from legacy (see Appendix D) | Not Started |
+| 0.5.5 | Add custom theme colors from legacy (see Appendix D) | Completed |
 | 0.5.6 | **Commit:** `feat: setup Tailwind CSS with custom theme` | Not Started |
 
 ### 0.6 Setup Drizzle ORM + Cloudflare D1
@@ -276,13 +279,13 @@ Before marking any TODO as complete:
 | ID | Task | Status |
 |----|------|--------|
 | 0.6.1 | Drizzle packages installed: `drizzle-orm`, `drizzle-kit` | Completed |
-| 0.6.2 | Create D1 database: `npx wrangler d1 create cookie-isle-db` | Not Started |
-| 0.6.3 | Create R2 bucket: `npx wrangler r2 bucket create cookie-isle-images` | Not Started |
-| 0.6.4 | Update `wrangler.jsonc` with D1 and R2 bindings | Not Started |
+| 0.6.2 | Create D1 database: `npx wrangler d1 create cookie-isle-db` | Completed |
+| 0.6.3 | Create R2 bucket: `npx wrangler r2 bucket create cookie-isle-images` | Pending (Enable R2 in CF Dashboard first) |
+| 0.6.4 | Update `wrangler.jsonc` with D1 and R2 bindings | Completed (D1 only, R2 commented out) |
 | 0.6.5 | Update `drizzle.config.ts` for D1 with d1-http driver | Not Started |
 | 0.6.6 | Update `src/lib/server/db/index.ts` to use D1 binding from platform.env | Not Started |
 | 0.6.7 | `src/app.d.ts` already has Platform interface (uses Env from worker-configuration.d.ts) | Completed |
-| 0.6.8 | Run `npx wrangler types` to regenerate types after D1/R2 bindings | Not Started |
+| 0.6.8 | Run `npx wrangler types` to regenerate types after D1/R2 bindings | Completed |
 | 0.6.9 | **Commit:** `feat: setup Drizzle ORM with Cloudflare D1 and R2 bindings` | Not Started |
 
 ### 0.7 Create database schema
@@ -297,8 +300,8 @@ Before marking any TODO as complete:
 | 0.7.5 | Add `dailyCapacity` table to schema | Not Started |
 | 0.7.6 | Add `adminSessions` table to schema | Not Started |
 | 0.7.7 | Create TypeScript types for JSON columns (OrderItem, DeliveryAddress) | Not Started |
-| 0.7.8 | Run `pnpm drizzle-kit generate` to create SQL migration | Not Started |
-| 0.7.9 | Run `pnpm drizzle-kit push` to apply schema to D1 | Not Started |
+| 0.7.8 | Run `bun run drizzle-kit generate` to create SQL migration | Not Started |
+| 0.7.9 | Run `bun run drizzle-kit push` to apply schema to D1 | Not Started |
 | 0.7.10 | Write unit tests for schema types in `tests/unit/schema.test.ts` | Not Started |
 | 0.7.11 | **Commit:** `feat: create database schema with Drizzle` | Not Started |
 
@@ -311,7 +314,7 @@ Before marking any TODO as complete:
 | 0.8.2 | Export typed Drizzle instance that takes Platform.env.DB | Not Started |
 | 0.8.3 | Add error handling for missing DB binding | Not Started |
 | 0.8.4 | Write unit test for db helper in `tests/unit/db.test.ts` | Not Started |
-| 0.8.5 | Run `pnpm check` and `pnpm test:unit` - must pass | Not Started |
+| 0.8.5 | Run `bun run check` and `bun run test:unit` - must pass | Not Started |
 | 0.8.6 | **Commit:** `feat: add database connection helper` | Not Started |
 
 ---
@@ -341,7 +344,7 @@ Before marking any TODO as complete:
 | 1.2.1 | Update `src/routes/+layout.svelte` with HTML structure (main wrapper) | Not Started |
 | 1.2.2 | Add `<svelte:head>` with meta tags (title, description, og:image) | Not Started |
 | 1.2.3 | Add favicon links from `static/favicon/` | Not Started |
-| 1.2.4 | Verify layout renders with `pnpm dev` | Not Started |
+| 1.2.4 | Verify layout renders with `bun run dev` | Not Started |
 | 1.2.5 | **Commit:** `feat: create root layout with meta tags` | Not Started |
 
 ### 1.3 Header component
@@ -664,7 +667,7 @@ Before marking any TODO as complete:
 
 | ID | Task | Status |
 |----|------|--------|
-| 4.1.1 | Install Stripe SDK: `pnpm add stripe` | Not Started |
+| 4.1.1 | Install Stripe SDK: `bun add stripe` | Not Started |
 | 4.1.2 | Create `src/lib/server/stripe.ts` with Stripe client initialization | Not Started |
 | 4.1.3 | Create `src/routes/api/checkout/+server.ts` POST handler | Not Started |
 | 4.1.4 | Define request body type with Zod or manual validation | Not Started |
@@ -1073,7 +1076,7 @@ Before marking any TODO as complete:
 | 7.3.2 | Connect to GitHub repository | Not Started |
 | 7.3.3 | Set production branch to `main` | Not Started |
 | 7.3.4 | Set preview branch to `refactor` | Not Started |
-| 7.3.5 | Configure build settings: command=`pnpm build`, output=`.svelte-kit/cloudflare` | Not Started |
+| 7.3.5 | Configure build settings: command=`bun run build`, output=`.svelte-kit/cloudflare` | Not Started |
 | 7.3.6 | Add D1 database binding: variable name `DB` | Not Started |
 | 7.3.7 | Add R2 bucket binding: variable name `IMAGES` | Not Started |
 | 7.3.8 | Set preview alias to `preview.cookie-isle.pages.dev` | Not Started |

@@ -1,3 +1,43 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+/* Cookie Isle Theme Colors - SoCal Coastal Island Vibe */
+@theme {
+	/* Primary colors - Ocean teal for buttons, links, accents */
+	--color-primary: #4CA2C2;
+	--color-primary-hover: #173448;
+
+	/* Secondary colors - Warm brown for headings and emphasis */
+	--color-secondary: #5C4033;
+	--color-secondary-dark: #3D2B1F;
+
+	/* Tertiary colors - Sandy beach and sky tones for backgrounds */
+	--color-tertiary: #FBF8F3;
+	--color-tertiary-light: #FDFCFA;
+	--color-tertiary-medium: #E8E4DC;
+
+	/* Accent color - Golden sun/cookie warmth */
+	--color-accent: #E9B44C;
+
+	/* Text colors */
+	--color-text-light: #5D6B6A;
+
+	/* Surface colors */
+	--color-card-bg: #FFFFFF;
+
+	/* Header colors */
+	--color-header-bg: #FBF8F3;
+	--color-header-text: #5C4033;
+
+	/* Footer colors */
+	--color-footer-bg: #264653;
+	--color-footer-text: #FBF8F3;
+	--color-footer-heading: #E9B44C;
+
+	/* Button colors */
+	--color-btn-bg: #4CA2C2;
+	--color-btn-text: #FDFCFA;
+	--color-btn-hover-bg: #264653;
+	--color-btn-nav-bg: #E9B44C;
+}

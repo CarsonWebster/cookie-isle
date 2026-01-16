@@ -2,12 +2,29 @@
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "cookie-isle",
 	"compatibility_date": "2026-01-16",
-	"compatibility_flags": ["nodejs_als"],
+	"compatibility_flags": ["nodejs_compat"],
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"assets": {
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
 	},
 	"workers_dev": true,
-	"preview_urls": true
+	"preview_urls": true,
+
+	// D1 Database binding
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "cookie-isle-db",
+			"database_id": "c804e72f-a721-4d5f-8332-f2f11c49504d"
+		}
+	]
+
+	// R2 Bucket binding - Enable R2 in Cloudflare Dashboard first, then add:
+	// "r2_buckets": [
+	// 	{
+	// 		"binding": "IMAGES",
+	// 		"bucket_name": "cookie-isle-images"
+	// 	}
+	// ]
 }
