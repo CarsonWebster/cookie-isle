@@ -1,6 +1,23 @@
 import { sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
+// Type definitions for JSON columns
+export interface OrderItem {
+	productId: number;
+	slug: string;
+	title: string;
+	priceCents: number;
+	quantity: number;
+}
+
+export interface DeliveryAddress {
+	street: string;
+	apt?: string;
+	city: string;
+	state: string;
+	zip: string;
+}
+
 // Products table
 export const products = sqliteTable('products', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
@@ -18,4 +35,26 @@ export const products = sqliteTable('products', {
 	sortOrder: integer('sort_order').default(0),
 	createdAt: text('created_at').default(sql`(datetime('now'))`),
 	updatedAt: text('updated_at').default(sql`(datetime('now'))`)
+});
+
+// Orders table
+export const orders = sqliteTable('orders', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	stripeSessionId: text('stripe_session_id').unique(),
+	status: text('status').default('pending'), // pending, paid, fulfilled, cancelled
+	customerName: text('customer_name'),
+	customerEmail: text('customer_email'),
+	customerPhone: text('customer_phone'),
+	fulfillmentType: text('fulfillment_type'), // pickup, delivery
+	fulfillmentDate: text('fulfillment_date'),
+	fulfillmentTime: text('fulfillment_time'),
+	deliveryAddress: text('delivery_address', { mode: 'json' }).$type<DeliveryAddress | null>(),
+	items: text('items', { mode: 'json' }).notNull().$type<OrderItem[]>(),
+	subtotalCents: integer('subtotal_cents'),
+	tipCents: integer('tip_cents').default(0),
+	giftBox: integer('gift_box', { mode: 'boolean' }).default(false),
+	giftMessage: text('gift_message'),
+	taxCents: integer('tax_cents').default(0),
+	totalCents: integer('total_cents'),
+	createdAt: text('created_at').default(sql`(datetime('now'))`)
 });
