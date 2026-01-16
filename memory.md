@@ -19,7 +19,7 @@ This file contains useful findings for future agents working on this project.
   - `orders` - DONE
   - `newsletter` - DONE
   - `fulfillmentSlots` - DONE
-  - `dailyCapacity` - NOT STARTED
+  - `dailyCapacity` - DONE
   - `adminSessions` - NOT STARTED
 - 0.8: Not started (database helper - but `src/lib/server/db/index.ts` already exists with `getDb()`)
 
@@ -58,11 +58,11 @@ export const tableName = sqliteTable('table_name', {
 
 ## Next Tasks (Priority Order)
 
-1. Add `dailyCapacity` table to schema (PRD 0.7.5)
-2. Add `adminSessions` table to schema (PRD 0.7.6)
-3. Generate and push migrations (PRD 0.7.8, 0.7.9)
-4. Write schema type tests (PRD 0.7.10)
-5. Complete database helper tasks (PRD 0.8)
+1. Add `adminSessions` table to schema (PRD 0.7.6)
+2. Generate and push migrations (PRD 0.7.8, 0.7.9)
+3. Write schema type tests (PRD 0.7.10)
+4. Complete database helper tasks (PRD 0.8)
+5. Start Phase 1: Core Layout & Components
 
 ## Commands Reference
 

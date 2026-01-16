@@ -77,3 +77,10 @@ export const fulfillmentSlots = sqliteTable('fulfillment_slots', {
 	maxCookies: integer('max_cookies').default(200),
 	active: integer('active', { mode: 'boolean' }).default(true)
 });
+
+// Daily capacity tracking table
+export const dailyCapacity = sqliteTable('daily_capacity', {
+	date: text('date').primaryKey(), // YYYY-MM-DD format
+	cookiesOrdered: integer('cookies_ordered').default(0),
+	updatedAt: text('updated_at').default(sql`(datetime('now'))`)
+});
