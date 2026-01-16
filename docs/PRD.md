@@ -310,7 +310,7 @@ Before marking any TODO as complete:
 | 0.7.1  | Create `drizzle/schema.ts` with `products` table (see Appendix A)     | Not Started |
 | 0.7.2  | Add `orders` table to schema                                          | Completed   |
 | 0.7.3  | Add `newsletter` table to schema                                      | Not Started |
-| 0.7.4  | Add `fulfillmentSlots` table to schema                                | Not Started |
+| 0.7.4  | Add `fulfillmentSlots` table to schema                                | Completed   |
 | 0.7.5  | Add `dailyCapacity` table to schema                                   | Not Started |
 | 0.7.6  | Add `adminSessions` table to schema                                   | Not Started |
 | 0.7.7  | Create TypeScript types for JSON columns (OrderItem, DeliveryAddress) | Completed   |

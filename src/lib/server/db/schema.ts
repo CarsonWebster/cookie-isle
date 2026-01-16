@@ -66,3 +66,14 @@ export const newsletter = sqliteTable('newsletter', {
 	source: text('source').default('website'),
 	subscribedAt: text('subscribed_at').default(sql`(datetime('now'))`)
 });
+
+// Fulfillment slots table
+export const fulfillmentSlots = sqliteTable('fulfillment_slots', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	date: text('date').notNull(), // YYYY-MM-DD format
+	startTime: text('start_time').notNull(), // HH:MM format
+	endTime: text('end_time').notNull(), // HH:MM format
+	slotType: text('slot_type').default('both'), // pickup, delivery, both
+	maxCookies: integer('max_cookies').default(200),
+	active: integer('active', { mode: 'boolean' }).default(true)
+});
