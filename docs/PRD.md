@@ -203,78 +203,87 @@ Before marking any TODO as complete:
 ---
 
 ## Phase 0: Repository Setup
-**Status:** Not Started
+**Status:** In Progress
 
 ### 0.1 Archive legacy project
-**Status:** Not Started
+**Status:** Completed
 
 | ID | Task | Status |
 |----|------|--------|
-| 0.1.1 | Create `_legacy/` directory | Not Started |
-| 0.1.2 | Move all Hugo files to `_legacy/` (hugo.toml, content/, layouts/, static/, workers/, assets/) | Not Started |
-| 0.1.3 | Update root `.gitignore` for SvelteKit project (add node_modules, .svelte-kit, .env, .dev.vars) | Not Started |
+| 0.1.1 | Create `_legacy/` directory | Completed |
+| 0.1.2 | Move all Hugo files to `_legacy/` (hugo.toml, content/, layouts/, static/, workers/, assets/) | Completed |
+| 0.1.3 | Update root `.gitignore` for SvelteKit project (add node_modules, .svelte-kit, .env, .dev.vars) | Completed |
 | 0.1.4 | **Commit:** `chore: archive legacy Hugo project to _legacy/` | Not Started |
 
 ### 0.2 Initialize SvelteKit project
-**Status:** Not Started
+**Status:** Completed
+
+> Note: Project was initialized using `sv` (Svelte CLI) with Bun runtime. All items below were auto-configured.
 
 | ID | Task | Status |
 |----|------|--------|
-| 0.2.1 | Run `pnpm create svelte@latest .` - Select: Skeleton project, TypeScript, ESLint, Prettier, Vitest | Not Started |
-| 0.2.2 | Install Cloudflare adapter: `pnpm add -D @sveltejs/adapter-cloudflare` | Not Started |
-| 0.2.3 | Configure `svelte.config.js` with Cloudflare adapter (see Appendix C for config) | Not Started |
-| 0.2.4 | Verify project runs: `pnpm dev` shows welcome page | Not Started |
+| 0.2.1 | Run `sv create` - Selected: Skeleton project, TypeScript, ESLint, Prettier, Vitest | Completed |
+| 0.2.2 | Install Cloudflare adapter: `@sveltejs/adapter-cloudflare` | Completed |
+| 0.2.3 | Configure `svelte.config.js` with Cloudflare adapter | Completed |
+| 0.2.4 | Verify project runs: `bun run dev` shows welcome page | Completed |
 | 0.2.5 | **Commit:** `feat: initialize SvelteKit with Cloudflare adapter` | Not Started |
 
 ### 0.3 Configure TypeScript strict mode
-**Status:** Not Started
+**Status:** Completed
+
+> Note: `sv` configured TypeScript with strict mode by default.
 
 | ID | Task | Status |
 |----|------|--------|
-| 0.3.1 | Update `tsconfig.json` with strict compiler options (see Development Standards) | Not Started |
-| 0.3.2 | Run `pnpm check` - must pass with zero errors | Not Started |
+| 0.3.1 | Update `tsconfig.json` with strict compiler options | Completed |
+| 0.3.2 | Run `bun run check` - must pass with zero errors | Completed |
 | 0.3.3 | **Commit:** `chore: enable TypeScript strict mode` | Not Started |
 
 ### 0.4 Setup Vitest for testing
-**Status:** Not Started
+**Status:** Completed
+
+> Note: `sv` configured Vitest with Playwright browser testing. Run `npx playwright install` to enable browser tests.
 
 | ID | Task | Status |
 |----|------|--------|
-| 0.4.1 | Install testing dependencies: `pnpm add -D vitest @testing-library/svelte @testing-library/jest-dom jsdom` | Not Started |
-| 0.4.2 | Create `vitest.config.ts` with svelte plugin and jsdom environment | Not Started |
-| 0.4.3 | Create `tests/setup.ts` with jest-dom matchers | Not Started |
-| 0.4.4 | Create sample test `tests/unit/sample.test.ts` to verify setup | Not Started |
-| 0.4.5 | Add test scripts to `package.json` (test, test:unit, test:watch, test:coverage) | Not Started |
-| 0.4.6 | Run `pnpm test:unit` - sample test must pass | Not Started |
+| 0.4.1 | Install testing dependencies: vitest, @vitest/browser-playwright | Completed |
+| 0.4.2 | Create `vite.config.ts` with Vitest config (server + client test projects) | Completed |
+| 0.4.3 | Demo test exists at `src/demo.spec.ts` | Completed |
+| 0.4.4 | Test scripts in `package.json` (test, test:unit) | Completed |
+| 0.4.5 | Run `bun run test` - server tests pass | Completed |
+| 0.4.6 | **Optional:** Run `npx playwright install` for browser component tests | Not Started |
 | 0.4.7 | **Commit:** `feat: setup Vitest testing framework` | Not Started |
 
 ### 0.5 Setup Tailwind CSS
-**Status:** Not Started
+**Status:** Completed
+
+> Note: `sv` configured Tailwind CSS v4 with @tailwindcss/vite plugin, forms, and typography.
 
 | ID | Task | Status |
 |----|------|--------|
-| 0.5.1 | Install Tailwind: `pnpm add -D tailwindcss postcss autoprefixer` | Not Started |
-| 0.5.2 | Run `npx tailwindcss init -p` to create config files | Not Started |
-| 0.5.3 | Configure `tailwind.config.js` with content paths: `['./src/**/*.{html,js,svelte,ts}']` | Not Started |
-| 0.5.4 | Add custom theme colors from legacy (see Appendix D for color values) | Not Started |
-| 0.5.5 | Create `src/app.css` with Tailwind directives (@tailwind base, components, utilities) | Not Started |
-| 0.5.6 | Create `src/routes/+layout.svelte` and import `../app.css` | Not Started |
-| 0.5.7 | Verify Tailwind works: add a colored div, check it renders | Not Started |
-| 0.5.8 | **Commit:** `feat: setup Tailwind CSS with custom theme` | Not Started |
+| 0.5.1 | Install Tailwind v4: `tailwindcss`, `@tailwindcss/vite`, `@tailwindcss/forms`, `@tailwindcss/typography` | Completed |
+| 0.5.2 | Tailwind configured via Vite plugin in `vite.config.ts` | Completed |
+| 0.5.3 | CSS file at `src/routes/layout.css` with `@import 'tailwindcss'` | Completed |
+| 0.5.4 | Layout at `src/routes/+layout.svelte` imports CSS | Completed |
+| 0.5.5 | Add custom theme colors from legacy (see Appendix D) | Not Started |
+| 0.5.6 | **Commit:** `feat: setup Tailwind CSS with custom theme` | Not Started |
 
 ### 0.6 Setup Drizzle ORM + Cloudflare D1
-**Status:** Not Started
+**Status:** Partially Complete
+
+> Note: `sv` configured Drizzle for libsql (Turso). Need to reconfigure for Cloudflare D1.
 
 | ID | Task | Status |
 |----|------|--------|
-| 0.6.1 | Install Drizzle: `pnpm add drizzle-orm` and `pnpm add -D drizzle-kit` | Not Started |
+| 0.6.1 | Drizzle packages installed: `drizzle-orm`, `drizzle-kit` | Completed |
 | 0.6.2 | Create D1 database: `npx wrangler d1 create cookie-isle-db` | Not Started |
 | 0.6.3 | Create R2 bucket: `npx wrangler r2 bucket create cookie-isle-images` | Not Started |
-| 0.6.4 | Create `wrangler.toml` with D1 and R2 bindings (see Appendix C) | Not Started |
-| 0.6.5 | Create `drizzle.config.ts` for D1 with d1-http driver | Not Started |
-| 0.6.6 | Create `src/app.d.ts` with Platform interface for D1Database and R2Bucket | Not Started |
-| 0.6.7 | Run `npx wrangler types` to generate worker-configuration.d.ts | Not Started |
-| 0.6.8 | **Commit:** `feat: setup Drizzle ORM with Cloudflare D1 and R2 bindings` | Not Started |
+| 0.6.4 | Update `wrangler.jsonc` with D1 and R2 bindings | Not Started |
+| 0.6.5 | Update `drizzle.config.ts` for D1 with d1-http driver | Not Started |
+| 0.6.6 | Update `src/lib/server/db/index.ts` to use D1 binding from platform.env | Not Started |
+| 0.6.7 | `src/app.d.ts` already has Platform interface (uses Env from worker-configuration.d.ts) | Completed |
+| 0.6.8 | Run `npx wrangler types` to regenerate types after D1/R2 bindings | Not Started |
+| 0.6.9 | **Commit:** `feat: setup Drizzle ORM with Cloudflare D1 and R2 bindings` | Not Started |
 
 ### 0.7 Create database schema
 **Status:** Not Started

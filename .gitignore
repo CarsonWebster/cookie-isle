@@ -1,29 +1,45 @@
-# Hugo build output
-public/
-resources/_gen/
+# Dependencies
+node_modules/
 
-# Hugo lock file
-.hugo_build.lock
+# Build Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
 
-# Editor directories and files
+# Environment
+.env
+.env.*
+!.env.example
+!.env.test
+.dev.vars
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Cloudflare Types (generated)
+/worker-configuration.d.ts
+
+# SQLite / Database
+*.db
+
+# Editor
 .idea/
-.vscode/
 *.swp
 *.swo
 *~
 
-# Node (if using npm packages)
-node_modules/
-
-# Environment files
-.env
-.env.local
-
-# Cloudflare Workers
-workers/**/node_modules/
-workers/**/.wrangler/
-workers/**/.dev.vars
+# Legacy Hugo (kept for reference in _legacy/)
+_legacy/public/
+_legacy/resources/_gen/
+_legacy/.hugo_build.lock
+_legacy/workers/**/node_modules/
+_legacy/workers/**/.wrangler/
+_legacy/workers/**/.dev.vars
