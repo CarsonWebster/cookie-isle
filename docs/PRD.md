@@ -730,16 +730,16 @@ Before marking any TODO as complete:
 
 ### 4.2 Connect checkout form to API
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                      | Status      |
-| ----- | --------------------------------------------------------- | ----------- |
-| 4.2.1 | Update checkout page to POST to `/api/checkout` on submit | Not Started |
-| 4.2.2 | Build request payload from cart + form data               | Not Started |
-| 4.2.3 | Handle API response and redirect to Stripe                | Not Started |
-| 4.2.4 | Handle API errors and display error message               | Not Started |
-| 4.2.5 | Add try/catch with user-friendly error handling           | Not Started |
-| 4.2.6 | **Commit:** `feat: connect checkout form to Stripe API`   | Not Started |
+| ID    | Task                                                      | Status    |
+| ----- | --------------------------------------------------------- | --------- |
+| 4.2.1 | Update checkout page to POST to `/api/checkout` on submit | Completed |
+| 4.2.2 | Build request payload from cart + form data               | Completed |
+| 4.2.3 | Handle API response and redirect to Stripe                | Completed |
+| 4.2.4 | Handle API errors and display error message               | Completed |
+| 4.2.5 | Add try/catch with user-friendly error handling           | Completed |
+| 4.2.6 | **Commit:** `feat: connect checkout form to Stripe API`   | Completed |
 
 ### 4.3 Stripe webhook endpoint
 

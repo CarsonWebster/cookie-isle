@@ -464,7 +464,7 @@
 	}
 
 	/**
-	 * Handles form submission
+	 * Handles form submission - POSTs to /api/checkout and redirects to Stripe
 	 */
 	async function handleSubmit(event: Event) {
 		event.preventDefault();
@@ -491,51 +491,96 @@
 			return;
 		}
 
+		// Get the selected slot details for the request
+		const slot = selectedSlot();
+		if (!slot) {
+			submitError = 'Please select a fulfillment time slot';
+			return;
+		}
+
 		// Set submitting state
 		isSubmitting = true;
 
 		try {
-			// TODO: Phase 4 - POST to /api/checkout
-			// For now, just simulate a delay and log the order data
-			await new Promise((resolve) => setTimeout(resolve, 1500));
-
-			const orderData = {
+			// Build the checkout request payload
+			const checkoutPayload = {
+				items: getItems().map((item) => ({
+					productId: item.productId,
+					slug: item.slug,
+					title: item.title,
+					priceCents: item.priceCents,
+					stripePriceId: item.stripePriceId,
+					quantity: item.quantity
+				})),
 				customer: {
-					firstName,
-					lastName,
-					email,
-					phone
+					firstName: firstName.trim(),
+					lastName: lastName.trim(),
+					email: email.trim(),
+					phone: phone.trim()
 				},
-				fulfillmentType,
-				deliveryAddress:
-					fulfillmentType === 'delivery'
-						? {
-								street,
-								apt: apt || undefined,
-								city,
-								state: addressState,
-								zip
-							}
-						: undefined,
-				slotId: selectedSlotId,
-				tipAmountCents,
+				fulfillment: {
+					type: fulfillmentType,
+					slotId: slot.id,
+					date: slot.date,
+					startTime: slot.startTime,
+					endTime: slot.endTime,
+					...(fulfillmentType === 'delivery' && {
+						address: {
+							street: street.trim(),
+							apt: apt.trim() || undefined,
+							city: city.trim(),
+							state: addressState.trim(),
+							zip: zip.trim()
+						}
+					})
+				},
+				tipCents: tipAmountCents,
 				includeGiftBox,
-				giftMessage: includeGiftBox ? giftMessage : undefined,
-				items: getItems(),
-				subtotalCents,
-				taxCents,
-				giftBoxCents,
-				orderTotalCents
+				...(includeGiftBox && giftMessage.trim() && { giftMessage: giftMessage.trim() })
 			};
 
-			console.log('Order data prepared for submission:', orderData);
+			// POST to checkout API
+			const response = await fetch('/api/checkout', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(checkoutPayload)
+			});
 
-			// For Phase 3.9, we show a placeholder message
-			// Phase 4 will implement actual Stripe checkout redirect
-			submitError =
-				'Checkout is almost ready! Stripe integration coming in Phase 4. Order data logged to console.';
-		} catch (error) {
-			console.error('Checkout error:', error);
+			// Type the response data
+			interface CheckoutApiResponse {
+				url?: string;
+				error?: string;
+				details?: string[];
+			}
+
+			const data: CheckoutApiResponse = await response.json();
+
+			// Handle error responses
+			if (!response.ok) {
+				// Extract error message from response
+				if (data.error) {
+					// Format detailed errors if available
+					if (data.details && data.details.length > 0) {
+						submitError = `${data.error}: ${data.details[0]}`;
+					} else {
+						submitError = data.error;
+					}
+				} else {
+					submitError = 'An error occurred while processing your order. Please try again.';
+				}
+				return;
+			}
+
+			// Redirect to Stripe checkout
+			if (data.url) {
+				window.location.href = data.url;
+			} else {
+				submitError = 'Unable to redirect to payment. Please try again.';
+			}
+		} catch (err) {
+			console.error('Checkout error:', err);
 			submitError = 'An error occurred while processing your order. Please try again.';
 		} finally {
 			isSubmitting = false;

@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16, Phase 4.1 Mostly Complete)
+## Current Progress (as of 2026-01-16, Phase 4.2 Complete)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -149,7 +149,8 @@ export const tableName = sqliteTable('table_name', {
 26. ~~Checkout page - Submit (PRD 3.9)~~ DONE - Form validation, loading states, submit button, max qty modal (237 total checkout tests)
 27. ~~Stripe SDK + client init (PRD 4.1.1-4.1.2)~~ DONE - `stripe` package installed, `src/lib/server/stripe.ts` with 19 tests
 28. ~~Stripe checkout API endpoint (PRD 4.1.3-4.1.13, 4.1.15)~~ DONE - `src/routes/api/checkout/+server.ts` with 63 tests
-29. **NEXT: Connect checkout form to API (PRD 4.2)** - Update checkout page to POST to `/api/checkout`
+29. ~~Connect checkout form to API (PRD 4.2)~~ DONE - `handleSubmit` in checkout page POSTs to `/api/checkout` and redirects to Stripe
+30. **NEXT: Stripe webhook handler (PRD 4.3)** - Create webhook to handle `checkout.session.completed` events
 
 ## Commands Reference
 
@@ -1656,14 +1657,92 @@ if (data.url) {
 - Order metadata building (6 tests)
 - Type checks (2 tests)
 
-### Next Tasks (Phase 4.2+)
+### Next Tasks (Phase 4.3+)
 
-1. **NEXT: Connect checkout form to API (PRD 4.2)** - Update checkout page to POST to `/api/checkout`
-2. Create webhook handler for `checkout.session.completed` (PRD 4.3)
+1. ~~Connect checkout form to API (PRD 4.2)~~ DONE
+2. **NEXT: Stripe webhook handler (PRD 4.3)** - Create webhook to handle `checkout.session.completed` events
 3. Create checkout success page (PRD 4.4)
 4. Create newsletter signup API (PRD 4.5)
 
-## Test Coverage Summary (Updated)
+## Checkout Form API Integration Notes (Phase 4.2 - COMPLETE)
+
+The `handleSubmit` function in `src/routes/(public)/checkout/+page.svelte` now:
+
+1. **Builds checkout payload** from cart state and form fields matching the `CheckoutRequest` type
+2. **POSTs to `/api/checkout`** with proper Content-Type header
+3. **Handles API responses** with typed `CheckoutApiResponse` interface
+4. **Shows error messages** from API validation errors (first error from `details` array)
+5. **Redirects to Stripe** via `window.location.href = data.url` on success
+
+### Checkout Payload Structure
+
+```typescript
+const checkoutPayload = {
+	items: getItems().map((item) => ({
+		productId: item.productId,
+		slug: item.slug,
+		title: item.title,
+		priceCents: item.priceCents,
+		stripePriceId: item.stripePriceId,
+		quantity: item.quantity
+	})),
+	customer: {
+		firstName: firstName.trim(),
+		lastName: lastName.trim(),
+		email: email.trim(),
+		phone: phone.trim()
+	},
+	fulfillment: {
+		type: fulfillmentType,
+		slotId: slot.id,
+		date: slot.date,
+		startTime: slot.startTime,
+		endTime: slot.endTime,
+		address: fulfillmentType === 'delivery' ? { ... } : undefined
+	},
+	tipCents: tipAmountCents,
+	includeGiftBox,
+	giftMessage: includeGiftBox && giftMessage ? giftMessage.trim() : undefined
+};
+```
+
+### Error Handling Pattern
+
+```typescript
+interface CheckoutApiResponse {
+	url?: string;
+	error?: string;
+	details?: string[];
+}
+
+const data: CheckoutApiResponse = await response.json();
+
+if (!response.ok) {
+	if (data.error) {
+		if (data.details && data.details.length > 0) {
+			submitError = `${data.error}: ${data.details[0]}`;
+		} else {
+			submitError = data.error;
+		}
+	} else {
+		submitError = 'An error occurred while processing your order. Please try again.';
+	}
+	return;
+}
+```
+
+### Testing the Checkout Flow
+
+To test the full checkout flow:
+
+1. Start dev server with `.dev.vars` containing `STRIPE_SECRET_KEY`
+2. Add items to cart
+3. Fill out customer form and select a slot
+4. Click "Place Order"
+5. Should redirect to Stripe checkout
+6. Use Stripe test card `4242 4242 4242 4242` to complete payment
+
+## Test Coverage Summary (Updated - Phase 4.2 Complete)
 
 | Test File                                             | Tests | Purpose                            |
 | ----------------------------------------------------- | ----- | ---------------------------------- |
@@ -1689,3 +1768,5 @@ if (data.url) {
 | `src/lib/server/stripe.spec.ts`                       | 19    | Stripe client module helpers       |
 | `src/routes/api/checkout/server.spec.ts`              | 63    | Checkout API validation & building |
 | **Total**                                             | 735   |                                    |
+
+Note: Phase 4.2 (connect checkout form to API) added no new tests since the integration is a simple fetch call and the API endpoint already has comprehensive tests. The existing 237 checkout page tests cover form validation, state management, and UI logic.
