@@ -12,6 +12,7 @@
 		{ href: '/admin', label: 'Dashboard', icon: '📊' },
 		{ href: '/admin/orders', label: 'Orders', icon: '📦' },
 		{ href: '/admin/products', label: 'Products', icon: '🍪' },
+		{ href: '/admin/gallery', label: 'Image Gallery', icon: '🖼️' },
 		{ href: '/admin/slots', label: 'Fulfillment Slots', icon: '📅' },
 		{ href: '/admin/newsletter', label: 'Newsletter', icon: '📧' }
 	];
