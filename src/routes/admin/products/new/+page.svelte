@@ -78,6 +78,12 @@
 
 	<!-- Form -->
 	<form method="POST" use:enhance class="space-y-8">
+		<!-- Hidden inputs for focal points -->
+		<input type="hidden" name="cardFocalX" value={cardFocalX} />
+		<input type="hidden" name="cardFocalY" value={cardFocalY} />
+		<input type="hidden" name="heroFocalX" value={heroFocalX} />
+		<input type="hidden" name="heroFocalY" value={heroFocalY} />
+
 		<!-- Basic Information -->
 		<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
 			<h2 class="mb-4 text-lg font-semibold text-gray-900">Basic Information</h2>

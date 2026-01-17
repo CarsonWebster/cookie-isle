@@ -15,6 +15,13 @@
       "when": 1768637244974,
       "tag": "0001_big_sway",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1768642866836,
+      "tag": "0002_nervous_ironclad",
+      "breakpoints": true
     }
   ]
 }

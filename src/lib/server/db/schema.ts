@@ -29,6 +29,11 @@ export const products = sqliteTable('products', {
 	ingredients: text('ingredients'),
 	imageUrl: text('image_url'),
 	heroImageUrl: text('hero_image_url'),
+	// Focal points for image cropping (stored as percentages 0-100)
+	cardFocalX: integer('card_focal_x').default(50), // X position for card (square) crop
+	cardFocalY: integer('card_focal_y').default(50), // Y position for card (square) crop
+	heroFocalX: integer('hero_focal_x').default(50), // X position for detail page (3:2) crop
+	heroFocalY: integer('hero_focal_y').default(50), // Y position for detail page (3:2) crop
 	tags: text('tags', { mode: 'json' }).$type<string[]>(),
 	featured: integer('featured', { mode: 'boolean' }).default(false),
 	active: integer('active', { mode: 'boolean' }).default(true),

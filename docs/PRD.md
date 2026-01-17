@@ -1186,33 +1186,35 @@ Before marking any TODO as complete:
 
 ### 7.5 Update Stripe webhook
 
-**Status:** Not Started
+**Status:** Pending (waiting for Stripe keys)
 
-| ID    | Task                                                                                   | Status      |
-| ----- | -------------------------------------------------------------------------------------- | ----------- |
-| 7.5.1 | Go to Stripe Dashboard > Webhooks                                                      | Not Started |
-| 7.5.2 | Add new webhook endpoint: `https://thecookieisle.com/api/webhook`                      | Not Started |
-| 7.5.3 | Select events: `checkout.session.completed`                                            | Not Started |
-| 7.5.4 | Copy webhook signing secret to STRIPE_WEBHOOK_SECRET                                   | Not Started |
-| 7.5.5 | Test webhook using Stripe CLI: `stripe listen --forward-to localhost:5173/api/webhook` | Not Started |
-| 7.5.6 | Verify test order creates record in D1                                                 | Not Started |
-| 7.5.7 | **Commit:** `docs: Stripe webhook configuration`                                       | Not Started |
+| ID    | Task                                                                                   | Status  |
+| ----- | -------------------------------------------------------------------------------------- | ------- |
+| 7.5.1 | Go to Stripe Dashboard > Webhooks                                                      | Pending |
+| 7.5.2 | Add new webhook endpoint: `https://thecookieisle.com/api/webhook`                      | Pending |
+| 7.5.3 | Select events: `checkout.session.completed`                                            | Pending |
+| 7.5.4 | Copy webhook signing secret to STRIPE_WEBHOOK_SECRET                                   | Pending |
+| 7.5.5 | Test webhook using Stripe CLI: `stripe listen --forward-to localhost:5173/api/webhook` | Pending |
+| 7.5.6 | Verify test order creates record in D1                                                 | Pending |
+| 7.5.7 | **Commit:** `docs: Stripe webhook configuration`                                       | Pending |
 
 ### 7.6 End-to-end testing
 
-**Status:** Not Started
+**Status:** In Progress
+
+> Note: Non-Stripe features can be tested now. Checkout flow testing requires Stripe keys.
 
 | ID     | Task                                                    | Status      |
 | ------ | ------------------------------------------------------- | ----------- |
-| 7.6.1  | Test full checkout flow on preview URL                  | Not Started |
-| 7.6.2  | Verify order appears in admin dashboard                 | Not Started |
-| 7.6.3  | Test marking order as fulfilled                         | Not Started |
+| 7.6.1  | Test full checkout flow on preview URL                  | Pending     |
+| 7.6.2  | Verify order appears in admin dashboard                 | Pending     |
+| 7.6.3  | Test marking order as fulfilled                         | Pending     |
 | 7.6.4  | Test adding new product via admin                       | Not Started |
 | 7.6.5  | Test image upload to R2                                 | Not Started |
 | 7.6.6  | Test newsletter signup                                  | Not Started |
 | 7.6.7  | Test mobile responsiveness on real device               | Not Started |
 | 7.6.8  | Test slot selection and capacity tracking               | Not Started |
-| 7.6.9  | Document any bugs found and create fix TODOs            | Not Started |
+| 7.6.9  | Document any bugs found and create fix TODOs            | In Progress |
 | 7.6.10 | **Commit:** `test: verify all features work on preview` | Not Started |
 
 ### 7.7 Production deployment
@@ -1314,6 +1316,11 @@ export const products = sqliteTable('products', {
 	ingredients: text('ingredients'),
 	imageUrl: text('image_url'),
 	heroImageUrl: text('hero_image_url'),
+	// Focal points for image cropping (0-100 percentages)
+	cardFocalX: integer('card_focal_x').default(50), // X position for card (1:1) crop
+	cardFocalY: integer('card_focal_y').default(50), // Y position for card (1:1) crop
+	heroFocalX: integer('hero_focal_x').default(50), // X position for detail page (3:2) crop
+	heroFocalY: integer('hero_focal_y').default(50), // Y position for detail page (3:2) crop
 	tags: text('tags', { mode: 'json' }).$type<string[]>(),
 	featured: integer('featured', { mode: 'boolean' }).default(false),
 	active: integer('active', { mode: 'boolean' }).default(true),

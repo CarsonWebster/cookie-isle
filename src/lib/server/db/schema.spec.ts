@@ -29,6 +29,11 @@ describe('database schema', () => {
 			expect(columns.ingredients).toBeDefined();
 			expect(columns.imageUrl).toBeDefined();
 			expect(columns.heroImageUrl).toBeDefined();
+			// Focal points for image cropping
+			expect(columns.cardFocalX).toBeDefined();
+			expect(columns.cardFocalY).toBeDefined();
+			expect(columns.heroFocalX).toBeDefined();
+			expect(columns.heroFocalY).toBeDefined();
 			expect(columns.tags).toBeDefined();
 			expect(columns.featured).toBeDefined();
 			expect(columns.active).toBeDefined();
@@ -39,7 +44,7 @@ describe('database schema', () => {
 
 		it('has correct column count', () => {
 			const columns = getTableColumns(products);
-			expect(Object.keys(columns)).toHaveLength(15);
+			expect(Object.keys(columns)).toHaveLength(19);
 		});
 	});
 

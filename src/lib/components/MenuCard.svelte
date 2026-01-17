@@ -21,6 +21,9 @@
 		description?: string | null;
 		imageUrl?: string | null;
 		tags?: string[] | null;
+		// Focal points for card image cropping (0-100 percentages)
+		cardFocalX?: number | null;
+		cardFocalY?: number | null;
 	}
 
 	interface Props {
@@ -32,6 +35,10 @@
 
 	// Format the price for display
 	let formattedPrice = $derived(formatPrice(product.priceCents));
+
+	// Focal point for card image (default to center)
+	let cardFocalX = $derived(product.cardFocalX ?? 50);
+	let cardFocalY = $derived(product.cardFocalY ?? 50);
 </script>
 
 <article
@@ -47,6 +54,7 @@
 				src={product.imageUrl}
 				alt={product.title}
 				class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+				style="object-position: {cardFocalX}% {cardFocalY}%;"
 				loading="lazy"
 			/>
 		{:else}

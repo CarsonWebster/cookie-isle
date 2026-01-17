@@ -58,6 +58,12 @@ export const actions: Actions = {
 		const featured = formData.get('featured') === 'on';
 		const active = formData.get('active') === 'on';
 
+		// Parse focal point values
+		const cardFocalXStr = formData.get('cardFocalX')?.toString();
+		const cardFocalYStr = formData.get('cardFocalY')?.toString();
+		const heroFocalXStr = formData.get('heroFocalX')?.toString();
+		const heroFocalYStr = formData.get('heroFocalY')?.toString();
+
 		// Validation errors object
 		const errors: Record<string, string> = {};
 
@@ -96,6 +102,12 @@ export const actions: Actions = {
 				sortOrder = parsed;
 			}
 		}
+
+		// Parse focal points (default to 50 if not provided or invalid)
+		const cardFocalX = cardFocalXStr ? parseInt(cardFocalXStr) || 50 : 50;
+		const cardFocalY = cardFocalYStr ? parseInt(cardFocalYStr) || 50 : 50;
+		const heroFocalX = heroFocalXStr ? parseInt(heroFocalXStr) || 50 : 50;
+		const heroFocalY = heroFocalYStr ? parseInt(heroFocalYStr) || 50 : 50;
 
 		// Parse tags (comma-separated to array)
 		let tags: string[] | null = null;
@@ -140,6 +152,10 @@ export const actions: Actions = {
 					ingredients,
 					imageUrl,
 					heroImageUrl,
+					cardFocalX,
+					cardFocalY,
+					heroFocalX,
+					heroFocalY,
 					tags,
 					featured,
 					active,

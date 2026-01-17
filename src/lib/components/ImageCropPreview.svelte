@@ -72,7 +72,7 @@
 			class="rounded-lg px-4 py-2 text-sm font-medium transition-colors
 				{activeTab === 'card' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
 		>
-			Card Preview (Square)
+			Card Preview (1:1)
 		</button>
 		<button
 			type="button"
@@ -80,7 +80,7 @@
 			class="rounded-lg px-4 py-2 text-sm font-medium transition-colors
 				{activeTab === 'hero' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
 		>
-			Hero Preview (Wide)
+			Detail Page (3:2)
 		</button>
 	</div>
 
@@ -134,11 +134,11 @@
 		<!-- Preview -->
 		<div class="space-y-2">
 			<h4 class="text-sm font-medium text-gray-700">
-				{activeTab === 'card' ? 'Card Preview (1:1)' : 'Hero Preview (16:9)'}
+				{activeTab === 'card' ? 'Card Preview (1:1)' : 'Detail Page Preview (3:2)'}
 			</h4>
 			<div
 				class="overflow-hidden rounded-lg border border-gray-300 bg-gray-100
-					{activeTab === 'card' ? 'aspect-square' : 'aspect-video'}"
+				{activeTab === 'card' ? 'aspect-square' : 'aspect-[3/2]'}"
 			>
 				<img
 					src={imageUrl}
@@ -150,7 +150,7 @@
 			<p class="text-xs text-gray-500">
 				{activeTab === 'card'
 					? 'Used in product cards and menu listings'
-					: 'Used on product detail page'}
+					: 'Used on cookie detail page'}
 			</p>
 		</div>
 	</div>
@@ -174,7 +174,7 @@
 
 			<!-- Hero Preview -->
 			<div class="space-y-1">
-				<div class="aspect-video overflow-hidden rounded-lg border border-gray-200 bg-white">
+				<div class="aspect-[3/2] overflow-hidden rounded-lg border border-gray-200 bg-white">
 					<img
 						src={imageUrl}
 						alt="Hero preview"
@@ -182,7 +182,7 @@
 						style="object-position: {heroFocalX}% {heroFocalY}%;"
 					/>
 				</div>
-				<p class="text-center text-xs text-gray-500">Hero (Wide)</p>
+				<p class="text-center text-xs text-gray-500">Detail (3:2)</p>
 			</div>
 		</div>
 	</div>

@@ -82,13 +82,13 @@ This file contains useful findings for future agents working on this project.
 - 2.3: MenuCard Component COMPLETE (done before 2.2 as it's a dependency)
   - Implementation: `src/lib/components/MenuCard.svelte` - Product card with image, title, price, description, tags, add to cart button
   - Tests: `src/lib/components/MenuCard.spec.ts` (37 tests) - Product type validation, price formatting, cart config
-  - Features: Aspect-ratio image container, cookie emoji placeholder, line-clamp-2 description, tag badges, hover lift effect
-  - Props: `product` (required) - Product type with id, slug, title, priceCents, stripePriceId, description?, imageUrl?, tags?
+  - Features: Aspect-ratio image container with focal point support (`cardFocalX`/`cardFocalY`), cookie emoji placeholder, line-clamp-2 description, tag badges, hover lift effect
+  - Props: `product` (required) - Product type with id, slug, title, priceCents, stripePriceId, description?, imageUrl?, tags?, cardFocalX?, cardFocalY?
 - 2.5: Cookie Detail Page COMPLETE
   - Server Load: `src/routes/(public)/menu/[slug]/+page.server.ts` - Queries by slug with active=true filter, throws 404 if not found
-  - Page: `src/routes/(public)/menu/[slug]/+page.svelte` - Full product details with hero image, two-column layout
+  - Page: `src/routes/(public)/menu/[slug]/+page.svelte` - Full product details with 3:2 image, responsive two-column layout
   - Tests: `src/routes/(public)/menu/[slug]/page.server.spec.ts` (10 tests) - Covers 404 cases, platform unavailability, successful loads
-  - Features: Hero image (16:9 on mobile, 21:9 on desktop), cookie placeholder, ingredients card, tags, large Add to Cart button, Back to Menu link
+  - Features: 3:2 aspect ratio image with focal point support, desktop: text left + image right, mobile: image top + text below, full-width card with ingredients/tags/Add to Cart (Z-pattern), Back to Menu link at bottom
 - 2.7: Coming Soon Mode COMPLETE
   - Implementation: `src/lib/components/ComingSoon.svelte` - Full-page coming soon landing with newsletter signup
   - Tests: `src/lib/components/ComingSoon.spec.ts` (46 tests) - Config validation, email validation, state transitions
@@ -139,6 +139,11 @@ The `images` table tracks all uploaded images:
 - Focal point coordinates: `cardFocalX`, `cardFocalY`, `heroFocalX`, `heroFocalY` (0-100 percentages)
 - `createdAt` timestamp
 
+The `products` table also stores focal points directly (added in migration 0002):
+
+- `cardFocalX`, `cardFocalY` - for menu card images (1:1 aspect ratio)
+- `heroFocalX`, `heroFocalY` - for detail page images (3:2 aspect ratio)
+
 ### Key Components
 
 1. **Image Gallery Page** (`/admin/gallery`)
@@ -154,9 +159,10 @@ The `images` table tracks all uploaded images:
    - Select image and pass to parent
 
 3. **Crop Preview** (`ImageCropPreview.svelte`)
-   - Shows how image appears in card (1:1) and hero (16:9) formats
+   - Shows how image appears in card (1:1) and detail page (3:2) formats
    - Click to set focal point for each crop type
    - Uses CSS `object-position` for visual preview (no actual cropping)
+   - Focal points are saved to products table and applied on public pages
 
 ### API Endpoints
 
@@ -297,7 +303,7 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | ---------------------------------------------------------- | ----- | ------------------------------------ |
 | `src/demo.spec.ts`                                         | 1     | Demo test from sv create             |
 | `src/lib/config.spec.ts`                                   | 35    | Site configuration and helpers       |
-| `src/lib/server/db/schema.spec.ts`                         | 23    | Schema table definitions and types   |
+| `src/lib/server/db/schema.spec.ts`                         | 26    | Schema table definitions and types   |
 | `src/lib/server/db/db.spec.ts`                             | 10    | Database helper functions            |
 | `src/lib/components/Header.spec.ts`                        | 13    | Header component config logic        |
 | `src/lib/components/Footer.spec.ts`                        | 15    | Footer component config logic        |
@@ -332,7 +338,7 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/admin/newsletter/page.server.spec.ts`          | 23    | Newsletter subscribers with CSV      |
 | `src/routes/api/upload/server.spec.ts`                     | 45    | R2 image upload API                  |
 | `src/routes/images/[...path]/server.spec.ts`               | 25    | R2 image serving endpoint            |
-| **Total**                                                  | 1255  |                                      |
+| **Total**                                                  | 1259  |                                      |
 
 ## Site Config Notes
 
@@ -621,18 +627,19 @@ The `src/routes/(public)/menu/[slug]/+page.svelte` page implements:
    - Queries by slug with `slug = ? AND active = true` filter
    - Throws 404 error if product not found or inactive
    - Throws 404 error if database unavailable (no graceful fallback since a specific product is required)
-   - Returns `{ product }` with full product data including heroImageUrl and ingredients
+   - Returns `{ product }` with full product data including heroImageUrl, ingredients, and focal points
 
 2. **Page Component (`+page.svelte`):**
-   - Hero image section: 16:9 aspect on mobile, 21:9 on larger screens
+   - **Desktop (lg+):** Two-column grid with title/price/description on left, 3:2 aspect ratio image on right
+   - **Mobile:** Single column with 3:2 image on top, then title, price, description below
+   - Full-width card with ingredients and tags on left, price + "Add to Cart" button on right (Z-pattern reading)
+   - Focal point support: applies `heroFocalX`/`heroFocalY` via CSS `object-position`
    - Cookie emoji placeholder when no image available
-   - Two-column layout on desktop: left (title, price, description, tags), right (ingredients, Add to Cart)
-   - Back to Menu link with arrow icon
+   - "Back to Menu" link at bottom
    - Open Graph meta tags for social sharing with product image
-   - Large full-width Add to Cart button with data attributes
 
 3. **Key Patterns:**
-   - Uses `$derived()` for `hasIngredients` and `hasTags` booleans
+   - Uses `$derived()` for `hasIngredients`, `hasTags`, and focal point values
    - Keyed `{#each}` with index for tags since tags can have duplicates
    - Meta description fallback when product has no description
 
@@ -643,11 +650,14 @@ The `src/routes/(public)/menu/[slug]/+page.svelte` page implements:
       ↓
     D1 Query: SELECT ... WHERE slug=? AND active=1 LIMIT 1
       ↓
-    { product } or 404 Error
+    { product } or 404 Error (includes heroFocalX/heroFocalY)
       ↓
 +page.svelte (data prop)
       ↓
-    Hero Image → Product Details Grid → Add to Cart
+    Desktop: [Title/Price/Desc] [3:2 Image]
+    Mobile:  [3:2 Image] → [Title/Price/Desc]
+      ↓
+    Full-width card: [Ingredients/Tags] [Price + Add to Cart]
 ```
 
 ### Difference from Menu Page
