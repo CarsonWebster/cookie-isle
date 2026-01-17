@@ -168,9 +168,12 @@ export const tableName = sqliteTable('table_name', {
 41. ~~R2 upload endpoint (PRD 5.1)~~ DONE - `src/routes/api/upload/+server.ts` with 45 tests
 42. ~~R2 image serving endpoint (PRD 5.2)~~ DONE - `src/routes/images/[...path]/+server.ts` with 25 tests
 43. ~~Image migration to R2 (PRD 5.3)~~ DONE - `scripts/migrate-images.sh` migrated 7 product images to R2
-44. **NEXT: Phase 7 (Data Migration & Deployment) - Deferred tasks before Phase 7+**
+44. ~~Cookies Needed Today (PRD 6.6.3, 6.6.9)~~ DONE - Admin dashboard now shows production requirements
+45. **NEXT: Phase 7 (Data Migration & Deployment) - Only one deferred task remaining (weekly revenue - nice-to-have)**
 
 > Note: Phase 5 is now COMPLETE. All product images are uploaded to R2, database records updated, and images are served via `/images/{filename}` endpoint with 1-year caching.
+>
+> Note: Phase 6 is now COMPLETE. All critical admin dashboard features implemented. The only remaining deferred task (6.6.5 - weekly revenue) is a nice-to-have feature.
 
 ## Commands Reference
 
@@ -247,7 +250,7 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/api/newsletter/server.spec.ts`                 | 54    | Newsletter API validation & helpers  |
 | `src/lib/server/auth.spec.ts`                              | 66    | Admin authentication helpers         |
 | `src/routes/admin/login/page.server.spec.ts`               | 27    | Admin login page load & actions      |
-| `src/routes/admin/page.server.spec.ts`                     | 20    | Admin dashboard stats                |
+| `src/routes/admin/page.server.spec.ts`                     | 27    | Admin dashboard stats & cookies      |
 | `src/routes/admin/layout.server.spec.ts`                   | 48    | Admin auth guard layout              |
 | `src/routes/admin/orders/page.server.spec.ts`              | 24    | Admin orders list with filters       |
 | `src/routes/admin/orders/[id]/page.server.spec.ts`         | 31    | Order detail page with status update |
@@ -258,7 +261,7 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/admin/newsletter/page.server.spec.ts`          | 23    | Newsletter subscribers with CSV      |
 | `src/routes/api/upload/server.spec.ts`                     | 45    | R2 image upload API                  |
 | `src/routes/images/[...path]/server.spec.ts`               | 25    | R2 image serving endpoint            |
-| **Total**                                                  | 1244  |                                      |
+| **Total**                                                  | 1255  |                                      |
 
 ## Site Config Notes
 
@@ -2791,6 +2794,7 @@ The `src/routes/admin/+page.svelte` and `+page.server.ts` implement the admin da
    - Queries pending orders count
    - Queries total products count
    - Loads 5 most recent orders with full details
+   - **Queries cookies needed for today's fulfillment** (6.6.3, 6.6.9)
    - All queries run in parallel via `Promise.all()`
    - Graceful fallback: returns zeros if platform/DB unavailable
    - Error handling: catches DB errors and returns empty data
@@ -2801,6 +2805,12 @@ The `src/routes/admin/+page.svelte` and `+page.server.ts` implement the admin da
      - Pending Orders (count)
      - Today's Revenue (formatted as $X.XX)
      - Total Products (count)
+   - **Cookies Needed Today section:**
+     - Shows production requirements grouped by product
+     - Displays total cookies needed in badge
+     - Each product shown with name and quantity in rounded card
+     - Sorted by quantity descending (most needed first)
+     - Empty state when no orders for today's fulfillment
    - Recent Orders table with:
      - Order #, Customer Name, Total, Status badge, Date
      - Status badges with colors (pending=yellow, paid=blue, fulfilled=green, cancelled=red)
@@ -2814,16 +2824,17 @@ The `src/routes/admin/+page.svelte` and `+page.server.ts` implement the admin da
 
 ### Exported Helper Functions
 
-| Function                      | Purpose                               |
-| ----------------------------- | ------------------------------------- |
-| `getTodayDate(now?)`          | Get today's date in YYYY-MM-DD format |
-| `queryTodayStats(db)`         | Query today's orders and revenue      |
-| `queryPendingOrdersCount(db)` | Count orders with status='pending'    |
-| `queryTotalProductsCount(db)` | Count all products                    |
-| `queryRecentOrders(db)`       | Get 5 most recent orders, formatted   |
-| `getStatusBadgeClass(status)` | Get Tailwind classes for status badge |
-| `formatStatus(status)`        | Capitalize status string              |
-| `formatDate(dateStr)`         | Format ISO date to readable format    |
+| Function                      | Purpose                                      |
+| ----------------------------- | -------------------------------------------- |
+| `getTodayDate(now?)`          | Get today's date in YYYY-MM-DD format        |
+| `queryTodayStats(db)`         | Query today's orders and revenue             |
+| `queryPendingOrdersCount(db)` | Count orders with status='pending'           |
+| `queryTotalProductsCount(db)` | Count all products                           |
+| `queryRecentOrders(db)`       | Get 5 most recent orders, formatted          |
+| `queryCookiesNeededToday(db)` | Query cookies needed for today's fulfillment |
+| `getStatusBadgeClass(status)` | Get Tailwind classes for status badge        |
+| `formatStatus(status)`        | Capitalize status string                     |
+| `formatDate(dateStr)`         | Format ISO date to readable format           |
 
 ### Exported Types
 
@@ -2845,23 +2856,30 @@ interface RecentOrder {
 	createdAt: string | null;
 }
 
+interface CookieNeeded {
+	productName: string;
+	quantity: number;
+}
+
 interface DashboardData {
 	stats: DashboardStats;
 	recentOrders: RecentOrder[];
+	cookiesNeededToday: CookieNeeded[];
 }
 ```
 
 ### Test Coverage
 
-20 tests in `src/routes/admin/page.server.spec.ts`:
+27 tests in `src/routes/admin/page.server.spec.ts` (updated with cookies needed feature):
 
 - getTodayDate function (3 tests)
 - queryTodayStats (3 tests)
 - queryPendingOrdersCount (2 tests)
 - queryTotalProductsCount (2 tests)
 - queryRecentOrders (3 tests)
-- load function (5 tests)
-- Type exports (3 tests)
+- queryCookiesNeededToday (6 tests) - NEW
+- load function (5 tests) - Updated to include cookies needed
+- Type exports (4 tests) - Added CookieNeeded interface
 
 ### Database Queries
 
@@ -2872,6 +2890,17 @@ SELECT * FROM orders
 WHERE date(created_at) = '2026-01-16'
   AND status IN ('paid', 'fulfilled')
 ```
+
+Cookies needed today query (groups by product from order items):
+
+```sql
+SELECT items, status, fulfillment_date
+FROM orders
+WHERE fulfillment_date = '2026-01-16'
+  AND status IN ('paid', 'fulfilled')
+```
+
+Then aggregates quantities in JavaScript by iterating through the `items` JSON array in each order.
 
 Recent orders query:
 
@@ -3745,11 +3774,11 @@ The `src/lib/components/ImageUpload.svelte` component provides reusable image up
 
 ```typescript
 interface Props {
-  label: string;              // Label text for the upload field
-  helpText?: string;          // Optional help text shown below
-  currentImageUrl?: string | null;  // Existing image URL (for edit mode)
-  name: string;               // Form field name for hidden input
-  onUploadComplete?: (url: string) => void;  // Callback when upload finishes
+	label: string; // Label text for the upload field
+	helpText?: string; // Optional help text shown below
+	currentImageUrl?: string | null; // Existing image URL (for edit mode)
+	name: string; // Form field name for hidden input
+	onUploadComplete?: (url: string) => void; // Callback when upload finishes
 }
 ```
 
@@ -3759,15 +3788,15 @@ interface Props {
 
 ```svelte
 <ImageUpload
-  label="Card Image"
-  name="imageUrl"
-  helpText="Used in product cards and menu listings (square aspect ratio recommended)"
+	label="Card Image"
+	name="imageUrl"
+	helpText="Used in product cards and menu listings (square aspect ratio recommended)"
 />
 
 <ImageUpload
-  label="Hero Image"
-  name="heroImageUrl"
-  helpText="Used on product detail page (wide aspect ratio recommended)"
+	label="Hero Image"
+	name="heroImageUrl"
+	helpText="Used on product detail page (wide aspect ratio recommended)"
 />
 ```
 
@@ -3775,17 +3804,17 @@ interface Props {
 
 ```svelte
 <ImageUpload
-  label="Card Image"
-  name="imageUrl"
-  currentImageUrl={data.product.imageUrl}
-  helpText="Used in product cards and menu listings"
+	label="Card Image"
+	name="imageUrl"
+	currentImageUrl={data.product.imageUrl}
+	helpText="Used in product cards and menu listings"
 />
 
 <ImageUpload
-  label="Hero Image"
-  name="heroImageUrl"
-  currentImageUrl={data.product.heroImageUrl}
-  helpText="Used on product detail page"
+	label="Hero Image"
+	name="heroImageUrl"
+	currentImageUrl={data.product.heroImageUrl}
+	helpText="Used on product detail page"
 />
 ```
 
@@ -3798,10 +3827,10 @@ const imageUrl = formData.get('imageUrl')?.toString().trim() || null;
 const heroImageUrl = formData.get('heroImageUrl')?.toString().trim() || null;
 
 await db.insert(products).values({
-  // ... other fields
-  imageUrl,
-  heroImageUrl,
-  // ... more fields
+	// ... other fields
+	imageUrl,
+	heroImageUrl
+	// ... more fields
 });
 ```
 
@@ -3811,12 +3840,15 @@ await db.insert(products).values({
 const imageUrl = formData.get('imageUrl')?.toString().trim() || null;
 const heroImageUrl = formData.get('heroImageUrl')?.toString().trim() || null;
 
-await db.update(products).set({
-  // ... other fields
-  imageUrl,
-  heroImageUrl,
-  // ... more fields
-}).where(eq(products.id, id));
+await db
+	.update(products)
+	.set({
+		// ... other fields
+		imageUrl,
+		heroImageUrl
+		// ... more fields
+	})
+	.where(eq(products.id, id));
 ```
 
 ### Upload API URL Format Change
@@ -3849,4 +3881,3 @@ The `getPublicImageUrl()` function in `src/routes/api/upload/+server.ts` was upd
 
 - **6.10.12:** Image library/gallery to select from previously uploaded images (nice-to-have)
 - This would require additional API endpoint to list images from R2 and a modal/picker UI
-

@@ -10,6 +10,10 @@
 
 	// Computed values
 	let hasRecentOrders = $derived(data.recentOrders.length > 0);
+	let hasCookiesNeeded = $derived(data.cookiesNeededToday.length > 0);
+	let totalCookiesNeeded = $derived(
+		data.cookiesNeededToday.reduce((sum: number, item) => sum + item.quantity, 0)
+	);
 
 	/**
 	 * Get status badge color classes
@@ -83,6 +87,35 @@
 			<div class="text-sm font-medium text-text-light">Total Products</div>
 			<div class="mt-2 text-3xl font-bold text-secondary">{data.stats.totalProductsCount}</div>
 		</div>
+	</div>
+
+	<!-- Cookies Needed Today -->
+	<div class="rounded-xl bg-white p-6 shadow-md">
+		<div class="flex items-center justify-between">
+			<h2 class="text-xl font-bold text-secondary">Cookies Needed Today</h2>
+			{#if hasCookiesNeeded}
+				<span class="rounded-full bg-primary px-3 py-1 text-sm font-semibold text-white">
+					{totalCookiesNeeded} total
+				</span>
+			{/if}
+		</div>
+		{#if hasCookiesNeeded}
+			<div class="mt-4 space-y-2">
+				{#each data.cookiesNeededToday as cookie}
+					<div class="flex items-center justify-between rounded-lg bg-tertiary p-4">
+						<div class="flex items-center gap-3">
+							<span class="text-2xl">🍪</span>
+							<span class="font-medium text-secondary">{cookie.productName}</span>
+						</div>
+						<span class="rounded-full bg-primary px-3 py-1 font-bold text-white">
+							{cookie.quantity}
+						</span>
+					</div>
+				{/each}
+			</div>
+		{:else}
+			<p class="mt-4 text-text-light">No orders for today's fulfillment.</p>
+		{/if}
 	</div>
 
 	<!-- Recent Orders -->

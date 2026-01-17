@@ -5,6 +5,7 @@ import {
 	queryPendingOrdersCount,
 	queryTotalProductsCount,
 	queryRecentOrders,
+	queryCookiesNeededToday,
 	load
 } from './+page.server';
 
@@ -222,7 +223,8 @@ describe('Admin Dashboard Server Functions', () => {
 					pendingOrdersCount: 0,
 					totalProductsCount: 0
 				},
-				recentOrders: []
+				recentOrders: [],
+				cookiesNeededToday: []
 			});
 		});
 
@@ -237,7 +239,8 @@ describe('Admin Dashboard Server Functions', () => {
 					pendingOrdersCount: 0,
 					totalProductsCount: 0
 				},
-				recentOrders: []
+				recentOrders: [],
+				cookiesNeededToday: []
 			});
 		});
 
@@ -276,6 +279,17 @@ describe('Admin Dashboard Server Functions', () => {
 				])
 			};
 
+			const cookiesNeededQuery = {
+				from: vi.fn().mockReturnThis(),
+				where: vi.fn().mockResolvedValue([
+					{
+						items: [{ productId: 1, title: 'Chocolate Chip', priceCents: 350, quantity: 12 }],
+						status: 'paid',
+						fulfillmentDate: '2026-01-16'
+					}
+				])
+			};
+
 			// Mock db.select() to return different query chains
 			let selectCallCount = 0;
 			const mockDb = {
@@ -285,6 +299,7 @@ describe('Admin Dashboard Server Functions', () => {
 					if (selectCallCount === 2) return pendingCountQuery;
 					if (selectCallCount === 3) return productsCountQuery;
 					if (selectCallCount === 4) return recentOrdersQuery;
+					if (selectCallCount === 5) return cookiesNeededQuery;
 					return todayStatsQuery;
 				})
 			};
@@ -303,6 +318,11 @@ describe('Admin Dashboard Server Functions', () => {
 				totalProductsCount: 8
 			});
 			expect(result.recentOrders).toHaveLength(1);
+			expect(result.cookiesNeededToday).toHaveLength(1);
+			expect(result.cookiesNeededToday[0]).toEqual({
+				productName: 'Chocolate Chip',
+				quantity: 12
+			});
 		});
 
 		it('should return empty data on database error', async () => {
@@ -329,7 +349,8 @@ describe('Admin Dashboard Server Functions', () => {
 					pendingOrdersCount: 0,
 					totalProductsCount: 0
 				},
-				recentOrders: []
+				recentOrders: [],
+				cookiesNeededToday: []
 			});
 
 			consoleErrorSpy.mockRestore();
@@ -360,6 +381,14 @@ describe('Admin Dashboard Server Functions', () => {
 			expect(order.id).toBe(1);
 		});
 
+		it('should export CookieNeeded interface', () => {
+			const cookie: import('./+page.server').CookieNeeded = {
+				productName: 'Chocolate Chip',
+				quantity: 24
+			};
+			expect(cookie.productName).toBe('Chocolate Chip');
+		});
+
 		it('should export DashboardData interface', () => {
 			const data: import('./+page.server').DashboardData = {
 				stats: {
@@ -369,9 +398,149 @@ describe('Admin Dashboard Server Functions', () => {
 					pendingOrdersCount: 0,
 					totalProductsCount: 0
 				},
-				recentOrders: []
+				recentOrders: [],
+				cookiesNeededToday: []
 			};
 			expect(data.stats).toBeDefined();
+		});
+	});
+
+	describe('queryCookiesNeededToday', () => {
+		it('should return empty array when no orders for today', async () => {
+			const mockSelect = vi.fn().mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([])
+				})
+			});
+			const mockDb = { select: mockSelect } as any;
+
+			const result = await queryCookiesNeededToday(mockDb);
+
+			expect(result).toEqual([]);
+		});
+
+		it('should aggregate cookies by product name', async () => {
+			const mockOrders = [
+				{
+					items: [
+						{ productId: 1, title: 'Chocolate Chip', priceCents: 350, quantity: 12 },
+						{ productId: 2, title: 'Brownie', priceCents: 500, quantity: 6 }
+					],
+					status: 'paid',
+					fulfillmentDate: '2026-01-16'
+				},
+				{
+					items: [
+						{ productId: 1, title: 'Chocolate Chip', priceCents: 350, quantity: 6 },
+						{ productId: 3, title: 'Oatmeal Raisin', priceCents: 325, quantity: 12 }
+					],
+					status: 'fulfilled',
+					fulfillmentDate: '2026-01-16'
+				}
+			];
+
+			const mockSelect = vi.fn().mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockOrders)
+				})
+			});
+			const mockDb = { select: mockSelect } as any;
+
+			const result = await queryCookiesNeededToday(mockDb);
+
+			expect(result).toHaveLength(3);
+			expect(result[0]).toEqual({ productName: 'Chocolate Chip', quantity: 18 });
+			expect(result[1]).toEqual({ productName: 'Oatmeal Raisin', quantity: 12 });
+			expect(result[2]).toEqual({ productName: 'Brownie', quantity: 6 });
+		});
+
+		it('should sort by quantity descending', async () => {
+			const mockOrders = [
+				{
+					items: [
+						{ productId: 1, title: 'Product A', priceCents: 350, quantity: 5 },
+						{ productId: 2, title: 'Product B', priceCents: 350, quantity: 20 },
+						{ productId: 3, title: 'Product C', priceCents: 350, quantity: 10 }
+					],
+					status: 'paid',
+					fulfillmentDate: '2026-01-16'
+				}
+			];
+
+			const mockSelect = vi.fn().mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockOrders)
+				})
+			});
+			const mockDb = { select: mockSelect } as any;
+
+			const result = await queryCookiesNeededToday(mockDb);
+
+			expect(result[0].quantity).toBe(20);
+			expect(result[1].quantity).toBe(10);
+			expect(result[2].quantity).toBe(5);
+		});
+
+		it('should handle orders with null items', async () => {
+			const mockOrders = [
+				{
+					items: null,
+					status: 'paid',
+					fulfillmentDate: '2026-01-16'
+				}
+			];
+
+			const mockSelect = vi.fn().mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockOrders)
+				})
+			});
+			const mockDb = { select: mockSelect } as any;
+
+			const result = await queryCookiesNeededToday(mockDb);
+
+			expect(result).toEqual([]);
+		});
+
+		it('should filter by fulfillment date (today)', async () => {
+			const mockSelect = vi.fn().mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([])
+				})
+			});
+			const mockDb = { select: mockSelect } as any;
+
+			await queryCookiesNeededToday(mockDb);
+
+			const whereCall = mockSelect.mock.results[0].value.from.mock.results[0].value.where;
+			expect(whereCall).toHaveBeenCalled();
+		});
+
+		it('should only include paid and fulfilled orders', async () => {
+			const mockOrders = [
+				{
+					items: [{ productId: 1, title: 'Cookie', priceCents: 350, quantity: 10 }],
+					status: 'paid',
+					fulfillmentDate: '2026-01-16'
+				},
+				{
+					items: [{ productId: 1, title: 'Cookie', priceCents: 350, quantity: 5 }],
+					status: 'fulfilled',
+					fulfillmentDate: '2026-01-16'
+				}
+			];
+
+			const mockSelect = vi.fn().mockReturnValue({
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockOrders)
+				})
+			});
+			const mockDb = { select: mockSelect } as any;
+
+			const result = await queryCookiesNeededToday(mockDb);
+
+			// Should aggregate both orders
+			expect(result[0]).toEqual({ productName: 'Cookie', quantity: 15 });
 		});
 	});
 });

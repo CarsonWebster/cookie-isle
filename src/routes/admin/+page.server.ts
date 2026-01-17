@@ -21,9 +21,15 @@ export interface RecentOrder {
 	createdAt: string | null;
 }
 
+export interface CookieNeeded {
+	productName: string;
+	quantity: number;
+}
+
 export interface DashboardData {
 	stats: DashboardStats;
 	recentOrders: RecentOrder[];
+	cookiesNeededToday: CookieNeeded[];
 }
 
 /**
@@ -104,6 +110,45 @@ export async function queryRecentOrders(db: ReturnType<typeof getDb>): Promise<R
 	}));
 }
 
+/**
+ * Query cookies needed for today's fulfillment slots
+ * Groups by product and sums quantities
+ */
+export async function queryCookiesNeededToday(
+	db: ReturnType<typeof getDb>
+): Promise<CookieNeeded[]> {
+	const today = getTodayDate();
+
+	// Get today's orders that need fulfillment (paid or fulfilled status)
+	const todayOrders = await db
+		.select({
+			items: orders.items,
+			status: orders.status,
+			fulfillmentDate: orders.fulfillmentDate
+		})
+		.from(orders)
+		.where(sql`${orders.fulfillmentDate} = ${today} AND ${orders.status} IN ('paid', 'fulfilled')`);
+
+	// Aggregate items by product name
+	const cookiesByProduct = new Map<string, number>();
+
+	for (const order of todayOrders) {
+		if (order.items && Array.isArray(order.items)) {
+			for (const item of order.items) {
+				const existingQty = cookiesByProduct.get(item.title) || 0;
+				cookiesByProduct.set(item.title, existingQty + item.quantity);
+			}
+		}
+	}
+
+	// Convert map to array and sort by quantity descending
+	const result: CookieNeeded[] = Array.from(cookiesByProduct.entries())
+		.map(([productName, quantity]) => ({ productName, quantity }))
+		.sort((a, b) => b.quantity - a.quantity);
+
+	return result;
+}
+
 export const load = async ({ platform }: RequestEvent) => {
 	// Return empty data if platform unavailable
 	if (!platform?.env?.DB) {
@@ -115,7 +160,8 @@ export const load = async ({ platform }: RequestEvent) => {
 				pendingOrdersCount: 0,
 				totalProductsCount: 0
 			},
-			recentOrders: []
+			recentOrders: [],
+			cookiesNeededToday: []
 		};
 	}
 
@@ -123,12 +169,14 @@ export const load = async ({ platform }: RequestEvent) => {
 		const db = getDb(platform);
 
 		// Query all stats in parallel
-		const [todayStats, pendingCount, productsCount, recentOrders] = await Promise.all([
-			queryTodayStats(db),
-			queryPendingOrdersCount(db),
-			queryTotalProductsCount(db),
-			queryRecentOrders(db)
-		]);
+		const [todayStats, pendingCount, productsCount, recentOrders, cookiesNeeded] =
+			await Promise.all([
+				queryTodayStats(db),
+				queryPendingOrdersCount(db),
+				queryTotalProductsCount(db),
+				queryRecentOrders(db),
+				queryCookiesNeededToday(db)
+			]);
 
 		return {
 			stats: {
@@ -138,7 +186,8 @@ export const load = async ({ platform }: RequestEvent) => {
 				pendingOrdersCount: pendingCount,
 				totalProductsCount: productsCount
 			},
-			recentOrders
+			recentOrders,
+			cookiesNeededToday: cookiesNeeded
 		};
 	} catch (error) {
 		console.error('Admin dashboard load error:', error);
@@ -151,7 +200,8 @@ export const load = async ({ platform }: RequestEvent) => {
 				pendingOrdersCount: 0,
 				totalProductsCount: 0
 			},
-			recentOrders: []
+			recentOrders: [],
+			cookiesNeededToday: []
 		};
 	}
 };

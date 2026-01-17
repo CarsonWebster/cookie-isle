@@ -954,13 +954,13 @@ Before marking any TODO as complete:
 | ------ | ------------------------------------------------------------------- | --------- |
 | 6.6.1  | Create `src/routes/admin/+page.server.ts`                           | Completed |
 | 6.6.2  | Query today's orders count and total revenue                        | Completed |
-| 6.6.3  | Query orders for today grouped by product for "cookies needed"      | Deferred  |
+| 6.6.3  | Query orders for today grouped by product for "cookies needed"      | Completed |
 | 6.6.4  | Query pending orders count                                          | Completed |
 | 6.6.5  | Query this week's revenue                                           | Deferred  |
 | 6.6.6  | Load 5 most recent orders                                           | Completed |
 | 6.6.7  | Create `src/routes/admin/+page.svelte`                              | Completed |
 | 6.6.8  | Display stat cards: Today's Orders, Today's Revenue, Pending Orders | Completed |
-| 6.6.9  | Display "Cookies Needed Today" breakdown by product                 | Deferred  |
+| 6.6.9  | Display "Cookies Needed Today" breakdown by product                 | Completed |
 | 6.6.10 | Display recent orders list with status badges                       | Completed |
 | 6.6.11 | Add quick links to common actions                                   | Completed |
 | 6.6.12 | Style with Tailwind: card grid, clean typography                    | Completed |
