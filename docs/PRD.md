@@ -1025,29 +1025,29 @@ Before marking any TODO as complete:
 
 ### 6.10 Product create page
 
-**Status:** Not Started
+**Status:** Completed (except image upload - deferred to Phase 5.1)
 
-| ID      | Task                                                                                  | Status      |
-| ------- | ------------------------------------------------------------------------------------- | ----------- |
-| 6.10.1  | Create `src/routes/admin/products/new/+page.svelte`                                   | Not Started |
-| 6.10.2  | Create product form with fields: title, slug (auto-generated), price, stripe_price_id | Not Started |
-| 6.10.3  | Add description textarea                                                              | Not Started |
-| 6.10.4  | Add ingredients textarea                                                              | Not Started |
-| 6.10.5  | Add tags input (comma-separated or tag chips)                                         | Not Started |
-| 6.10.6  | Add featured checkbox                                                                 | Not Started |
-| 6.10.7  | Add active checkbox (default true)                                                    | Not Started |
-| 6.10.8  | Add sort_order number input                                                           | Not Started |
-| 6.10.9  | Create image upload component with drag-and-drop                                      | Not Started |
-| 6.10.10 | Upload image to R2 via /api/upload                                                    | Not Started |
-| 6.10.11 | Display uploaded image preview                                                        | Not Started |
-| 6.10.12 | Allow selecting from previously uploaded images                                       | Not Started |
-| 6.10.13 | Add separate hero image upload                                                        | Not Started |
-| 6.10.14 | Create `+page.server.ts` with form action to insert product                           | Not Started |
-| 6.10.15 | Validate required fields                                                              | Not Started |
-| 6.10.16 | Generate slug from title if not provided                                              | Not Started |
-| 6.10.17 | Redirect to /admin/products on success                                                | Not Started |
-| 6.10.18 | Write page test in `tests/integration/admin-product-create.test.ts`                   | Not Started |
-| 6.10.19 | **Commit:** `feat: create product create page with image upload`                      | Not Started |
+| ID      | Task                                                                                  | Status    |
+| ------- | ------------------------------------------------------------------------------------- | --------- |
+| 6.10.1  | Create `src/routes/admin/products/new/+page.svelte`                                   | Completed |
+| 6.10.2  | Create product form with fields: title, slug (auto-generated), price, stripe_price_id | Completed |
+| 6.10.3  | Add description textarea                                                              | Completed |
+| 6.10.4  | Add ingredients textarea                                                              | Completed |
+| 6.10.5  | Add tags input (comma-separated or tag chips)                                         | Completed |
+| 6.10.6  | Add featured checkbox                                                                 | Completed |
+| 6.10.7  | Add active checkbox (default true)                                                    | Completed |
+| 6.10.8  | Add sort_order number input                                                           | Completed |
+| 6.10.9  | Create image upload component with drag-and-drop                                      | Deferred  |
+| 6.10.10 | Upload image to R2 via /api/upload                                                    | Deferred  |
+| 6.10.11 | Display uploaded image preview                                                        | Deferred  |
+| 6.10.12 | Allow selecting from previously uploaded images                                       | Deferred  |
+| 6.10.13 | Add separate hero image upload                                                        | Deferred  |
+| 6.10.14 | Create `+page.server.ts` with form action to insert product                           | Completed |
+| 6.10.15 | Validate required fields                                                              | Completed |
+| 6.10.16 | Generate slug from title if not provided                                              | Completed |
+| 6.10.17 | Redirect to /admin/products on success                                                | Completed |
+| 6.10.18 | Write page test in `page.server.spec.ts` (12 tests)                                   | Completed |
+| 6.10.19 | **Commit:** `feat: create product create page with form and validation`               | Completed |
 
 ### 6.11 Product edit page
 

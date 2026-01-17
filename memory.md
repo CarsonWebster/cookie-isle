@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16, Phase 6.4 Complete)
+## Current Progress (as of 2026-01-17, Phase 6.10 Complete)
 
 ### Phase 0 Status: COMPLETE
 
@@ -161,7 +161,8 @@ export const tableName = sqliteTable('table_name', {
 34. ~~Admin orders list page (PRD 6.7)~~ DONE - `src/routes/admin/orders/` with 24 tests
 35. ~~Order detail page (PRD 6.8)~~ DONE - `src/routes/admin/orders/[id]/` with 31 tests
 36. ~~Products list page (PRD 6.9)~~ DONE - `src/routes/admin/products/` with 21 tests
-37. **NEXT: Phase 6.10 - Product Create Page** - Form to add new products with image upload
+37. ~~Product create page (PRD 6.10)~~ DONE - `src/routes/admin/products/new/` with 12 tests
+38. **NEXT: Phase 6.11 - Product Edit Page** - Edit existing products with delete functionality
 
 ## Commands Reference
 
@@ -243,7 +244,8 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/admin/orders/page.server.spec.ts`              | 24    | Admin orders list with filters       |
 | `src/routes/admin/orders/[id]/page.server.spec.ts`         | 31    | Order detail page with status update |
 | `src/routes/admin/products/page.server.spec.ts`            | 21    | Admin products list with toggles     |
-| **Total**                                                  | 1097  |                                      |
+| `src/routes/admin/products/new/page.server.spec.ts`        | 12    | Product create form validation       |
+| **Total**                                                  | 1109  |                                      |
 
 ## Site Config Notes
 
@@ -2920,12 +2922,12 @@ The `src/routes/admin/products/` page implements product catalog management.
 
 ### Server Functions
 
-| Function             | Purpose                                |
-| -------------------- | -------------------------------------- |
-| `queryProducts()`    | Load all products with price formatting|
-| `toggleProductActive()` | Update product active status        |
-| `load()`             | PageServerLoad function                |
-| `actions.toggleActive` | Form action for toggle switch       |
+| Function                | Purpose                                 |
+| ----------------------- | --------------------------------------- |
+| `queryProducts()`       | Load all products with price formatting |
+| `toggleProductActive()` | Update product active status            |
+| `load()`                | PageServerLoad function                 |
+| `actions.toggleActive`  | Form action for toggle switch           |
 
 ### AdminProduct Interface
 
@@ -3007,8 +3009,122 @@ export const actions: Actions = {
 </button>
 ```
 
+## Product Create Page Notes (Phase 6.10 - COMPLETE)
+
+The `src/routes/admin/products/new/` page implements product creation with form validation.
+
+### Key Features
+
+1. **Auto-generated Slug:**
+   - Generates slug from title automatically using `generateSlug()` function
+   - User can manually override by editing the slug field
+   - Uses `$effect()` to watch title changes and update slug when in auto mode
+   - `autoSlug` state tracks whether slug should auto-update
+
+2. **Form Validation:**
+   - Required fields: title, slug, price, stripePriceId
+   - Slug format: lowercase letters, numbers, and hyphens only (`/^[a-z0-9-]+$/`)
+   - Price validation: positive number, converted to cents (e.g., $5.00 → 500 cents)
+   - Slug uniqueness check against existing products in database
+
+3. **Optional Fields:**
+   - description (textarea)
+   - ingredients (textarea)
+   - tags (comma-separated input, parsed to string array)
+   - sortOrder (number, defaults to 0)
+   - featured (checkbox, defaults to false)
+   - active (checkbox, defaults to false)
+
+4. **Error Handling:**
+   - Field-level errors displayed below each input
+   - Form-level errors displayed in red alert box
+   - Type-safe error handling with `getError()` helper function
+   - Handles both `{ errors: Record<string, string> }` and `{ error: string }` return types
+
+5. **Server Action:**
+   - Validates all fields server-side
+   - Checks slug uniqueness with `eq()` from drizzle-orm
+   - Parses tags by trimming and splitting on commas
+   - Converts price from dollars to cents
+   - Redirects to `/admin/products` on success (303 redirect)
+
+### Implementation Patterns
+
+**Slug Generation Function:**
+
+```typescript
+function generateSlug(text: string): string {
+	return text
+		.toLowerCase()
+		.trim()
+		.replace(/[^\w\s-]/g, '') // Remove non-word chars except spaces and hyphens
+		.replace(/[\s_-]+/g, '-') // Replace spaces, underscores, hyphens with single hyphen
+		.replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+}
+```
+
+**Error Display Helper:**
+
+```typescript
+function getError(field: string): string | undefined {
+	if (!form || typeof form !== 'object') return undefined;
+	if (!('errors' in form) || !form.errors) return undefined;
+	const errors = form.errors as Record<string, string>;
+	return errors[field];
+}
+```
+
+**Form Action Pattern:**
+
+```typescript
+export const actions: Actions = {
+	default: async ({ request, platform }) => {
+		const db = getDb(platform);
+		if (!db) return fail(500, { error: 'Database not available' });
+
+		const formData = await request.formData();
+		// ... parse and validate
+
+		if (Object.keys(errors).length > 0) {
+			return fail(400, { errors });
+		}
+
+		// Check slug uniqueness
+		const existing = await db.select().from(products).where(eq(products.slug, slug!)).limit(1);
+		if (existing.length > 0) {
+			return fail(400, { errors: { slug: 'This slug is already in use...' } });
+		}
+
+		// Insert product
+		await db.insert(products).values({ ... });
+		throw redirect(303, '/admin/products');
+	}
+};
+```
+
+### Test Coverage
+
+12 tests in `page.server.spec.ts` covering:
+
+- **Form Validation:** Missing/invalid title, slug, price, stripePriceId
+- **Slug Uniqueness:** Duplicate slug detection
+- **Successful Creation:** Full form data, minimal fields, tag parsing
+- **Error Handling:** Database unavailable, insert failures
+
+### Deferred Items
+
+Image upload functionality (tasks 6.10.9-6.10.13) deferred to Phase 5.1:
+
+- Drag-and-drop image upload
+- R2 integration via `/api/upload`
+- Image preview display
+- Image library selection
+- Hero image upload
+
+These require the R2 upload endpoint from Phase 5.1 to be implemented first.
+
 ### Next Steps
 
-- Product create page (6.10) - Form with image upload to R2
 - Product edit page (6.11) - Pre-populated form with delete option
-- Image upload endpoint is already in PRD (5.1) but not yet implemented
+- Fulfillment slots management (6.12) - Calendar-based slot creation
+- Image upload endpoint (5.1) - Required before adding image upload to product forms
