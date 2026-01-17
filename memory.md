@@ -14,16 +14,12 @@ This file contains useful findings for future agents working on this project.
 
 - 0.1-0.5: Completed (project setup, TypeScript, Vitest, Tailwind)
 - 0.6: Partially complete (D1 configured, R2 pending - needs enabling in CF Dashboard)
-- 0.7: Schema and Migrations MOSTLY COMPLETE
-  - `products` - DONE
-  - `orders` - DONE
-  - `newsletter` - DONE
-  - `fulfillmentSlots` - DONE
-  - `dailyCapacity` - DONE
-  - `adminSessions` - DONE
-  - Migrations generated (0.7.8) - DONE
-  - Remaining: push to D1 (0.7.9 - needs CF credentials), schema tests (0.7.10)
-- 0.8: Database helper EXISTS (`src/lib/server/db/index.ts`) - just needs verification and tests
+- 0.7: Schema and Migrations COMPLETE
+  - All 6 tables in schema: `products`, `orders`, `newsletter`, `fulfillmentSlots`, `dailyCapacity`, `adminSessions`
+  - Migrations generated - DONE
+  - Schema tests written (23 tests) - DONE (`src/lib/server/db/schema.spec.ts`)
+  - Remaining: push to D1 (0.7.9 - needs CF credentials)
+- 0.8: Database helper EXISTS (`src/lib/server/db/index.ts`) - just needs tests
 
 ## Key File Locations
 
@@ -62,9 +58,9 @@ export const tableName = sqliteTable('table_name', {
 
 1. ~~Add `adminSessions` table to schema (PRD 0.7.6)~~ DONE
 2. ~~Generate migrations (PRD 0.7.8)~~ DONE - See `drizzle/migrations/0000_unknown_mandrill.sql`
-3. Push migrations to D1 (PRD 0.7.9) - Requires CF credentials in env vars
-4. Write schema type tests (PRD 0.7.10)
-5. Verify database helper (PRD 0.8) - `src/lib/server/db/index.ts` already exists with `getDb()` and `createDb()`
+3. ~~Write schema type tests (PRD 0.7.10)~~ DONE - 23 tests in `src/lib/server/db/schema.spec.ts`
+4. Push migrations to D1 (PRD 0.7.9) - Requires CF credentials in env vars (blocked on CF setup)
+5. Write database helper tests (PRD 0.8.4) - `src/lib/server/db/index.ts` already has implementation
 6. Start Phase 1: Core Layout & Components (1.1 Site configuration is first)
 
 ## Commands Reference
@@ -88,3 +84,5 @@ bun run db:push      # Push schema to D1
 6. **PRD sync:** Some PRD task statuses were out of sync - products/newsletter tables were marked "Not Started" but existed. Fixed in this session.
 7. **Migrations generated:** The migration file `drizzle/migrations/0000_unknown_mandrill.sql` contains CREATE TABLE for all 6 tables. Ready to push to D1.
 8. **drizzle-kit generate works locally:** The d1-http driver credentials are only needed for `push` operations, not `generate`.
+9. **Test file locations:** Tests live in `src/` alongside source files, not in a separate `tests/` directory. Use `*.spec.ts` for server tests and `*.svelte.spec.ts` for browser tests.
+10. **Drizzle introspection:** Use `getTableName()` and `getTableColumns()` from `drizzle-orm` to introspect schema for testing.

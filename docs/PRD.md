@@ -305,32 +305,34 @@ Before marking any TODO as complete:
 
 **Status:** In Progress
 
-| ID     | Task                                                                  | Status      |
-| ------ | --------------------------------------------------------------------- | ----------- |
-| 0.7.1  | Create `drizzle/schema.ts` with `products` table (see Appendix A)     | Completed   |
-| 0.7.2  | Add `orders` table to schema                                          | Completed   |
-| 0.7.3  | Add `newsletter` table to schema                                      | Completed   |
-| 0.7.4  | Add `fulfillmentSlots` table to schema                                | Completed   |
-| 0.7.5  | Add `dailyCapacity` table to schema                                   | Completed   |
-| 0.7.6  | Add `adminSessions` table to schema                                   | Completed   |
-| 0.7.7  | Create TypeScript types for JSON columns (OrderItem, DeliveryAddress) | Completed   |
-| 0.7.8  | Run `bun run drizzle-kit generate` to create SQL migration            | Completed   |
-| 0.7.9  | Run `bun run drizzle-kit push` to apply schema to D1                  | Not Started |
-| 0.7.10 | Write unit tests for schema types in `tests/unit/schema.test.ts`      | Not Started |
-| 0.7.11 | **Commit:** `feat: create database schema with Drizzle`               | Not Started |
+| ID     | Task                                                                    | Status      |
+| ------ | ----------------------------------------------------------------------- | ----------- |
+| 0.7.1  | Create `drizzle/schema.ts` with `products` table (see Appendix A)       | Completed   |
+| 0.7.2  | Add `orders` table to schema                                            | Completed   |
+| 0.7.3  | Add `newsletter` table to schema                                        | Completed   |
+| 0.7.4  | Add `fulfillmentSlots` table to schema                                  | Completed   |
+| 0.7.5  | Add `dailyCapacity` table to schema                                     | Completed   |
+| 0.7.6  | Add `adminSessions` table to schema                                     | Completed   |
+| 0.7.7  | Create TypeScript types for JSON columns (OrderItem, DeliveryAddress)   | Completed   |
+| 0.7.8  | Run `bun run drizzle-kit generate` to create SQL migration              | Completed   |
+| 0.7.9  | Run `bun run drizzle-kit push` to apply schema to D1                    | Not Started |
+| 0.7.10 | Write unit tests for schema types in `src/lib/server/db/schema.spec.ts` | Completed   |
+| 0.7.11 | **Commit:** `feat: create database schema with Drizzle`                 | Not Started |
 
 ### 0.8 Create database helper
 
-**Status:** Not Started
+**Status:** Partially Complete
 
-| ID    | Task                                                          | Status      |
-| ----- | ------------------------------------------------------------- | ----------- |
-| 0.8.1 | Create `src/lib/server/db.ts` with `getDb(platform)` function | Not Started |
-| 0.8.2 | Export typed Drizzle instance that takes Platform.env.DB      | Not Started |
-| 0.8.3 | Add error handling for missing DB binding                     | Not Started |
-| 0.8.4 | Write unit test for db helper in `tests/unit/db.test.ts`      | Not Started |
-| 0.8.5 | Run `bun run check` and `bun run test:unit` - must pass       | Not Started |
-| 0.8.6 | **Commit:** `feat: add database connection helper`            | Not Started |
+> Note: Database helper already exists at `src/lib/server/db/index.ts` with `getDb()` and `createDb()` functions. Just needs tests.
+
+| ID    | Task                                                                | Status      |
+| ----- | ------------------------------------------------------------------- | ----------- |
+| 0.8.1 | Create `src/lib/server/db/index.ts` with `getDb(platform)` function | Completed   |
+| 0.8.2 | Export typed Drizzle instance that takes Platform.env.DB            | Completed   |
+| 0.8.3 | Add error handling for missing DB binding                           | Completed   |
+| 0.8.4 | Write unit test for db helper in `src/lib/server/db/db.spec.ts`     | Not Started |
+| 0.8.5 | Run `bun run check` and `bun run test:unit` - must pass             | Not Started |
+| 0.8.6 | **Commit:** `feat: add database connection helper`                  | Not Started |
 
 ---
 
