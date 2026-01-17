@@ -285,39 +285,39 @@ Before marking any TODO as complete:
 
 ### 0.6 Setup Drizzle ORM + Cloudflare D1
 
-**Status:** Partially Complete
+**Status:** Completed
 
-> Note: `sv` configured Drizzle for libsql (Turso). Need to reconfigure for Cloudflare D1.
+> Note: D1 and R2 are now fully configured. Remote D1 has schema and seed data applied.
 
-| ID    | Task                                                                                    | Status                                    |
-| ----- | --------------------------------------------------------------------------------------- | ----------------------------------------- |
-| 0.6.1 | Drizzle packages installed: `drizzle-orm`, `drizzle-kit`                                | Completed                                 |
-| 0.6.2 | Create D1 database: `npx wrangler d1 create cookie-isle-db`                             | Completed                                 |
-| 0.6.3 | Create R2 bucket: `npx wrangler r2 bucket create cookie-isle-images`                    | Pending (Enable R2 in CF Dashboard first) |
-| 0.6.4 | Update `wrangler.jsonc` with D1 and R2 bindings                                         | Completed (D1 only, R2 commented out)     |
-| 0.6.5 | Update `drizzle.config.ts` for D1 with d1-http driver                                   | Not Started                               |
-| 0.6.6 | Update `src/lib/server/db/index.ts` to use D1 binding from platform.env                 | Not Started                               |
-| 0.6.7 | `src/app.d.ts` already has Platform interface (uses Env from worker-configuration.d.ts) | Completed                                 |
-| 0.6.8 | Run `npx wrangler types` to regenerate types after D1/R2 bindings                       | Completed                                 |
-| 0.6.9 | **Commit:** `feat: setup Drizzle ORM with Cloudflare D1 and R2 bindings`                | Not Started                               |
+| ID    | Task                                                                                    | Status    |
+| ----- | --------------------------------------------------------------------------------------- | --------- |
+| 0.6.1 | Drizzle packages installed: `drizzle-orm`, `drizzle-kit`                                | Completed |
+| 0.6.2 | Create D1 database: `npx wrangler d1 create cookie-isle-db`                             | Completed |
+| 0.6.3 | Create R2 bucket: `npx wrangler r2 bucket create cookie-isle-images`                    | Completed |
+| 0.6.4 | Update `wrangler.jsonc` with D1 and R2 bindings                                         | Completed |
+| 0.6.5 | Update `drizzle.config.ts` for D1 with d1-http driver                                   | Completed |
+| 0.6.6 | Update `src/lib/server/db/index.ts` to use D1 binding from platform.env                 | Completed |
+| 0.6.7 | `src/app.d.ts` already has Platform interface (uses Env from worker-configuration.d.ts) | Completed |
+| 0.6.8 | Run `npx wrangler types` to regenerate types after D1/R2 bindings                       | Completed |
+| 0.6.9 | **Commit:** `feat: setup Drizzle ORM with Cloudflare D1 and R2 bindings`                | Completed |
 
 ### 0.7 Create database schema
 
-**Status:** Completed (local)
+**Status:** Completed
 
-| ID     | Task                                                                    | Status            |
-| ------ | ----------------------------------------------------------------------- | ----------------- |
-| 0.7.1  | Create `drizzle/schema.ts` with `products` table (see Appendix A)       | Completed         |
-| 0.7.2  | Add `orders` table to schema                                            | Completed         |
-| 0.7.3  | Add `newsletter` table to schema                                        | Completed         |
-| 0.7.4  | Add `fulfillmentSlots` table to schema                                  | Completed         |
-| 0.7.5  | Add `dailyCapacity` table to schema                                     | Completed         |
-| 0.7.6  | Add `adminSessions` table to schema                                     | Completed         |
-| 0.7.7  | Create TypeScript types for JSON columns (OrderItem, DeliveryAddress)   | Completed         |
-| 0.7.8  | Run `bun run drizzle-kit generate` to create SQL migration              | Completed         |
-| 0.7.9  | Run `bun run drizzle-kit push` to apply schema to D1                    | Completed (local) |
-| 0.7.10 | Write unit tests for schema types in `src/lib/server/db/schema.spec.ts` | Completed         |
-| 0.7.11 | **Commit:** `feat: create database schema with Drizzle`                 | Not Started       |
+| ID     | Task                                                                    | Status      |
+| ------ | ----------------------------------------------------------------------- | ----------- |
+| 0.7.1  | Create `drizzle/schema.ts` with `products` table (see Appendix A)       | Completed   |
+| 0.7.2  | Add `orders` table to schema                                            | Completed   |
+| 0.7.3  | Add `newsletter` table to schema                                        | Completed   |
+| 0.7.4  | Add `fulfillmentSlots` table to schema                                  | Completed   |
+| 0.7.5  | Add `dailyCapacity` table to schema                                     | Completed   |
+| 0.7.6  | Add `adminSessions` table to schema                                     | Completed   |
+| 0.7.7  | Create TypeScript types for JSON columns (OrderItem, DeliveryAddress)   | Completed   |
+| 0.7.8  | Run `bun run drizzle-kit generate` to create SQL migration              | Completed   |
+| 0.7.9  | Run `bun run drizzle-kit push` to apply schema to D1                    | Completed   |
+| 0.7.10 | Write unit tests for schema types in `src/lib/server/db/schema.spec.ts` | Completed   |
+| 0.7.11 | **Commit:** `feat: create database schema with Drizzle`                 | Not Started |
 
 ### 0.8 Create database helper
 
@@ -901,17 +901,18 @@ Before marking any TODO as complete:
 
 ### 6.3 Admin auth guard
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                               | Status      |
-| ----- | -------------------------------------------------- | ----------- |
-| 6.3.1 | Create `src/routes/admin/+layout.server.ts`        | Not Started |
-| 6.3.2 | Get `admin_session` cookie from request            | Not Started |
-| 6.3.3 | Validate session using auth helper                 | Not Started |
-| 6.3.4 | If invalid or missing, redirect to `/admin/login`  | Not Started |
-| 6.3.5 | If valid, continue to requested page               | Not Started |
-| 6.3.6 | Exclude `/admin/login` from auth check             | Not Started |
-| 6.3.7 | **Commit:** `feat: add admin authentication guard` | Not Started |
+| ID    | Task                                                         | Status    |
+| ----- | ------------------------------------------------------------ | --------- |
+| 6.3.1 | Create `src/routes/admin/+layout.server.ts`                  | Completed |
+| 6.3.2 | Get `admin_session` cookie from request                      | Completed |
+| 6.3.3 | Validate session using auth helper                           | Completed |
+| 6.3.4 | If invalid or missing, redirect to `/admin/login`            | Completed |
+| 6.3.5 | If valid, continue to requested page                         | Completed |
+| 6.3.6 | Exclude `/admin/login` from auth check                       | Completed |
+| 6.3.7 | Write unit tests in `src/routes/admin/layout.server.spec.ts` | Completed |
+| 6.3.8 | **Commit:** `feat: add admin authentication guard`           | Completed |
 
 ### 6.4 Admin layout
 

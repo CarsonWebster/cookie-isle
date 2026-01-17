@@ -8,19 +8,20 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16, Phase 6.2 Complete)
+## Current Progress (as of 2026-01-17, Phase 6.2 Complete)
 
-### Phase 0 Status: COMPLETE (except CF deployment tasks)
+### Phase 0 Status: COMPLETE
 
 - 0.1-0.5: Completed (project setup, TypeScript, Vitest, Tailwind)
-- 0.6: Partially complete (D1 configured, R2 pending - needs enabling in CF Dashboard)
+- 0.6: COMPLETE - D1 and R2 fully configured
+  - D1 database created and schema applied to remote
+  - R2 bucket `cookie-isle-images` created and bound in wrangler.jsonc
+  - Worker types regenerated with `IMAGES: R2Bucket` binding
 - 0.7: Schema and Migrations COMPLETE
   - All 6 tables in schema: `products`, `orders`, `newsletter`, `fulfillmentSlots`, `dailyCapacity`, `adminSessions`
-  - Migrations generated - DONE
+  - Migrations generated and applied to both local AND remote D1
+  - Seed data applied to both local AND remote D1
   - Schema tests written (23 tests) - DONE (`src/lib/server/db/schema.spec.ts`)
-  - Local D1 schema applied - DONE (via wrangler d1 execute --local)
-  - Seed data created - DONE (`drizzle/seed.sql` with 4 products, 4 fulfillment slots)
-  - Remaining: push to remote D1 (needs CF credentials)
 - 0.8: Database helper COMPLETE
   - Implementation: `src/lib/server/db/index.ts` with `getDb()` and `createDb()` functions
   - Tests: `src/lib/server/db/db.spec.ts` (10 tests) - Tests cover error handling and successful DB creation
@@ -96,7 +97,7 @@ This file contains useful findings for future agents working on this project.
 | `src/routes/api/newsletter/+server.ts`      | Newsletter signup API endpoint                           |
 | `src/lib/server/auth.ts`                    | Admin auth helpers (session mgmt, password verify)       |
 | `drizzle.config.ts`                         | Drizzle Kit config (uses d1-http driver)                 |
-| `wrangler.jsonc`                            | Cloudflare bindings (D1 configured, R2 commented out)    |
+| `wrangler.jsonc`                            | Cloudflare bindings (D1 and R2 configured)               |
 | `AGENTS.md`                                 | Agent instructions and coding standards                  |
 
 ## Testing Notes
@@ -157,7 +158,7 @@ export const tableName = sqliteTable('table_name', {
 31. ~~Checkout success page (PRD 4.4)~~ DONE - `src/routes/(public)/checkout/success/` with 27 tests
 32. ~~Newsletter signup endpoint (PRD 4.5)~~ DONE - `src/routes/api/newsletter/+server.ts` with 54 tests
 33. ~~Connect newsletter form (PRD 4.6)~~ DONE - ComingSoon component now POSTs to `/api/newsletter`
-34. **NEXT: Phase 5 - R2 Image Upload** - Start with R2 upload endpoint (PRD 5.1)
+34. **NEXT: Phase 5 - R2 Image Upload** - R2 bucket is ready, start with upload endpoint (PRD 5.1)
 
 ## Commands Reference
 
@@ -184,23 +185,25 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 ## Gotchas
 
 1. **Playwright installed:** Browser tests now work. Run `npx playwright install` if browsers get removed.
-2. **R2 not enabled:** R2 bucket binding is commented out in `wrangler.jsonc` - needs enabling in CF Dashboard first
-3. **Database helper exists:** Task 0.8 says "Not Started" but `src/lib/server/db/index.ts` already has `getDb()` function
+2. **R2 now enabled:** R2 bucket `cookie-isle-images` is created and bound in `wrangler.jsonc` as `IMAGES`.
+3. **Remote D1 ready:** Schema and seed data have been pushed to remote D1. Both local and remote databases are in sync.
 4. **Commit message style:** Use conventional commits (`feat:`, `fix:`, `chore:`, etc.)
-5. **Schema complete:** All 6 tables are now in schema.ts. Migrations have been generated.
-6. **PRD sync:** Some PRD task statuses were out of sync - products/newsletter tables were marked "Not Started" but existed. Fixed in this session.
-7. **Migrations generated:** The migration file `drizzle/migrations/0000_unknown_mandrill.sql` contains CREATE TABLE for all 6 tables. Ready to push to D1.
+5. **Schema complete:** All 6 tables are now in schema.ts. Migrations have been generated and applied.
+6. **PRD sync:** PRD task statuses should be kept up to date as work progresses.
+7. **Migrations applied:** The migration file `drizzle/migrations/0000_unknown_mandrill.sql` has been applied to both local and remote D1.
 8. **drizzle-kit generate works locally:** The d1-http driver credentials are only needed for `push` operations, not `generate`.
 9. **Test file locations:** Tests live in `src/` alongside source files, not in a separate `tests/` directory. Use `*.spec.ts` for server tests and `*.svelte.spec.ts` for browser tests.
 10. **Drizzle introspection:** Use `getTableName()` and `getTableColumns()` from `drizzle-orm` to introspect schema for testing.
 11. **Mocking drizzle-orm/d1:** When testing database helpers, mock the `drizzle-orm/d1` module with `vi.mock()`. See `db.spec.ts` for the pattern.
 12. **D1Database mocking:** Create mock D1Database with `prepare`, `dump`, `batch`, `exec` methods. Cast as `unknown as D1Database` to satisfy TypeScript.
-13. **Phase 0 complete:** All coding tasks in Phase 0 are done. Only blocked tasks are CF deployment (0.6.3 R2, 0.7.9 push to D1) which require manual CF Dashboard setup.
+13. **Phase 0 complete:** All coding and deployment tasks in Phase 0 are done.
 14. **Favicon location:** The favicon is at `src/lib/assets/favicon.svg`, not in `static/favicon/`. It's imported as a Svelte asset.
 15. **Tailwind theme colors:** Custom colors are defined in `src/routes/layout.css` under `@theme`. Use them as `bg-tertiary`, `text-primary`, etc.
 16. **Root layout pattern:** Uses Svelte 5 runes (`$props`) and imports config from `$lib/config`. Wraps content in `<div class="min-h-screen flex flex-col bg-tertiary">`.
 17. **Testing .svelte.ts files:** Don't export `$derived` values directly - the Svelte compiler is needed. Use getter functions that compute values from `$state`. Tests in `.spec.ts` run in Node without Svelte compilation.
 18. **Cart store testing:** Use `_resetForTesting()` before each test. Mock `window` and `localStorage` for persistence tests. See `cart.spec.ts` for patterns.
+19. **SvelteKit +page.server.ts exports:** Only `load`, `actions`, `prerender`, `csr`, `ssr`, `trailingSlash`, `config`, `entries`, or `_`-prefixed names can be exported. Helper functions and types that need to be shared with `+page.svelte` must be in a separate file (e.g., `checkout-utils.ts`). This is a runtime validation not caught by TypeScript or tests.
+20. **Checkout utils:** Shared types (`FulfillmentSlotWithCapacity`, `SlotsByDate`) and helpers (`formatTimeDisplay`) are in `src/routes/(public)/checkout/checkout-utils.ts` to avoid SvelteKit export restrictions.
 
 ## Test Coverage Summary
 
@@ -2235,10 +2238,10 @@ export const actions = {
 4. **No plaintext storage:** Only session ID stored in DB, not the password
 5. **Error messages:** Generic errors don't leak security info
 
-### Next Tasks (Phase 6.3+)
+### Next Tasks (Phase 6.4+)
 
 1. ~~Create admin login page (PRD 6.2)~~ DONE
-2. Create admin auth guard (PRD 6.3)
+2. ~~Create admin auth guard (PRD 6.3)~~ DONE
 3. Create admin layout with sidebar (PRD 6.4)
 4. Create admin logout (PRD 6.5)
 5. Create admin dashboard (PRD 6.6)
@@ -2324,9 +2327,102 @@ try {
 - Type exports (2 tests)
 - Edge cases (3 tests)
 
+## Admin Auth Guard Notes (Phase 6.3 - COMPLETE)
+
+The `src/routes/admin/+layout.server.ts` module protects all admin routes with session validation.
+
+### Key Features
+
+1. **Layout-Level Protection:** Runs for all routes under `/admin/` via SvelteKit layout server load
+2. **Login Page Exclusion:** Skips auth check for `/admin/login` to prevent redirect loops
+3. **Session Cookie Check:** Gets `admin_session` cookie and validates against D1
+4. **Invalid Session Handling:** Clears cookie and redirects to login if session invalid/expired
+5. **Returns authenticated flag:** Passes `{ authenticated: true }` to child routes
+
+### Implementation Pattern
+
+```typescript
+import { redirect, isRedirect } from '@sveltejs/kit';
+import type { LayoutServerLoad } from './$types';
+import { getDb } from '$lib/server/db';
+import { validateSession } from '$lib/server/auth';
+
+export const load: LayoutServerLoad = async ({ cookies, platform, url }) => {
+	// Skip auth check for login page
+	if (url.pathname === '/admin/login') {
+		return {};
+	}
+
+	const sessionId = cookies.get('admin_session');
+
+	// No session cookie - redirect to login
+	if (!sessionId) {
+		redirect(303, '/admin/login');
+	}
+
+	// Database not available - redirect to login
+	if (!platform?.env?.DB) {
+		redirect(303, '/admin/login');
+	}
+
+	try {
+		const db = getDb(platform);
+		const { valid } = await validateSession(db, sessionId);
+
+		if (!valid) {
+			cookies.delete('admin_session', { path: '/admin' });
+			redirect(303, '/admin/login');
+		}
+
+		return { authenticated: true };
+	} catch (e) {
+		if (isRedirect(e)) {
+			throw e;
+		}
+		cookies.delete('admin_session', { path: '/admin' });
+		redirect(303, '/admin/login');
+	}
+};
+```
+
+### Routes Protected
+
+All routes under `/admin/` except `/admin/login`:
+
+- `/admin` - Dashboard
+- `/admin/orders` - Orders list
+- `/admin/orders/[id]` - Order detail
+- `/admin/products` - Products list
+- `/admin/products/new` - Create product
+- `/admin/products/[id]` - Edit product
+- `/admin/slots` - Fulfillment slots
+- `/admin/newsletter` - Newsletter subscribers
+
+### Security Considerations
+
+1. **Cookie path scoping:** Cookie is only valid for `/admin` path
+2. **Cookie deletion on invalid session:** Clears stale cookies
+3. **Database unavailable handling:** Fails secure (redirects to login)
+4. **Error handling:** Catches all non-redirect errors and redirects to login
+
+### Test Coverage
+
+48 tests in `src/routes/admin/layout.server.spec.ts`:
+
+- Login page exclusion (3 tests)
+- Missing session cookie (5 tests)
+- Database unavailable (4 tests)
+- Session validation (5 tests)
+- Invalid session handling (4 tests)
+- Error handling (4 tests)
+- Cookie handling (3 tests)
+- Multiple admin routes protection (18 tests)
+- Type exports (2 tests)
+
 ### Test Coverage Summary (Updated)
 
 | Test File                                    | Tests | Purpose                       |
 | -------------------------------------------- | ----- | ----------------------------- |
 | `src/routes/admin/login/page.server.spec.ts` | 27    | Admin login page load/actions |
-| **Total**                                    | 953   |                               |
+| `src/routes/admin/layout.server.spec.ts`     | 48    | Admin auth guard              |
+| **Total**                                    | 1001  |                               |
