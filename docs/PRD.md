@@ -369,22 +369,22 @@ Before marking any TODO as complete:
 
 ### 1.3 Header component
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                             | Status      |
-| ------ | ---------------------------------------------------------------- | ----------- |
-| 1.3.1  | Create `src/lib/components/Header.svelte` with Svelte 5 runes    | Not Started |
-| 1.3.2  | Add logo (image or text fallback) with link to home              | Not Started |
-| 1.3.3  | Add desktop navigation links: Menu, About, Calendar (if enabled) | Not Started |
-| 1.3.4  | Add cart button with badge showing item count                    | Not Started |
-| 1.3.5  | Add social icons (Instagram, Facebook) if enabled in config      | Not Started |
-| 1.3.6  | Create mobile menu state with `$state` rune                      | Not Started |
-| 1.3.7  | Add hamburger button for mobile (hidden on desktop)              | Not Started |
-| 1.3.8  | Create slide-out mobile drawer with navigation links             | Not Started |
-| 1.3.9  | Add overlay behind mobile drawer that closes menu on click       | Not Started |
-| 1.3.10 | Style with Tailwind: sticky header, responsive breakpoints       | Not Started |
-| 1.3.11 | Write component test in `tests/unit/Header.test.svelte.ts`       | Not Started |
-| 1.3.12 | **Commit:** `feat: create Header component with mobile nav`      | Not Started |
+| ID     | Task                                                             | Status    |
+| ------ | ---------------------------------------------------------------- | --------- |
+| 1.3.1  | Create `src/lib/components/Header.svelte` with Svelte 5 runes    | Completed |
+| 1.3.2  | Add logo (image or text fallback) with link to home              | Completed |
+| 1.3.3  | Add desktop navigation links: Menu, About, Calendar (if enabled) | Completed |
+| 1.3.4  | Add cart button with badge showing item count                    | Completed |
+| 1.3.5  | Add social icons (Instagram, Facebook) if enabled in config      | Completed |
+| 1.3.6  | Create mobile menu state with `$state` rune                      | Completed |
+| 1.3.7  | Add hamburger button for mobile (hidden on desktop)              | Completed |
+| 1.3.8  | Create slide-out mobile drawer with navigation links             | Completed |
+| 1.3.9  | Add overlay behind mobile drawer that closes menu on click       | Completed |
+| 1.3.10 | Style with Tailwind: sticky header, responsive breakpoints       | Completed |
+| 1.3.11 | Write component test in `src/lib/components/Header.spec.ts`      | Completed |
+| 1.3.12 | **Commit:** `feat: create Header component with mobile nav`      | Completed |
 
 ### 1.4 Footer component
 
