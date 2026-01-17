@@ -59,6 +59,11 @@ This file contains useful findings for future agents working on this project.
   - Tests: `src/lib/components/MenuCard.spec.ts` (37 tests) - Product type validation, price formatting, cart config
   - Features: Aspect-ratio image container, cookie emoji placeholder, line-clamp-2 description, tag badges, hover lift effect
   - Props: `product` (required) - Product type with id, slug, title, priceCents, stripePriceId, description?, imageUrl?, tags?
+- 2.5: Cookie Detail Page COMPLETE
+  - Server Load: `src/routes/(public)/menu/[slug]/+page.server.ts` - Queries by slug with active=true filter, throws 404 if not found
+  - Page: `src/routes/(public)/menu/[slug]/+page.svelte` - Full product details with hero image, two-column layout
+  - Tests: `src/routes/(public)/menu/[slug]/page.server.spec.ts` (10 tests) - Covers 404 cases, platform unavailability, successful loads
+  - Features: Hero image (16:9 on mobile, 21:9 on desktop), cookie placeholder, ingredients card, tags, large Add to Cart button, Back to Menu link
 
 ## Key File Locations
 
@@ -116,7 +121,8 @@ export const tableName = sqliteTable('table_name', {
 12. ~~MenuCard component (PRD 2.3)~~ DONE - `src/lib/components/MenuCard.svelte` with 37 tests
 13. ~~Homepage (PRD 2.2)~~ DONE - `src/routes/(public)/+page.svelte` with Hero and featured products (7 tests)
 14. ~~Menu page (PRD 2.4)~~ DONE - `src/routes/(public)/menu/+page.svelte` with all products grid (10 tests)
-15. **NEXT: Cookie detail page (PRD 2.5)** - `src/routes/(public)/menu/[slug]/+page.svelte` with product details
+15. ~~Cookie detail page (PRD 2.5)~~ DONE - `src/routes/(public)/menu/[slug]/+page.svelte` with product details (10 tests)
+16. **NEXT: About page (PRD 2.6)** - `src/routes/(public)/about/+page.svelte` with content from legacy
 
 ## Commands Reference
 
@@ -150,19 +156,20 @@ bun run db:push      # Push schema to D1
 
 ## Test Coverage Summary
 
-| Test File                                      | Tests | Purpose                            |
-| ---------------------------------------------- | ----- | ---------------------------------- |
-| `src/demo.spec.ts`                             | 1     | Demo test from sv create           |
-| `src/lib/config.spec.ts`                       | 35    | Site configuration and helpers     |
-| `src/lib/server/db/schema.spec.ts`             | 23    | Schema table definitions and types |
-| `src/lib/server/db/db.spec.ts`                 | 10    | Database helper functions          |
-| `src/lib/components/Header.spec.ts`            | 13    | Header component config logic      |
-| `src/lib/components/Footer.spec.ts`            | 15    | Footer component config logic      |
-| `src/lib/components/Hero.spec.ts`              | 19    | Hero component config logic        |
-| `src/lib/components/MenuCard.spec.ts`          | 37    | MenuCard product type and config   |
-| `src/routes/(public)/page.server.spec.ts`      | 7     | Homepage load function             |
-| `src/routes/(public)/menu/page.server.spec.ts` | 10    | Menu page load function            |
-| **Total**                                      | 170   |                                    |
+| Test File                                             | Tests | Purpose                            |
+| ----------------------------------------------------- | ----- | ---------------------------------- |
+| `src/demo.spec.ts`                                    | 1     | Demo test from sv create           |
+| `src/lib/config.spec.ts`                              | 35    | Site configuration and helpers     |
+| `src/lib/server/db/schema.spec.ts`                    | 23    | Schema table definitions and types |
+| `src/lib/server/db/db.spec.ts`                        | 10    | Database helper functions          |
+| `src/lib/components/Header.spec.ts`                   | 13    | Header component config logic      |
+| `src/lib/components/Footer.spec.ts`                   | 15    | Footer component config logic      |
+| `src/lib/components/Hero.spec.ts`                     | 19    | Hero component config logic        |
+| `src/lib/components/MenuCard.spec.ts`                 | 37    | MenuCard product type and config   |
+| `src/routes/(public)/page.server.spec.ts`             | 7     | Homepage load function             |
+| `src/routes/(public)/menu/page.server.spec.ts`        | 10    | Menu page load function            |
+| `src/routes/(public)/menu/[slug]/page.server.spec.ts` | 10    | Cookie detail page load function   |
+| **Total**                                             | 180   |                                    |
 
 ## Site Config Notes
 
@@ -442,6 +449,48 @@ const createMockDb = (products) => {
 const result = await load({ platform: undefined });
 expect(result).toEqual({ featuredProducts: [] });
 ```
+
+## Cookie Detail Page Notes
+
+The `src/routes/(public)/menu/[slug]/+page.svelte` page implements:
+
+1. **Server Load Function (`+page.server.ts`):**
+   - Queries by slug with `slug = ? AND active = true` filter
+   - Throws 404 error if product not found or inactive
+   - Throws 404 error if database unavailable (no graceful fallback since a specific product is required)
+   - Returns `{ product }` with full product data including heroImageUrl and ingredients
+
+2. **Page Component (`+page.svelte`):**
+   - Hero image section: 16:9 aspect on mobile, 21:9 on larger screens
+   - Cookie emoji placeholder when no image available
+   - Two-column layout on desktop: left (title, price, description, tags), right (ingredients, Add to Cart)
+   - Back to Menu link with arrow icon
+   - Open Graph meta tags for social sharing with product image
+   - Large full-width Add to Cart button with data attributes
+
+3. **Key Patterns:**
+   - Uses `$derived()` for `hasIngredients` and `hasTags` booleans
+   - Keyed `{#each}` with index for tags since tags can have duplicates
+   - Meta description fallback when product has no description
+
+### Cookie Detail Data Flow
+
+```
++page.server.ts (load)
+      ↓
+    D1 Query: SELECT ... WHERE slug=? AND active=1 LIMIT 1
+      ↓
+    { product } or 404 Error
+      ↓
++page.svelte (data prop)
+      ↓
+    Hero Image → Product Details Grid → Add to Cart
+```
+
+### Difference from Menu Page
+
+- Menu page: Returns array of products, graceful empty array fallback
+- Detail page: Returns single product, throws 404 if not found (no fallback)
 
 ## Menu Page Notes
 

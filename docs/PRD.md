@@ -486,22 +486,22 @@ Before marking any TODO as complete:
 
 ### 2.5 Cookie detail page
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                          | Status      |
-| ------ | ------------------------------------------------------------- | ----------- |
-| 2.5.1  | Create `src/routes/(public)/menu/[slug]/+page.server.ts`      | Not Started |
-| 2.5.2  | Query product by slug, throw 404 if not found or inactive     | Not Started |
-| 2.5.3  | Create `src/routes/(public)/menu/[slug]/+page.svelte`         | Not Started |
-| 2.5.4  | Display hero image (large, full-width on mobile)              | Not Started |
-| 2.5.5  | Display title, price, and description                         | Not Started |
-| 2.5.6  | Display ingredients list                                      | Not Started |
-| 2.5.7  | Display tags                                                  | Not Started |
-| 2.5.8  | Add large "Add to Cart" button                                | Not Started |
-| 2.5.9  | Add "Back to Menu" link                                       | Not Started |
-| 2.5.10 | Style with Tailwind: two-column layout on desktop             | Not Started |
-| 2.5.11 | Write page test in `tests/integration/product-detail.test.ts` | Not Started |
-| 2.5.12 | **Commit:** `feat: create cookie detail page`                 | Not Started |
+| ID     | Task                                                                     | Status    |
+| ------ | ------------------------------------------------------------------------ | --------- |
+| 2.5.1  | Create `src/routes/(public)/menu/[slug]/+page.server.ts`                 | Completed |
+| 2.5.2  | Query product by slug, throw 404 if not found or inactive                | Completed |
+| 2.5.3  | Create `src/routes/(public)/menu/[slug]/+page.svelte`                    | Completed |
+| 2.5.4  | Display hero image (large, full-width on mobile)                         | Completed |
+| 2.5.5  | Display title, price, and description                                    | Completed |
+| 2.5.6  | Display ingredients list                                                 | Completed |
+| 2.5.7  | Display tags                                                             | Completed |
+| 2.5.8  | Add large "Add to Cart" button                                           | Completed |
+| 2.5.9  | Add "Back to Menu" link                                                  | Completed |
+| 2.5.10 | Style with Tailwind: two-column layout on desktop                        | Completed |
+| 2.5.11 | Write page test in `src/routes/(public)/menu/[slug]/page.server.spec.ts` | Completed |
+| 2.5.12 | **Commit:** `feat: create cookie detail page`                            | Completed |
 
 ### 2.6 About page
 
