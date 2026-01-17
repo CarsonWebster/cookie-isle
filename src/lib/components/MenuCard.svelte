@@ -8,7 +8,8 @@
 	 * PRD Reference: 2.3
 	 */
 
-	import { formatPrice, config } from '$lib/config';
+	import { formatPrice } from '$lib/config';
+	import AddToCartButton from '$lib/components/AddToCartButton.svelte';
 
 	/** Product data type matching the database schema */
 	export interface Product {
@@ -96,16 +97,6 @@
 		{/if}
 
 		<!-- Add to Cart Button -->
-		<button
-			type="button"
-			class="mt-4 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-btn-text transition-colors duration-200 hover:bg-btn-hover-bg focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none"
-			data-product-id={product.id}
-			data-product-slug={product.slug}
-			data-product-title={product.title}
-			data-product-price={product.priceCents}
-			data-product-stripe-price-id={product.stripePriceId}
-		>
-			{config.cart.buttonText}
-		</button>
+		<AddToCartButton {product} size="small" class="mt-4" />
 	</div>
 </article>

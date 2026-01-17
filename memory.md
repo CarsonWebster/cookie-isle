@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16, updated for Phase 3.3)
+## Current Progress (as of 2026-01-16, updated for Phase 3.4)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -73,23 +73,24 @@ This file contains useful findings for future agents working on this project.
 
 ## Key File Locations
 
-| File                                  | Purpose                                               |
-| ------------------------------------- | ----------------------------------------------------- |
-| `docs/PRD.md`                         | Complete migration spec with task tracking            |
-| `src/lib/config.ts`                   | Site configuration (migrated from hugo.toml)          |
-| `src/lib/stores/cart.svelte.ts`       | Cart state management with localStorage               |
-| `src/lib/components/Header.svelte`    | Header with desktop/mobile nav, cart badge            |
-| `src/lib/components/Footer.svelte`    | Footer with brand, nav, contact, social               |
-| `src/lib/components/Hero.svelte`      | Hero section with gradient, CTA button                |
-| `src/lib/components/MenuCard.svelte`  | Product card with image, price, add to cart           |
-| `src/lib/components/CartToast.svelte` | Toast notification for cart actions                   |
-| `src/routes/(public)/+layout.svelte`  | Public pages layout (Header + main + Footer)          |
-| `src/routes/(public)/+page.svelte`    | Homepage with Hero and featured products              |
-| `src/lib/server/db/schema.ts`         | Drizzle table definitions                             |
-| `src/lib/server/db/index.ts`          | Database helper functions (`getDb`, `createDb`)       |
-| `drizzle.config.ts`                   | Drizzle Kit config (uses d1-http driver)              |
-| `wrangler.jsonc`                      | Cloudflare bindings (D1 configured, R2 commented out) |
-| `AGENTS.md`                           | Agent instructions and coding standards               |
+| File                                        | Purpose                                               |
+| ------------------------------------------- | ----------------------------------------------------- |
+| `docs/PRD.md`                               | Complete migration spec with task tracking            |
+| `src/lib/config.ts`                         | Site configuration (migrated from hugo.toml)          |
+| `src/lib/stores/cart.svelte.ts`             | Cart state management with localStorage               |
+| `src/lib/components/Header.svelte`          | Header with desktop/mobile nav, cart badge            |
+| `src/lib/components/Footer.svelte`          | Footer with brand, nav, contact, social               |
+| `src/lib/components/Hero.svelte`            | Hero section with gradient, CTA button                |
+| `src/lib/components/MenuCard.svelte`        | Product card with image, price, add to cart           |
+| `src/lib/components/CartToast.svelte`       | Toast notification for cart actions                   |
+| `src/lib/components/AddToCartButton.svelte` | Reusable add to cart button with feedback             |
+| `src/routes/(public)/+layout.svelte`        | Public pages layout (Header + main + Footer)          |
+| `src/routes/(public)/+page.svelte`          | Homepage with Hero and featured products              |
+| `src/lib/server/db/schema.ts`               | Drizzle table definitions                             |
+| `src/lib/server/db/index.ts`                | Database helper functions (`getDb`, `createDb`)       |
+| `drizzle.config.ts`                         | Drizzle Kit config (uses d1-http driver)              |
+| `wrangler.jsonc`                            | Cloudflare bindings (D1 configured, R2 commented out) |
+| `AGENTS.md`                                 | Agent instructions and coding standards               |
 
 ## Testing Notes
 
@@ -135,7 +136,8 @@ export const tableName = sqliteTable('table_name', {
 18. ~~Cart store (PRD 3.1)~~ DONE - `src/lib/stores/cart.svelte.ts` with Svelte 5 runes and localStorage persistence (57 tests)
 19. ~~Cart badge component (PRD 3.2)~~ DONE - `src/lib/components/CartBadge.svelte` with 26 tests
 20. ~~Cart toast notification (PRD 3.3)~~ DONE - `src/lib/components/CartToast.svelte` with 35 tests
-21. **NEXT: Add to cart functionality (PRD 3.4)** - `src/lib/components/AddToCartButton.svelte` connecting cart store to toast
+21. ~~Add to cart functionality (PRD 3.4)~~ DONE - `src/lib/components/AddToCartButton.svelte` with 46 tests
+22. **NEXT: Checkout page - Cart display (PRD 3.5)** - `src/routes/(public)/checkout/+page.svelte` with cart items list
 
 ## Commands Reference
 
@@ -188,7 +190,8 @@ bun run db:push      # Push schema to D1
 | `src/lib/stores/cart.spec.ts`                         | 57    | Cart store state and persistence   |
 | `src/lib/components/CartBadge.spec.ts`                | 26    | CartBadge component logic          |
 | `src/lib/components/CartToast.spec.ts`                | 35    | CartToast notification logic       |
-| **Total**                                             | 344   |                                    |
+| `src/lib/components/AddToCartButton.spec.ts`          | 46    | AddToCartButton integration logic  |
+| **Total**                                             | 390   |                                    |
 
 ## Site Config Notes
 
@@ -897,12 +900,70 @@ CartToast is added to `src/routes/+layout.svelte` at the end of the template, ou
 - **Button:** `bg-primary` with `hover:bg-primary-hover` transition
 - **Accessibility:** `role="alert"`, `aria-live="polite"`, dismiss button has `aria-label`
 
+## AddToCartButton Component Notes (Phase 3.4 - COMPLETE)
+
+The `src/lib/components/AddToCartButton.svelte` component implements the add to cart interaction.
+
+### Key Features
+
+1. **Cart Integration:** Calls `addToCart()` from cart store and `showToast()` from CartToast
+2. **Size Variants:** `small` (for MenuCard) and `large` (for detail pages)
+3. **Visual Feedback:** "Added!" state with green background and checkmark icon for 1.5s
+4. **Max Quantity Handling:** Disables button and shows "Max Qty Reached" when at limit (99)
+5. **Animation:** Pop animation on successful add via CSS keyframes
+
+### Props Interface
+
+```typescript
+interface Props {
+	/** Product data to add to cart */
+	product: AddToCartProduct;
+	/** Button size variant */
+	size?: 'small' | 'large';
+	/** Additional CSS classes */
+	class?: string;
+}
+
+interface AddToCartProduct {
+	id: number;
+	slug: string;
+	title: string;
+	priceCents: number;
+	stripePriceId: string;
+}
+```
+
+### Usage in MenuCard
+
+```svelte
+<AddToCartButton {product} size="small" class="mt-4" />
+```
+
+### Usage in Cookie Detail Page
+
+```svelte
+<AddToCartButton product={data.product} size="large" class="mt-8" />
+```
+
+### Button State Logic
+
+| State        | Background     | Text              | Disabled |
+| ------------ | -------------- | ----------------- | -------- |
+| Normal       | `bg-primary`   | "Add to Cart"     | false    |
+| Added (1.5s) | `bg-green-600` | "Added!" + check  | false    |
+| Max Qty      | `bg-gray-400`  | "Max Qty Reached" | true     |
+
+### Data Attributes (preserved for analytics/testing)
+
+- `data-product-id`, `data-product-slug`, `data-product-title`
+- `data-product-price`, `data-product-stripe-price-id`
+
 ## Phase 3 Remaining Tasks
 
 Files still to create for Phase 3:
 
-1. ~~`src/lib/stores/cart.svelte.ts`~~ - DONE
+1. ~~`src/lib/stores/cart.svelte.ts`~~ - DONE (57 tests)
 2. ~~`src/lib/components/CartBadge.svelte`~~ - DONE (26 tests)
 3. ~~`src/lib/components/CartToast.svelte`~~ - DONE (35 tests)
-4. `src/lib/components/AddToCartButton.svelte` - Reusable add to cart button
-5. `src/routes/(public)/checkout/+page.svelte` - Checkout page
+4. ~~`src/lib/components/AddToCartButton.svelte`~~ - DONE (46 tests)
+5. `src/routes/(public)/checkout/+page.svelte` - Checkout page (PRD 3.5)

@@ -593,19 +593,19 @@ Before marking any TODO as complete:
 
 ### 3.4 Add to cart functionality
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                                | Status      |
-| ----- | ------------------------------------------------------------------- | ----------- |
-| 3.4.1 | Create `src/lib/components/AddToCartButton.svelte`                  | Not Started |
-| 3.4.2 | Accept product prop with required cart data                         | Not Started |
-| 3.4.3 | On click: add to cart store, show toast, animate button             | Not Started |
-| 3.4.4 | Check max quantity limit before adding                              | Not Started |
-| 3.4.5 | Show "Added!" state briefly after click                             | Not Started |
-| 3.4.6 | Update MenuCard to use AddToCartButton                              | Not Started |
-| 3.4.7 | Update cookie detail page to use AddToCartButton                    | Not Started |
-| 3.4.8 | Write component test in `tests/unit/AddToCartButton.test.svelte.ts` | Not Started |
-| 3.4.9 | **Commit:** `feat: wire up Add to Cart functionality`               | Not Started |
+| ID    | Task                                                                 | Status    |
+| ----- | -------------------------------------------------------------------- | --------- |
+| 3.4.1 | Create `src/lib/components/AddToCartButton.svelte`                   | Completed |
+| 3.4.2 | Accept product prop with required cart data                          | Completed |
+| 3.4.3 | On click: add to cart store, show toast, animate button              | Completed |
+| 3.4.4 | Check max quantity limit before adding                               | Completed |
+| 3.4.5 | Show "Added!" state briefly after click                              | Completed |
+| 3.4.6 | Update MenuCard to use AddToCartButton                               | Completed |
+| 3.4.7 | Update cookie detail page to use AddToCartButton                     | Completed |
+| 3.4.8 | Write component test in `src/lib/components/AddToCartButton.spec.ts` | Completed |
+| 3.4.9 | **Commit:** `feat: wire up Add to Cart functionality`                | Completed |
 
 ### 3.5 Checkout page - Cart display
 

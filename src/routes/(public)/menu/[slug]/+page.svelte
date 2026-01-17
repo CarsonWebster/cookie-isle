@@ -14,6 +14,7 @@
 	 */
 
 	import { config, formatPrice } from '$lib/config';
+	import AddToCartButton from '$lib/components/AddToCartButton.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -142,17 +143,7 @@
 				<div class="flex-1"></div>
 
 				<!-- Add to Cart Button -->
-				<button
-					type="button"
-					class="mt-8 w-full rounded-lg bg-primary px-6 py-4 text-lg font-semibold text-btn-text transition-colors duration-200 hover:bg-btn-hover-bg focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none"
-					data-product-id={data.product.id}
-					data-product-slug={data.product.slug}
-					data-product-title={data.product.title}
-					data-product-price={data.product.priceCents}
-					data-product-stripe-price-id={data.product.stripePriceId}
-				>
-					{config.cart.buttonText}
-				</button>
+				<AddToCartButton product={data.product} size="large" class="mt-8" />
 			</div>
 		</div>
 	</div>
