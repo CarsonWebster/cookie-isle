@@ -8,13 +8,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import {
-	load,
-	formatFulfillmentDate,
-	formatFulfillmentTime,
-	formatFulfillmentType,
-	type OrderData
-} from './+page.server';
+import { load, type OrderData } from './+page.server';
+import { formatFulfillmentDate, formatFulfillmentTime, formatFulfillmentType } from '$lib/format';
 
 // Mock the database module
 vi.mock('$lib/server/db', () => ({

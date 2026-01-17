@@ -38,47 +38,6 @@ export interface OrderData {
 	createdAt: string | null;
 }
 
-/**
- * Formats a date string (YYYY-MM-DD) to a human-readable format
- */
-export function formatFulfillmentDate(dateStr: string | null): string {
-	if (!dateStr) return '';
-	const date = new Date(dateStr + 'T12:00:00'); // Add time to avoid timezone issues
-	return date.toLocaleDateString('en-US', {
-		weekday: 'long',
-		month: 'long',
-		day: 'numeric',
-		year: 'numeric'
-	});
-}
-
-/**
- * Formats a time range string (e.g., "10:00-12:00") to human-readable format
- */
-export function formatFulfillmentTime(timeStr: string | null): string {
-	if (!timeStr) return '';
-
-	const [start, end] = timeStr.split('-');
-	if (!start || !end) return timeStr;
-
-	const formatTime = (time: string): string => {
-		const [hours, minutes] = time.split(':').map(Number);
-		const period = hours >= 12 ? 'PM' : 'AM';
-		const displayHours = hours % 12 || 12;
-		return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
-	};
-
-	return `${formatTime(start)} - ${formatTime(end)}`;
-}
-
-/**
- * Formats a fulfillment type for display
- */
-export function formatFulfillmentType(type: string | null): string {
-	if (!type) return '';
-	return type.charAt(0).toUpperCase() + type.slice(1);
-}
-
 export const load: PageServerLoad = async ({ url, platform }) => {
 	// Get session_id from URL query params
 	const sessionId = url.searchParams.get('session_id');

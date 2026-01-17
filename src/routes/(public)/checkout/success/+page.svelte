@@ -11,11 +11,7 @@
 	import { onMount } from 'svelte';
 	import { config, formatPrice } from '$lib/config';
 	import { clearCart, clearStorage } from '$lib/stores/cart.svelte';
-	import {
-		formatFulfillmentDate,
-		formatFulfillmentTime,
-		formatFulfillmentType
-	} from './+page.server';
+	import { formatFulfillmentDate, formatFulfillmentTime, formatFulfillmentType } from '$lib/format';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
