@@ -40,11 +40,7 @@
 		<div class="text-center">
 			<!-- Cookie decoration -->
 			<div class="mb-4" aria-hidden="true">
-				<img
-					src="/images/Cookieart.png"
-					alt=""
-					class="mx-auto h-16 w-auto animate-bounce sm:h-20"
-				/>
+				<img src="/Cookieart.png" alt="" class="mx-auto h-16 w-auto animate-bounce sm:h-20" />
 			</div>
 
 			<!-- Title -->

@@ -97,11 +97,7 @@
 		<!-- Logo / Brand -->
 		<div class="mb-8">
 			<div class="mb-4" aria-hidden="true">
-				<img
-					src="/images/Cookieart.png"
-					alt=""
-					class="mx-auto h-20 w-auto animate-bounce sm:h-24"
-				/>
+				<img src="/Cookieart.png" alt="" class="mx-auto h-20 w-auto animate-bounce sm:h-24" />
 			</div>
 			<h1 class="text-3xl font-bold tracking-tight text-secondary sm:text-4xl md:text-5xl">
 				{config.title}

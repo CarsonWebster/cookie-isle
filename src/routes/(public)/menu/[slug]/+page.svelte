@@ -77,7 +77,7 @@
 					<div
 						class="flex aspect-[3/2] w-full items-center justify-center rounded-xl bg-tertiary-medium shadow-lg"
 					>
-						<img src="/images/Cookieart.png" alt="" class="h-32 w-auto" aria-hidden="true" />
+						<img src="/Cookieart.png" alt="" class="h-32 w-auto" aria-hidden="true" />
 					</div>
 				{/if}
 			</div>

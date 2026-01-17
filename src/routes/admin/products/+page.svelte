@@ -90,7 +90,7 @@
 									/>
 								{:else}
 									<div class="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-										<img src="/images/Cookieart.png" alt="" class="h-8 w-auto" aria-hidden="true" />
+										<img src="/Cookieart.png" alt="" class="h-8 w-auto" aria-hidden="true" />
 									</div>
 								{/if}
 							</td>
@@ -192,7 +192,7 @@
 							<div
 								class="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100"
 							>
-								<img src="/images/Cookieart.png" alt="" class="h-10 w-auto" aria-hidden="true" />
+								<img src="/Cookieart.png" alt="" class="h-10 w-auto" aria-hidden="true" />
 							</div>
 						{/if}
 

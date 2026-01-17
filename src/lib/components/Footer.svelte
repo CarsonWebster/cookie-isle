@@ -15,7 +15,7 @@
 			<!-- Brand Section -->
 			<div class="md:col-span-1 lg:col-span-2">
 				<a href="/" class="flex items-center gap-2">
-					<img src="/images/CookieIsleLogo.png" alt="" class="h-12 w-auto" aria-hidden="true" />
+					<img src="/CookieIsleLogo.png" alt="" class="h-12 w-auto" aria-hidden="true" />
 					<span class="text-2xl font-semibold text-footer-heading">{config.title}</span>
 				</a>
 				<p class="mt-3 max-w-md text-sm leading-relaxed text-footer-text/80">

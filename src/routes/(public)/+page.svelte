@@ -51,7 +51,7 @@
 				<div
 					class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-tertiary-medium"
 				>
-					<img src="/images/Cookieart.png" alt="" class="h-12 w-auto" aria-hidden="true" />
+					<img src="/Cookieart.png" alt="" class="h-12 w-auto" aria-hidden="true" />
 				</div>
 				<p class="mt-4 text-lg text-text-light">Our featured cookies are being freshly baked!</p>
 				<p class="mt-2 text-text-light">Check back soon or browse our full menu.</p>

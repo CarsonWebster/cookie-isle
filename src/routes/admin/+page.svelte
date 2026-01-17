@@ -104,7 +104,7 @@
 				{#each data.cookiesNeededToday as cookie}
 					<div class="flex items-center justify-between rounded-lg bg-tertiary p-4">
 						<div class="flex items-center gap-3">
-							<img src="/images/Cookieart.png" alt="" class="h-8 w-auto" aria-hidden="true" />
+							<img src="/Cookieart.png" alt="" class="h-8 w-auto" aria-hidden="true" />
 							<span class="font-medium text-secondary">{cookie.productName}</span>
 						</div>
 						<span class="rounded-full bg-primary px-3 py-1 font-bold text-white">
@@ -172,7 +172,7 @@
 			href="/admin/products"
 			class="flex flex-col items-center justify-center rounded-xl bg-white p-6 shadow-md transition-transform hover:-translate-y-1 hover:shadow-xl"
 		>
-			<img src="/images/Cookieart.png" alt="" class="h-12 w-auto" aria-hidden="true" />
+			<img src="/Cookieart.png" alt="" class="h-12 w-auto" aria-hidden="true" />
 			<span class="mt-2 font-medium text-secondary">Manage Products</span>
 		</a>
 		<a

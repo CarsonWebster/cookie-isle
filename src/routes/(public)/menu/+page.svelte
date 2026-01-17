@@ -54,7 +54,7 @@
 				<div
 					class="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-tertiary-medium"
 				>
-					<img src="/images/Cookieart.png" alt="" class="h-16 w-auto" aria-hidden="true" />
+					<img src="/Cookieart.png" alt="" class="h-16 w-auto" aria-hidden="true" />
 				</div>
 				<h2 class="mt-6 text-2xl font-semibold text-secondary">No Cookies Available</h2>
 				<p class="mt-3 text-lg text-text-light">

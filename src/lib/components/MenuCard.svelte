@@ -63,7 +63,7 @@
 				class="flex h-full w-full items-center justify-center bg-tertiary-medium"
 				aria-label="Cookie placeholder"
 			>
-				<img src="/images/Cookieart.png" alt="" class="h-16 w-auto" aria-hidden="true" />
+				<img src="/Cookieart.png" alt="" class="h-16 w-auto" aria-hidden="true" />
 			</div>
 		{/if}
 	</a>
