@@ -505,15 +505,15 @@ Before marking any TODO as complete:
 
 ### 2.6 About page
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                      | Status      |
-| ----- | --------------------------------------------------------- | ----------- |
-| 2.6.1 | Create `src/routes/(public)/about/+page.svelte`           | Not Started |
-| 2.6.2 | Port content from `_legacy/content/about.md`              | Not Started |
-| 2.6.3 | Style with Tailwind prose classes for readable typography | Not Started |
-| 2.6.4 | Add page title with decorative styling                    | Not Started |
-| 2.6.5 | **Commit:** `feat: create about page`                     | Not Started |
+| ID    | Task                                                      | Status    |
+| ----- | --------------------------------------------------------- | --------- |
+| 2.6.1 | Create `src/routes/(public)/about/+page.svelte`           | Completed |
+| 2.6.2 | Port content from `_legacy/content/about.md`              | Completed |
+| 2.6.3 | Style with Tailwind prose classes for readable typography | Completed |
+| 2.6.4 | Add page title with decorative styling                    | Completed |
+| 2.6.5 | **Commit:** `feat: create about page`                     | Completed |
 
 ### 2.7 Coming soon mode
 

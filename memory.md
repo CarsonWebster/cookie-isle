@@ -122,7 +122,8 @@ export const tableName = sqliteTable('table_name', {
 13. ~~Homepage (PRD 2.2)~~ DONE - `src/routes/(public)/+page.svelte` with Hero and featured products (7 tests)
 14. ~~Menu page (PRD 2.4)~~ DONE - `src/routes/(public)/menu/+page.svelte` with all products grid (10 tests)
 15. ~~Cookie detail page (PRD 2.5)~~ DONE - `src/routes/(public)/menu/[slug]/+page.svelte` with product details (10 tests)
-16. **NEXT: About page (PRD 2.6)** - `src/routes/(public)/about/+page.svelte` with content from legacy
+16. ~~About page (PRD 2.6)~~ DONE - `src/routes/(public)/about/+page.svelte` with prose styling (no server load needed)
+17. **NEXT: Coming Soon mode (PRD 2.7)** - `src/lib/components/ComingSoon.svelte` with newsletter signup
 
 ## Commands Reference
 
@@ -530,3 +531,65 @@ The `src/routes/(public)/menu/+page.svelte` page implements:
 
 - Homepage: Filters for `featured=true AND active=true`, shows subset
 - Menu page: Filters for only `active=true`, shows all products
+
+## About Page Notes
+
+The `src/routes/(public)/about/+page.svelte` page implements:
+
+1. **No Server Load Function Needed:**
+   - Static content page - all content is hardcoded in the component
+   - Uses `config.title` and `config.contact.email` for dynamic values
+   - No database queries required
+
+2. **Page Component:**
+   - Page title "About Us" with decorative underline (same pattern as Menu page)
+   - Prose-styled article with Tailwind typography plugin classes
+   - Content sections: Our Story, Our Philosophy, Meet the Baker, Visit Us
+   - Custom list styling with checkmark icons instead of bullets
+   - Conditional email link based on `config.contact.emailEnabled`
+   - CTA button linking to /menu at the bottom
+
+3. **Key Patterns:**
+   - Uses `prose prose-lg` base classes for readable typography
+   - Custom prose modifiers: `prose-headings:text-secondary`, `prose-p:text-text-light`
+   - H2 spacing: `prose-h2:mt-10 prose-h2:mb-4`
+   - Custom list items with flex layout and SVG checkmarks
+   - Uses config for site title to maintain brand consistency
+
+### About Page Implementation
+
+```svelte
+<script lang="ts">
+	import { config } from '$lib/config';
+</script>
+
+<svelte:head>
+	<title>About Us | {config.title}</title>
+	<meta name="description" content="Learn about {config.title} and our passion for baking" />
+</svelte:head>
+
+<section class="bg-tertiary py-12 sm:py-16 lg:py-20">
+	<div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+		<!-- Page Header with decorative underline -->
+		<!-- Prose article with typography classes -->
+		<!-- CTA button to /menu -->
+	</div>
+</section>
+```
+
+### Tailwind Typography Classes Used
+
+- `prose prose-lg` - Base prose styling with large text
+- `prose-headings:text-secondary` - Brown headings
+- `prose-h2:text-2xl prose-h2:font-bold` - H2 sizing
+- `prose-h2:mt-10 prose-h2:mb-4` - H2 spacing
+- `prose-p:text-text-light prose-p:leading-relaxed` - Paragraph styling
+- `prose-li:text-text-light` - List item text color
+- `prose-strong:text-secondary` - Bold text color
+- `prose-a:text-primary prose-a:no-underline hover:prose-a:underline` - Link styling
+
+### About vs Other Pages
+
+- **About:** Static content, no server load, prose-styled article, max-w-4xl container
+- **Menu/Homepage:** Dynamic content, server load from D1, card grid layout, max-w-7xl container
+- **Cookie Detail:** Dynamic content, server load with slug param, hero image + details layout
