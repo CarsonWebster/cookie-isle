@@ -360,7 +360,7 @@ export const config: SiteConfig = {
 	// Google Calendar
 	// -------------------------------------------------------------------------
 	calendar: {
-		enabled: true,
+		enabled: false,
 		embedUrl:
 			'https://calendar.google.com/calendar/embed?src=c_5099568f04822947c2b6fbf47ad6667e9d9902df5c16e5c82ee5261c348079ae%40group.calendar.google.com&ctz=America%2FLos_Angeles',
 		icalUrl:
@@ -390,7 +390,8 @@ export const config: SiteConfig = {
 		comingSoonMode: false,
 		comingSoonHeadline: 'Coming Soon',
 		comingSoonText: `I'm busy baking up something special!
-The Cookie Isle is a cozy cottage bakery bringing fresh baked happiness to our community. Follow to be the first to know when we open!
+The Cookie Isle is a cozy cottage bakery bringing fresh baked happiness to our community. 
+Follow to be the first to know when we open!
 
 Located in Coronado, CA`
 	}
