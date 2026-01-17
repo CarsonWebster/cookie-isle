@@ -985,24 +985,24 @@ Before marking any TODO as complete:
 
 ### 6.8 Order detail page
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                              | Status      |
-| ------ | ----------------------------------------------------------------- | ----------- |
-| 6.8.1  | Create `src/routes/admin/orders/[id]/+page.server.ts`             | Not Started |
-| 6.8.2  | Load order by ID, return 404 if not found                         | Not Started |
-| 6.8.3  | Create `src/routes/admin/orders/[id]/+page.svelte`                | Not Started |
-| 6.8.4  | Display order status with large badge                             | Not Started |
-| 6.8.5  | Display customer info section: name, email, phone                 | Not Started |
-| 6.8.6  | Display fulfillment info: type, date, time, address (if delivery) | Not Started |
-| 6.8.7  | Display order items with quantities and prices                    | Not Started |
-| 6.8.8  | Display order totals: subtotal, tip, gift box, tax, total         | Not Started |
-| 6.8.9  | Display gift message if present                                   | Not Started |
-| 6.8.10 | Add "Mark as Fulfilled" button (if status is "paid")              | Not Started |
-| 6.8.11 | Create form action to update order status                         | Not Started |
-| 6.8.12 | Add "Back to Orders" link                                         | Not Started |
-| 6.8.13 | Write page test in `tests/integration/admin-order-detail.test.ts` | Not Started |
-| 6.8.14 | **Commit:** `feat: create order detail page with status update`   | Not Started |
+| ID     | Task                                                                  | Status    |
+| ------ | --------------------------------------------------------------------- | --------- |
+| 6.8.1  | Create `src/routes/admin/orders/[id]/+page.server.ts`                 | Completed |
+| 6.8.2  | Load order by ID, return 404 if not found                             | Completed |
+| 6.8.3  | Create `src/routes/admin/orders/[id]/+page.svelte`                    | Completed |
+| 6.8.4  | Display order status with large badge                                 | Completed |
+| 6.8.5  | Display customer info section: name, email, phone                     | Completed |
+| 6.8.6  | Display fulfillment info: type, date, time, address (if delivery)     | Completed |
+| 6.8.7  | Display order items with quantities and prices                        | Completed |
+| 6.8.8  | Display order totals: subtotal, tip, gift box, tax, total             | Completed |
+| 6.8.9  | Display gift message if present                                       | Completed |
+| 6.8.10 | Add "Mark as Fulfilled" button (if status is "paid")                  | Completed |
+| 6.8.11 | Create form action to update order status                             | Completed |
+| 6.8.12 | Add "Back to Orders" link                                             | Completed |
+| 6.8.13 | Write page test in `src/routes/admin/orders/[id]/page.server.spec.ts` | Completed |
+| 6.8.14 | **Commit:** `feat: create order detail page with status update`       | Completed |
 
 ### 6.9 Products list page
 

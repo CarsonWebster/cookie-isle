@@ -159,7 +159,8 @@ export const tableName = sqliteTable('table_name', {
 32. ~~Newsletter signup endpoint (PRD 4.5)~~ DONE - `src/routes/api/newsletter/+server.ts` with 54 tests
 33. ~~Connect newsletter form (PRD 4.6)~~ DONE - ComingSoon component now POSTs to `/api/newsletter`
 34. ~~Admin orders list page (PRD 6.7)~~ DONE - `src/routes/admin/orders/` with 24 tests
-35. **NEXT: Phase 6.8 - Order Detail Page** - View individual order with full details and status update
+35. ~~Order detail page (PRD 6.8)~~ DONE - `src/routes/admin/orders/[id]/` with 31 tests
+36. **NEXT: Phase 6.9 - Products List Page** - View and manage all products with inline toggles
 
 ## Commands Reference
 
@@ -239,7 +240,8 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/admin/page.server.spec.ts`                     | 20    | Admin dashboard stats                |
 | `src/routes/admin/layout.server.spec.ts`                   | 48    | Admin auth guard layout              |
 | `src/routes/admin/orders/page.server.spec.ts`              | 24    | Admin orders list with filters       |
-| **Total**                                                  | 1045  |                                      |
+| `src/routes/admin/orders/[id]/page.server.spec.ts`         | 31    | Order detail page with status update |
+| **Total**                                                  | 1076  |                                      |
 
 ## Site Config Notes
 
@@ -2741,7 +2743,137 @@ ORDER BY fulfillment_date DESC
 ### What's Not Included (Deferred)
 
 - Pagination for >20 orders (PRD 6.7.10) - deferred for now, can add later if needed
-- Order detail page (PRD 6.8) - next task
+
+## Admin Order Detail Page Notes (Phase 6.8 - COMPLETE)
+
+The `src/routes/admin/orders/[id]/` implements a comprehensive order detail view with status update capability.
+
+### Key Features
+
+1. **Server Load Function (`+page.server.ts`):**
+   - Loads order by ID using URL param `[id]`
+   - Throws 404 if order ID is invalid (not a number) or order not found
+   - Throws 503 if database is unavailable
+   - Returns fully formatted order data with all fields
+   - Pre-formats currency values, dates, and times for display
+   - Uses `queryOrderById()` helper function for database query
+
+2. **Order Detail Page (`+page.svelte`):**
+   - **Page Header:**
+     - "Back to Orders" link with left arrow icon
+     - Order number as main heading (`Order #123`)
+     - Placed on date in formatted style
+     - Large status badge (same color coding as orders list)
+   - **Two-Column Layout (responsive):**
+     - Left column: Customer info, fulfillment info, order items, gift message
+     - Right column: Order summary, actions, order metadata
+   - **Customer Information Card:**
+     - Name, email (clickable mailto:), phone (clickable tel:)
+     - Simple definition list layout
+   - **Fulfillment Information Card:**
+     - Type (pickup/delivery), date, time
+     - Full delivery address if type is delivery (with optional apt)
+   - **Order Items Table:**
+     - Item name (links to product page), quantity, price, total
+     - Uses same table styling as orders list
+   - **Gift Message Card (conditional):**
+     - Only shows if `giftBox` is true and `giftMessage` is present
+     - Preserves line breaks with `whitespace-pre-wrap`
+   - **Order Summary Card:**
+     - Subtotal, tip (if > 0), gift box (if true), tax, total
+     - Bold total with border-top separator
+   - **Actions Card (conditional):**
+     - Only shows if order status is "paid"
+     - "Mark as Fulfilled" button (green, full-width)
+     - Uses SvelteKit form action with progressive enhancement
+     - Shows loading state while submitting
+   - **Order Metadata Card:**
+     - Order ID, Stripe Session ID, Created timestamp
+
+3. **Form Actions:**
+   - `markFulfilled` action updates order status to "fulfilled"
+   - Validates order ID and database availability
+   - Returns success/error messages
+   - Shows success banner with green checkmark icon
+   - Shows error banner with red X icon if update fails
+
+### Exported Helper Functions
+
+| Function                     | Purpose                                       |
+| ---------------------------- | --------------------------------------------- |
+| `formatDateTime(isoString)`  | Format ISO to "Jan 16, 2026 at 3:30 PM"       |
+| `formatFulfillmentDate(str)` | Format YYYY-MM-DD to "Friday, Jan 16, 2026"   |
+| `formatTime(timeString)`     | Format HH:MM to "3:30 PM"                     |
+| `queryOrderById(db, id)`     | Query order by ID and return formatted object |
+| `updateOrderStatus(db, ...)` | Update order status in database               |
+
+### Exported Types
+
+```typescript
+interface OrderDetail {
+	id: number;
+	stripeSessionId: string | null;
+	status: string | null;
+	customerName: string | null;
+	customerEmail: string | null;
+	customerPhone: string | null;
+	fulfillmentType: string | null;
+	fulfillmentDate: string | null;
+	fulfillmentTime: string | null;
+	deliveryAddress: DeliveryAddress | null;
+	items: OrderItem[];
+	subtotalCents: number | null;
+	tipCents: number | null;
+	giftBox: boolean | null;
+	giftMessage: string | null;
+	taxCents: number | null;
+	totalCents: number | null;
+	createdAt: string | null;
+	// Formatted values
+	subtotalFormatted: string;
+	tipFormatted: string;
+	taxFormatted: string;
+	totalFormatted: string;
+	createdAtFormatted: string;
+	fulfillmentDateFormatted: string;
+}
+```
+
+### Test Coverage
+
+31 tests in `src/routes/admin/orders/[id]/page.server.spec.ts`:
+
+- formatDateTime (4 tests)
+- formatFulfillmentDate (4 tests)
+- formatTime (6 tests)
+- queryOrderById (5 tests)
+- updateOrderStatus (3 tests)
+- load function (5 tests)
+- markFulfilled action (4 tests)
+
+### Time Formatting Details
+
+The `formatTime()` function includes robust validation:
+
+- Checks for valid HH:MM format (must have exactly 2 parts separated by `:`)
+- Validates hours (0-23) and minutes (0-59)
+- Returns original string if format is invalid
+- Handles edge cases like "00:00" (midnight) and "12:00" (noon)
+
+### What's Included vs PRD
+
+All PRD requirements completed:
+
+- ✓ Load order by ID with 404 handling
+- ✓ Display customer info (name, email, phone)
+- ✓ Display fulfillment info (type, date, time, address)
+- ✓ Display order items table
+- ✓ Display order totals breakdown
+- ✓ Display gift message conditionally
+- ✓ "Mark as Fulfilled" button for paid orders
+- ✓ Form action to update status
+- ✓ Back to Orders link
+- ✓ Comprehensive unit tests (31 tests)
 - Products CRUD pages (PRD 6.9-6.11)
 - Fulfillment slots management (PRD 6.12)
 - Newsletter subscribers list (PRD 6.13)
