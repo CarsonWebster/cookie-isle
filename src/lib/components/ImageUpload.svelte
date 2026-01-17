@@ -1,13 +1,30 @@
 <script lang="ts">
 	/**
 	 * ImageUpload Component
-	 * Reusable component for uploading images to R2 via /api/upload
+	 * Reusable component for uploading images to R2 via /admin/api/upload
 	 * Supports:
 	 * - File input with drag-and-drop
 	 * - Image preview
 	 * - Upload progress and error handling
-	 * - Validates file type (JPEG, PNG, WebP) and size (max 5MB)
+	 * - Validates file type (JPEG, PNG, WebP) and size (max 20MB)
+	 * - Gallery picker for selecting existing images
 	 */
+
+	import ImagePickerModal from './ImagePickerModal.svelte';
+
+	interface GalleryImage {
+		id: number;
+		filename: string;
+		originalName: string;
+		url: string;
+		mimeType: string;
+		sizeBytes: number;
+		cardFocalX: number | null;
+		cardFocalY: number | null;
+		heroFocalX: number | null;
+		heroFocalY: number | null;
+		createdAt: string | null;
+	}
 
 	interface Props {
 		/** Label for the upload field */
@@ -20,9 +37,18 @@
 		name: string;
 		/** Callback when upload completes with the new image URL */
 		onUploadComplete?: (url: string) => void;
+		/** Whether to show the "Choose from Gallery" button */
+		showGalleryPicker?: boolean;
 	}
 
-	let { label, helpText, currentImageUrl = null, name, onUploadComplete }: Props = $props();
+	let {
+		label,
+		helpText,
+		currentImageUrl = null,
+		name,
+		onUploadComplete,
+		showGalleryPicker = true
+	}: Props = $props();
 
 	// Component state
 	let isDragging = $state(false);
@@ -30,6 +56,9 @@
 	let uploadError = $state<string | null>(null);
 	let previewUrl = $state<string | null>(currentImageUrl);
 	let uploadedUrl = $state<string | null>(currentImageUrl);
+
+	// Gallery picker state
+	let showGalleryModal = $state(false);
 
 	// File input reference
 	let fileInput: HTMLInputElement;
@@ -43,16 +72,16 @@
 			return 'Invalid file type. Please upload a JPEG, PNG, or WebP image.';
 		}
 
-		const maxSize = 5 * 1024 * 1024; // 5MB
+		const maxSize = 20 * 1024 * 1024; // 20MB
 		if (file.size > maxSize) {
-			return 'File too large. Maximum size is 5MB.';
+			return 'File too large. Maximum size is 20MB.';
 		}
 
 		return null;
 	}
 
 	/**
-	 * Uploads file to /api/upload endpoint
+	 * Uploads file to /admin/api/upload endpoint
 	 */
 	async function uploadFile(file: File) {
 		isUploading = true;
@@ -69,7 +98,7 @@
 			const formData = new FormData();
 			formData.append('file', file);
 
-			const response = await fetch('/api/upload', {
+			const response = await fetch('/admin/api/upload', {
 				method: 'POST',
 				body: formData
 			});
@@ -178,6 +207,19 @@
 		uploadError = null;
 		if (fileInput) {
 			fileInput.value = '';
+		}
+	}
+
+	/**
+	 * Handles image selection from gallery
+	 */
+	function handleGallerySelect(image: GalleryImage) {
+		uploadedUrl = image.url;
+		previewUrl = image.url;
+		uploadError = null;
+
+		if (onUploadComplete) {
+			onUploadComplete(image.url);
 		}
 	}
 
@@ -305,9 +347,28 @@
 							Click to upload or drag and drop
 						{/if}
 					</p>
-					<p class="mt-1 text-xs text-gray-500">JPEG, PNG, or WebP (max 5MB)</p>
+					<p class="mt-1 text-xs text-gray-500">JPEG, PNG, or WebP (max 20MB)</p>
 				</div>
 			</button>
+
+			<!-- Gallery Picker Button -->
+			{#if showGalleryPicker}
+				<button
+					type="button"
+					onclick={() => (showGalleryModal = true)}
+					class="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+				>
+					<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+						/>
+					</svg>
+					Choose from Gallery
+				</button>
+			{/if}
 		{/if}
 	</div>
 
@@ -321,3 +382,11 @@
 		<p class="text-sm text-red-600">{uploadError}</p>
 	{/if}
 </div>
+
+<!-- Gallery Picker Modal -->
+<ImagePickerModal
+	open={showGalleryModal}
+	onSelect={handleGallerySelect}
+	onClose={() => (showGalleryModal = false)}
+	title="Select {label}"
+/>
