@@ -1,5 +1,8 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { config, getSortedMenu } from '$lib/config';
+	import CartBadge from '$lib/components/CartBadge.svelte';
+	import { initializeCart, getCartCount } from '$lib/stores/cart.svelte';
 
 	// Mobile menu state using Svelte 5 runes
 	let mobileMenuOpen = $state(false);
@@ -7,8 +10,10 @@
 	// Get sorted menu items
 	const menuItems = getSortedMenu();
 
-	// Cart count (placeholder for now - will be connected to cart store in Phase 3)
-	let cartCount = $state(0);
+	// Initialize cart from localStorage on client mount
+	onMount(() => {
+		initializeCart();
+	});
 
 	function openMobileMenu() {
 		mobileMenuOpen = true;
@@ -132,13 +137,7 @@
 						<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
 					</svg>
 					<!-- Cart Badge -->
-					{#if cartCount > 0}
-						<span
-							class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-white"
-						>
-							{cartCount}
-						</span>
-					{/if}
+					<CartBadge />
 				</a>
 			{/if}
 		</div>
@@ -255,11 +254,11 @@
 						<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
 					</svg>
 					Cart
-					{#if cartCount > 0}
+					{#if getCartCount() > 0}
 						<span
 							class="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-white"
 						>
-							{cartCount}
+							{getCartCount() > 99 ? '99+' : getCartCount()}
 						</span>
 					{/if}
 				</a>

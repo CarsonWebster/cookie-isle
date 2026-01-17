@@ -561,18 +561,18 @@ Before marking any TODO as complete:
 
 ### 3.2 Cart badge component
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                              | Status      |
-| ----- | ----------------------------------------------------------------- | ----------- |
-| 3.2.1 | Create `src/lib/components/CartBadge.svelte`                      | Not Started |
-| 3.2.2 | Import cart store and display `cartCount`                         | Not Started |
-| 3.2.3 | Hide badge when count is 0                                        | Not Started |
-| 3.2.4 | Add pop animation when count changes                              | Not Started |
-| 3.2.5 | Style with Tailwind: absolute positioned, circular, primary color | Not Started |
-| 3.2.6 | Update Header to use CartBadge component                          | Not Started |
-| 3.2.7 | Write component test in `tests/unit/CartBadge.test.svelte.ts`     | Not Started |
-| 3.2.8 | **Commit:** `feat: create CartBadge component`                    | Not Started |
+| ID    | Task                                                              | Status    |
+| ----- | ----------------------------------------------------------------- | --------- |
+| 3.2.1 | Create `src/lib/components/CartBadge.svelte`                      | Completed |
+| 3.2.2 | Import cart store and display `cartCount`                         | Completed |
+| 3.2.3 | Hide badge when count is 0                                        | Completed |
+| 3.2.4 | Add pop animation when count changes                              | Completed |
+| 3.2.5 | Style with Tailwind: absolute positioned, circular, primary color | Completed |
+| 3.2.6 | Update Header to use CartBadge component                          | Completed |
+| 3.2.7 | Write component test in `src/lib/components/CartBadge.spec.ts`    | Completed |
+| 3.2.8 | **Commit:** `feat: create CartBadge component`                    | Completed |
 
 ### 3.3 Cart toast notification
 

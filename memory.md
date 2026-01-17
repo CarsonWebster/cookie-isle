@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16)
+## Current Progress (as of 2026-01-16, updated for Phase 3.2)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -132,7 +132,8 @@ export const tableName = sqliteTable('table_name', {
 16. ~~About page (PRD 2.6)~~ DONE - `src/routes/(public)/about/+page.svelte` with prose styling (no server load needed)
 17. ~~Coming Soon mode (PRD 2.7)~~ DONE - `src/lib/components/ComingSoon.svelte` with 46 tests
 18. ~~Cart store (PRD 3.1)~~ DONE - `src/lib/stores/cart.svelte.ts` with Svelte 5 runes and localStorage persistence (57 tests)
-19. **NEXT: Cart badge component (PRD 3.2)** - `src/lib/components/CartBadge.svelte` to display cart count in header
+19. ~~Cart badge component (PRD 3.2)~~ DONE - `src/lib/components/CartBadge.svelte` with 26 tests
+20. **NEXT: Cart toast notification (PRD 3.3)** - `src/lib/components/CartToast.svelte` for "Added to cart" feedback
 
 ## Commands Reference
 
@@ -183,7 +184,8 @@ bun run db:push      # Push schema to D1
 | `src/routes/(public)/menu/page.server.spec.ts`        | 10    | Menu page load function            |
 | `src/routes/(public)/menu/[slug]/page.server.spec.ts` | 10    | Cookie detail page load function   |
 | `src/lib/stores/cart.spec.ts`                         | 57    | Cart store state and persistence   |
-| **Total**                                             | 283   |                                    |
+| `src/lib/components/CartBadge.spec.ts`                | 26    | CartBadge component logic          |
+| **Total**                                             | 309   |                                    |
 
 ## Site Config Notes
 
@@ -762,12 +764,78 @@ vi.stubGlobal('localStorage', {
 });
 ```
 
+## CartBadge Component Notes (Phase 3.2 - COMPLETE)
+
+The `src/lib/components/CartBadge.svelte` component implements cart item count display.
+
+### Key Features
+
+1. **Reactive Count Display:** Uses `$derived(getCartCount())` for automatic updates
+2. **Hidden When Empty:** Component renders nothing when count is 0
+3. **Pop Animation:** CSS animation triggers when count changes using `$effect`
+4. **Overflow Handling:** Displays "99+" for counts above 99
+5. **Accessibility:** Includes aria-label with proper singular/plural handling
+
+### Implementation Details
+
+```svelte
+<script lang="ts">
+	import { getCartCount } from '$lib/stores/cart.svelte';
+
+	let previousCount = $state(0);
+	let animating = $state(false);
+	const count = $derived(getCartCount());
+
+	$effect(() => {
+		if (count !== previousCount && count > 0) {
+			animating = true;
+			const timer = setTimeout(() => {
+				animating = false;
+			}, 300);
+			previousCount = count;
+			return () => clearTimeout(timer);
+		}
+		previousCount = count;
+	});
+</script>
+
+{#if count > 0}
+	<span
+		class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center
+		rounded-full bg-primary text-xs font-bold text-white
+		{animating ? 'animate-badge-pop' : ''}"
+	>
+		{count > 99 ? '99+' : count}
+	</span>
+{/if}
+```
+
+### Header Integration
+
+The Header component was updated to:
+
+1. Import `CartBadge` and `initializeCart` from cart store
+2. Call `initializeCart()` in `onMount()` to load cart from localStorage
+3. Replace inline badge markup with `<CartBadge />` component (desktop cart icon)
+4. Mobile cart uses `getCartCount()` directly for inline display
+
+### Usage Pattern
+
+```svelte
+<a href="/checkout" class="relative">
+	<CartIcon />
+	<CartBadge />
+</a>
+```
+
+The badge uses absolute positioning and appears in the top-right corner of the parent.
+
 ## Phase 3 Remaining Tasks
 
 Files still to create for Phase 3:
 
 1. ~~`src/lib/stores/cart.svelte.ts`~~ - DONE
-2. `src/lib/components/CartBadge.svelte` - Badge showing item count in header
+2. ~~`src/lib/components/CartBadge.svelte`~~ - DONE (26 tests)
 3. `src/lib/components/CartToast.svelte` - "Added to cart" notification
 4. `src/lib/components/AddToCartButton.svelte` - Reusable add to cart button
 5. `src/routes/(public)/checkout/+page.svelte` - Checkout page
