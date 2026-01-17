@@ -5,9 +5,10 @@ import {
 	queryPendingOrdersCount,
 	queryTotalProductsCount,
 	queryRecentOrders,
-	queryCookiesNeededToday,
-	load
-} from './+page.server';
+	queryCookiesNeededToday
+} from './dashboard';
+import type { DashboardStats, RecentOrder, CookieNeeded, DashboardData } from './dashboard';
+import { load } from './+page.server';
 
 // Mock the database module
 vi.mock('$lib/server/db', () => ({
@@ -359,7 +360,7 @@ describe('Admin Dashboard Server Functions', () => {
 
 	describe('Type exports', () => {
 		it('should export DashboardStats interface', () => {
-			const stats: import('./+page.server').DashboardStats = {
+			const stats: DashboardStats = {
 				todayOrdersCount: 5,
 				todayRevenueCents: 5000,
 				todayRevenueFormatted: '$50.00',
@@ -370,7 +371,7 @@ describe('Admin Dashboard Server Functions', () => {
 		});
 
 		it('should export RecentOrder interface', () => {
-			const order: import('./+page.server').RecentOrder = {
+			const order: RecentOrder = {
 				id: 1,
 				customerName: 'Test',
 				totalCents: 1000,
@@ -382,7 +383,7 @@ describe('Admin Dashboard Server Functions', () => {
 		});
 
 		it('should export CookieNeeded interface', () => {
-			const cookie: import('./+page.server').CookieNeeded = {
+			const cookie: CookieNeeded = {
 				productName: 'Chocolate Chip',
 				quantity: 24
 			};
@@ -390,7 +391,7 @@ describe('Admin Dashboard Server Functions', () => {
 		});
 
 		it('should export DashboardData interface', () => {
-			const data: import('./+page.server').DashboardData = {
+			const data: DashboardData = {
 				stats: {
 					todayOrdersCount: 0,
 					todayRevenueCents: 0,

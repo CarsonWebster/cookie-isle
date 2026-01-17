@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { config } from '$lib/config';
-	import type { DashboardData } from './+page.server';
+	import type { DashboardData } from './dashboard';
 
 	interface Props {
 		data: DashboardData;
