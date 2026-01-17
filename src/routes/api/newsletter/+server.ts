@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import { getDb } from '$lib/server/db';
 import { newsletter } from '$lib/server/db/schema';
 import { config } from '$lib/config';
+import { sendWelcomeEmail } from '$lib/server/email';
 
 // ============================================================================
 // Types
@@ -93,6 +94,14 @@ export function _normalizeEmail(email: string): string {
 	return email.trim().toLowerCase();
 }
 
+/**
+ * Generates a random unsubscribe token.
+ * Uses crypto.randomUUID and removes hyphens for a cleaner URL.
+ */
+export function generateUnsubscribeToken(): string {
+	return crypto.randomUUID().replace(/-/g, '');
+}
+
 // ============================================================================
 // POST Handler
 // ============================================================================
@@ -161,10 +170,25 @@ export async function POST({ request, platform }: RequestEvent): Promise<Respons
 			} satisfies NewsletterResponse);
 		}
 
+		// Generate unique unsubscribe token
+		const unsubscribeToken = generateUnsubscribeToken();
+
 		// Insert new subscriber
 		await db.insert(newsletter).values({
 			email,
-			source
+			source,
+			unsubscribeToken
+		});
+
+		// Send welcome email (non-blocking - don't fail signup if email fails)
+		// Note: Emails only sent when both RESEND_API_KEY and EMAIL_PRODUCTION_MODE are set
+		const env = platform.env as unknown as Record<string, string>;
+		const emailContext = {
+			apiKey: env.RESEND_API_KEY || '',
+			productionMode: env.EMAIL_PRODUCTION_MODE === 'true'
+		};
+		sendWelcomeEmail(emailContext, email, unsubscribeToken).catch((err) => {
+			console.error('[Newsletter] Failed to send welcome email:', err);
 		});
 
 		return json({

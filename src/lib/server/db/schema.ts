@@ -69,7 +69,10 @@ export const newsletter = sqliteTable('newsletter', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	email: text('email').notNull().unique(),
 	source: text('source').default('website'),
-	subscribedAt: text('subscribed_at').default(sql`(datetime('now'))`)
+	subscribed: integer('subscribed', { mode: 'boolean' }).default(true),
+	unsubscribeToken: text('unsubscribe_token').notNull().unique(),
+	subscribedAt: text('subscribed_at').default(sql`(datetime('now'))`),
+	unsubscribedAt: text('unsubscribed_at')
 });
 
 // Fulfillment slots table

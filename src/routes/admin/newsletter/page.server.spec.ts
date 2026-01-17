@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { load, actions, _generateCSV, type NewsletterSubscriber } from './+page.server';
+import { load, _generateCSV, type NewsletterSubscriber } from './+page.server';
 import { formatSubscribedDate } from '$lib/format';
 import type { D1Database } from '@cloudflare/workers-types';
 
@@ -40,26 +40,30 @@ describe('Newsletter Page Server', () => {
 					id: 1,
 					email: 'test@example.com',
 					source: 'website',
-					subscribedAt: '2026-01-16T10:00:00.000Z'
+					subscribed: true,
+					subscribedAt: '2026-01-16T10:00:00.000Z',
+					unsubscribedAt: null
 				},
 				{
 					id: 2,
 					email: 'user@test.com',
 					source: 'coming-soon',
-					subscribedAt: '2026-01-15T09:00:00.000Z'
+					subscribed: true,
+					subscribedAt: '2026-01-15T09:00:00.000Z',
+					unsubscribedAt: null
 				}
 			];
 
 			const csv = _generateCSV(subscribers);
 
-			expect(csv).toContain('Email,Source,Subscribed Date');
-			expect(csv).toContain('"test@example.com","website","2026-01-16T10:00:00.000Z"');
-			expect(csv).toContain('"user@test.com","coming-soon","2026-01-15T09:00:00.000Z"');
+			expect(csv).toContain('Email,Source,Subscribed,Subscribed Date,Unsubscribed Date');
+			expect(csv).toContain('"test@example.com","website","Yes","2026-01-16T10:00:00.000Z",""');
+			expect(csv).toContain('"user@test.com","coming-soon","Yes","2026-01-15T09:00:00.000Z",""');
 		});
 
 		it('should handle empty subscribers array', () => {
 			const csv = _generateCSV([]);
-			expect(csv).toBe('Email,Source,Subscribed Date\n');
+			expect(csv).toBe('Email,Source,Subscribed,Subscribed Date,Unsubscribed Date\n');
 		});
 
 		it('should escape quotes in email addresses', () => {
@@ -68,7 +72,9 @@ describe('Newsletter Page Server', () => {
 					id: 1,
 					email: 'test"quoted"@example.com',
 					source: 'website',
-					subscribedAt: '2026-01-16T10:00:00.000Z'
+					subscribed: true,
+					subscribedAt: '2026-01-16T10:00:00.000Z',
+					unsubscribedAt: null
 				}
 			];
 
@@ -82,7 +88,9 @@ describe('Newsletter Page Server', () => {
 					id: 1,
 					email: 'test@example.com',
 					source: null,
-					subscribedAt: '2026-01-16T10:00:00.000Z'
+					subscribed: true,
+					subscribedAt: '2026-01-16T10:00:00.000Z',
+					unsubscribedAt: null
 				}
 			];
 
@@ -96,12 +104,32 @@ describe('Newsletter Page Server', () => {
 					id: 1,
 					email: 'test@example.com',
 					source: 'website',
-					subscribedAt: null
+					subscribed: true,
+					subscribedAt: null,
+					unsubscribedAt: null
 				}
 			];
 
 			const csv = _generateCSV(subscribers);
-			expect(csv).toContain('"test@example.com","website",""');
+			expect(csv).toContain('"test@example.com","website","Yes","",""');
+		});
+
+		it('should show unsubscribed status correctly', () => {
+			const subscribers: NewsletterSubscriber[] = [
+				{
+					id: 1,
+					email: 'test@example.com',
+					source: 'website',
+					subscribed: false,
+					subscribedAt: '2026-01-16T10:00:00.000Z',
+					unsubscribedAt: '2026-01-17T10:00:00.000Z'
+				}
+			];
+
+			const csv = _generateCSV(subscribers);
+			expect(csv).toContain(
+				'"test@example.com","website","No","2026-01-16T10:00:00.000Z","2026-01-17T10:00:00.000Z"'
+			);
 		});
 	});
 
@@ -149,13 +177,17 @@ describe('Newsletter Page Server', () => {
 					id: 1,
 					email: 'test1@example.com',
 					source: 'website',
-					subscribedAt: '2026-01-16T10:00:00.000Z'
+					subscribed: true,
+					subscribedAt: '2026-01-16T10:00:00.000Z',
+					unsubscribedAt: null
 				},
 				{
 					id: 2,
 					email: 'test2@example.com',
 					source: 'coming-soon',
-					subscribedAt: '2026-01-15T09:00:00.000Z'
+					subscribed: true,
+					subscribedAt: '2026-01-15T09:00:00.000Z',
+					unsubscribedAt: null
 				}
 			];
 
@@ -175,7 +207,8 @@ describe('Newsletter Page Server', () => {
 
 			expect(result).toEqual({
 				subscribers: mockSubscribers,
-				totalCount: 2
+				totalCount: 2,
+				activeCount: 2
 			});
 			expect(getDb).toHaveBeenCalledWith({
 				env: { DB: {} }
@@ -201,7 +234,8 @@ describe('Newsletter Page Server', () => {
 
 			expect(result).toEqual({
 				subscribers: [],
-				totalCount: 0
+				totalCount: 0,
+				activeCount: 0
 			});
 			expect(consoleSpy).toHaveBeenCalledWith(
 				'Failed to load newsletter subscribers:',
@@ -227,146 +261,20 @@ describe('Newsletter Page Server', () => {
 		});
 	});
 
-	describe('export action', () => {
-		beforeEach(() => {
-			vi.clearAllMocks();
-		});
-
-		it('should throw 503 when platform is undefined', async () => {
-			await expect(
-				actions.export({
-					platform: undefined
-				} as any)
-			).rejects.toThrow();
-		});
-
-		it('should throw 503 when DB is undefined', async () => {
-			await expect(
-				actions.export({
-					platform: { env: { DB: undefined } }
-				} as any)
-			).rejects.toThrow();
-		});
-
-		it('should return CSV response with proper headers', async () => {
-			const mockSubscribers = [
-				{
-					id: 1,
-					email: 'test@example.com',
-					source: 'website',
-					subscribedAt: '2026-01-16T10:00:00.000Z'
-				}
-			];
-
-			const mockDb = {
-				select: vi.fn().mockReturnValue({
-					from: vi.fn().mockReturnValue({
-						orderBy: vi.fn().mockResolvedValue(mockSubscribers)
-					})
-				})
-			};
-
-			vi.mocked(getDb).mockReturnValue(mockDb as any);
-
-			const response = (await actions.export({
-				platform: { env: { DB: {} as D1Database } }
-			} as any)) as Response;
-
-			expect(response).toBeInstanceOf(Response);
-			expect(response.headers.get('Content-Type')).toBe('text/csv');
-			expect(response.headers.get('Content-Disposition')).toContain('attachment');
-			expect(response.headers.get('Content-Disposition')).toContain('newsletter-subscribers-');
-			expect(response.headers.get('Content-Disposition')).toContain('.csv');
-		});
-
-		it('should include current date in filename', async () => {
-			const mockDb = {
-				select: vi.fn().mockReturnValue({
-					from: vi.fn().mockReturnValue({
-						orderBy: vi.fn().mockResolvedValue([])
-					})
-				})
-			};
-
-			vi.mocked(getDb).mockReturnValue(mockDb as any);
-
-			const response = (await actions.export({
-				platform: { env: { DB: {} as D1Database } }
-			} as any)) as Response;
-
-			const contentDisposition = response.headers.get('Content-Disposition');
-			const today = new Date().toISOString().split('T')[0];
-			expect(contentDisposition).toContain(today);
-		});
-
-		it('should generate CSV content from subscribers', async () => {
-			const mockSubscribers = [
-				{
-					id: 1,
-					email: 'test@example.com',
-					source: 'website',
-					subscribedAt: '2026-01-16T10:00:00.000Z'
-				}
-			];
-
-			const mockDb = {
-				select: vi.fn().mockReturnValue({
-					from: vi.fn().mockReturnValue({
-						orderBy: vi.fn().mockResolvedValue(mockSubscribers)
-					})
-				})
-			};
-
-			vi.mocked(getDb).mockReturnValue(mockDb as any);
-
-			const response = (await actions.export({
-				platform: { env: { DB: {} as D1Database } }
-			} as any)) as Response;
-
-			const text = await response.text();
-			expect(text).toContain('Email,Source,Subscribed Date');
-			expect(text).toContain('"test@example.com","website","2026-01-16T10:00:00.000Z"');
-		});
-
-		it('should throw 500 when database query fails', async () => {
-			const mockDb = {
-				select: vi.fn().mockReturnValue({
-					from: vi.fn().mockReturnValue({
-						orderBy: vi.fn().mockRejectedValue(new Error('Database error'))
-					})
-				})
-			};
-
-			vi.mocked(getDb).mockReturnValue(mockDb as any);
-
-			const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-			await expect(
-				actions.export({
-					platform: { env: { DB: {} as D1Database } }
-				} as any)
-			).rejects.toThrow();
-
-			expect(consoleSpy).toHaveBeenCalledWith(
-				'Failed to export newsletter subscribers:',
-				expect.any(Error)
-			);
-
-			consoleSpy.mockRestore();
-		});
-	});
-
 	describe('Type Exports', () => {
 		it('should export NewsletterSubscriber type', () => {
 			const subscriber: NewsletterSubscriber = {
 				id: 1,
 				email: 'test@example.com',
 				source: 'website',
-				subscribedAt: '2026-01-16T10:00:00.000Z'
+				subscribed: true,
+				subscribedAt: '2026-01-16T10:00:00.000Z',
+				unsubscribedAt: null
 			};
 
 			expect(subscriber.id).toBeDefined();
 			expect(subscriber.email).toBeDefined();
+			expect(subscriber.subscribed).toBe(true);
 		});
 
 		it('should allow null values in NewsletterSubscriber', () => {
@@ -374,11 +282,14 @@ describe('Newsletter Page Server', () => {
 				id: 1,
 				email: 'test@example.com',
 				source: null,
-				subscribedAt: null
+				subscribed: null,
+				subscribedAt: null,
+				unsubscribedAt: null
 			};
 
 			expect(subscriber.source).toBeNull();
 			expect(subscriber.subscribedAt).toBeNull();
+			expect(subscriber.subscribed).toBeNull();
 		});
 	});
 });

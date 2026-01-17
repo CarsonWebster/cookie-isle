@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { formatSubscribedDate } from '$lib/format';
 
 	let { data } = $props();
 
 	const subscribers = $derived(data.subscribers);
 	const totalCount = $derived(data.totalCount);
+	const activeCount = $derived(data.activeCount);
+	const unsubscribedCount = $derived(totalCount - activeCount);
 	const hasSubscribers = $derived(totalCount > 0);
 </script>
 
@@ -23,26 +24,54 @@
 
 		<!-- Export Button -->
 		{#if hasSubscribers}
-			<form method="POST" action="?/export" use:enhance>
-				<button
-					type="submit"
-					class="rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:bg-primary-hover focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none"
-				>
-					📥 Export to CSV
-				</button>
-			</form>
+			<a
+				href="/admin/newsletter/export"
+				download
+				class="rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:bg-primary-hover focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none"
+			>
+				📥 Export to CSV
+			</a>
 		{/if}
 	</div>
 
-	<!-- Total Count Card -->
-	<div class="mb-6 rounded-xl bg-white p-6 shadow-md">
-		<div class="flex items-center justify-between">
-			<div>
-				<p class="text-sm font-medium text-text-light">Total Subscribers</p>
-				<p class="mt-1 text-3xl font-bold text-secondary">{totalCount}</p>
+	<!-- Stats Cards -->
+	<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+		<!-- Active Subscribers -->
+		<div class="rounded-xl bg-white p-6 shadow-md">
+			<div class="flex items-center justify-between">
+				<div>
+					<p class="text-sm font-medium text-text-light">Active Subscribers</p>
+					<p class="mt-1 text-3xl font-bold text-green-600">{activeCount}</p>
+				</div>
+				<div class="rounded-full bg-green-100 p-3">
+					<span class="text-2xl">✅</span>
+				</div>
 			</div>
-			<div class="rounded-full bg-primary/10 p-4">
-				<span class="text-4xl">📧</span>
+		</div>
+
+		<!-- Unsubscribed -->
+		<div class="rounded-xl bg-white p-6 shadow-md">
+			<div class="flex items-center justify-between">
+				<div>
+					<p class="text-sm font-medium text-text-light">Unsubscribed</p>
+					<p class="mt-1 text-3xl font-bold text-gray-500">{unsubscribedCount}</p>
+				</div>
+				<div class="rounded-full bg-gray-100 p-3">
+					<span class="text-2xl">📭</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- Total -->
+		<div class="rounded-xl bg-white p-6 shadow-md">
+			<div class="flex items-center justify-between">
+				<div>
+					<p class="text-sm font-medium text-text-light">Total All Time</p>
+					<p class="mt-1 text-3xl font-bold text-secondary">{totalCount}</p>
+				</div>
+				<div class="rounded-full bg-primary/10 p-3">
+					<span class="text-2xl">📧</span>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -61,6 +90,11 @@
 						<th
 							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
 						>
+							Status
+						</th>
+						<th
+							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
+						>
 							Source
 						</th>
 						<th
@@ -72,12 +106,27 @@
 				</thead>
 				<tbody class="divide-y divide-gray-200 bg-white">
 					{#each subscribers as subscriber (subscriber.id)}
-						<tr class="hover:bg-gray-50">
+						<tr class="hover:bg-gray-50 {subscriber.subscribed === false ? 'opacity-60' : ''}">
 							<td class="px-6 py-4 whitespace-nowrap">
 								<div class="flex items-center">
-									<span class="mr-2 text-xl">📧</span>
-									<span class="text-sm font-medium text-secondary">{subscriber.email}</span>
+									<span class="mr-2 text-xl">{subscriber.subscribed === false ? '📭' : '📧'}</span>
+									<a
+										href="mailto:{subscriber.email}"
+										class="text-sm font-medium text-secondary hover:text-primary hover:underline"
+									>
+										{subscriber.email}
+									</a>
 								</div>
+							</td>
+							<td class="px-6 py-4 whitespace-nowrap">
+								<span
+									class="inline-flex rounded-full px-2 py-1 text-xs font-semibold {subscriber.subscribed ===
+									false
+										? 'bg-gray-100 text-gray-600'
+										: 'bg-green-100 text-green-800'}"
+								>
+									{subscriber.subscribed === false ? 'Unsubscribed' : 'Active'}
+								</span>
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap">
 								<span
@@ -101,12 +150,29 @@
 		<!-- Mobile Card View -->
 		<div class="space-y-4 md:hidden">
 			{#each subscribers as subscriber (subscriber.id)}
-				<div class="rounded-xl bg-white p-4 shadow-md">
+				<div
+					class="rounded-xl bg-white p-4 shadow-md {subscriber.subscribed === false
+						? 'opacity-60'
+						: ''}"
+				>
 					<div class="mb-3 flex items-start justify-between">
 						<div class="flex items-center">
-							<span class="mr-2 text-xl">📧</span>
-							<span class="text-sm font-medium text-secondary">{subscriber.email}</span>
+							<span class="mr-2 text-xl">{subscriber.subscribed === false ? '📭' : '📧'}</span>
+							<a
+								href="mailto:{subscriber.email}"
+								class="text-sm font-medium text-secondary hover:text-primary hover:underline"
+							>
+								{subscriber.email}
+							</a>
 						</div>
+						<span
+							class="inline-flex rounded-full px-2 py-1 text-xs font-semibold {subscriber.subscribed ===
+							false
+								? 'bg-gray-100 text-gray-600'
+								: 'bg-green-100 text-green-800'}"
+						>
+							{subscriber.subscribed === false ? 'Unsubscribed' : 'Active'}
+						</span>
 					</div>
 
 					<div class="space-y-2 text-sm">

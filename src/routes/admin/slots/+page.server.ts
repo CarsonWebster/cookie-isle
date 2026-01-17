@@ -18,11 +18,10 @@ export const load: PageServerLoad = async ({ platform }) => {
 	const slots = await db
 		.select()
 		.from(fulfillmentSlots)
-		.orderBy(fulfillmentSlots.date, fulfillmentSlots.startTime)
-		.all();
+		.orderBy(fulfillmentSlots.date, fulfillmentSlots.startTime);
 
 	// Load all daily capacity data
-	const capacityData = await db.select().from(dailyCapacity).all();
+	const capacityData = await db.select().from(dailyCapacity);
 
 	// Create a map of date -> capacity data for easy lookup
 	const capacityMap = new Map(capacityData.map((c) => [c.date, c]));

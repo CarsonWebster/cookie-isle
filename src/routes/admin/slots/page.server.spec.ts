@@ -51,14 +51,20 @@ describe('Admin Slots Page - Load Function', () => {
 			{ date: '2026-01-21', cookiesOrdered: 100, updatedAt: '2026-01-19T10:00:00Z' }
 		];
 
-		const mockAll = vi.fn();
-		const mockOrderBy = vi.fn().mockReturnValue({ all: mockAll });
-		const mockWhere = vi.fn().mockReturnValue({ orderBy: mockOrderBy, all: mockAll });
-		const mockFrom = vi.fn().mockReturnValue({ where: mockWhere, orderBy: mockOrderBy });
+		// Mock chain: select() -> from() -> orderBy() returns Promise<slots>
+		// Mock chain: select() -> from() returns Promise<capacity>
+		const mockOrderBy = vi.fn().mockResolvedValue(mockSlots);
+		const mockFrom = vi.fn().mockImplementation(() => {
+			// Return different results based on call count
+			const callCount = mockFrom.mock.calls.length;
+			if (callCount === 1) {
+				// First call (slots) - has orderBy
+				return { orderBy: mockOrderBy };
+			}
+			// Second call (capacity) - returns directly
+			return Promise.resolve(mockCapacity);
+		});
 		const mockSelect = vi.fn().mockReturnValue({ from: mockFrom });
-
-		// First call returns slots, second returns capacity
-		mockAll.mockResolvedValueOnce(mockSlots).mockResolvedValueOnce(mockCapacity);
 
 		const mockDb = { select: mockSelect };
 		vi.mocked(getDb).mockReturnValue(mockDb as any);
@@ -83,10 +89,14 @@ describe('Admin Slots Page - Load Function', () => {
 	});
 
 	it('should return empty arrays when no slots exist', async () => {
-		const mockAll = vi.fn().mockResolvedValue([]);
-		const mockOrderBy = vi.fn().mockReturnValue({ all: mockAll });
-		const mockWhere = vi.fn().mockReturnValue({ orderBy: mockOrderBy, all: mockAll });
-		const mockFrom = vi.fn().mockReturnValue({ where: mockWhere, orderBy: mockOrderBy });
+		const mockOrderBy = vi.fn().mockResolvedValue([]);
+		const mockFrom = vi.fn().mockImplementation(() => {
+			const callCount = mockFrom.mock.calls.length;
+			if (callCount === 1) {
+				return { orderBy: mockOrderBy };
+			}
+			return Promise.resolve([]);
+		});
 		const mockSelect = vi.fn().mockReturnValue({ from: mockFrom });
 
 		const mockDb = { select: mockSelect };

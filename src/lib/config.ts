@@ -45,6 +45,13 @@ export interface NewsletterConfig {
 	buttonText: string;
 	successMessage: string;
 	errorMessage: string;
+	/** Email settings for welcome emails */
+	email: {
+		enabled: boolean;
+		fromAddress: string;
+		fromName: string;
+		welcomeSubject: string;
+	};
 }
 
 /** Cart and checkout configuration */
@@ -283,7 +290,13 @@ export const config: SiteConfig = {
 		placeholder: 'Enter your email',
 		buttonText: 'Notify Me',
 		successMessage: "Thanks for signing up! We'll let you know when we launch.",
-		errorMessage: 'Something went wrong. Please try again.'
+		errorMessage: 'Something went wrong. Please try again.',
+		email: {
+			enabled: true,
+			fromAddress: 'contact@thecookieisle.com',
+			fromName: 'The Cookie Isle',
+			welcomeSubject: 'Welcome to The Cookie Isle!'
+		}
 	},
 
 	// -------------------------------------------------------------------------

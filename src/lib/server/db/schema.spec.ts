@@ -92,11 +92,14 @@ describe('database schema', () => {
 			expect(columns.email).toBeDefined();
 			expect(columns.source).toBeDefined();
 			expect(columns.subscribedAt).toBeDefined();
+			expect(columns.subscribed).toBeDefined();
+			expect(columns.unsubscribeToken).toBeDefined();
+			expect(columns.unsubscribedAt).toBeDefined();
 		});
 
 		it('has correct column count', () => {
 			const columns = getTableColumns(newsletter);
-			expect(Object.keys(columns)).toHaveLength(4);
+			expect(Object.keys(columns)).toHaveLength(7);
 		});
 	});
 

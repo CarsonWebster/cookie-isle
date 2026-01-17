@@ -1209,10 +1209,10 @@ Before marking any TODO as complete:
 | 7.6.1  | Test full checkout flow on preview URL                  | Pending     |
 | 7.6.2  | Verify order appears in admin dashboard                 | Pending     |
 | 7.6.3  | Test marking order as fulfilled                         | Pending     |
-| 7.6.4  | Test adding new product via admin                       | Not Started |
-| 7.6.5  | Test image upload to R2                                 | Not Started |
+| 7.6.4  | Test adding new product via admin                       | Completed   |
+| 7.6.5  | Test image upload to R2                                 | Completed   |
 | 7.6.6  | Test newsletter signup                                  | Not Started |
-| 7.6.7  | Test mobile responsiveness on real device               | Not Started |
+| 7.6.7  | Test mobile responsiveness on real device               | Completed   |
 | 7.6.8  | Test slot selection and capacity tracking               | Not Started |
 | 7.6.9  | Document any bugs found and create fix TODOs            | In Progress |
 | 7.6.10 | **Commit:** `test: verify all features work on preview` | Not Started |

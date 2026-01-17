@@ -1,4 +1,4 @@
-import { desc, eq, or } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import type { PageServerLoad, Actions } from './$types';
 import { getDb } from '$lib/server/db';
 import { images, products } from '$lib/server/db/schema';

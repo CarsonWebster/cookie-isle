@@ -27,16 +27,16 @@
 >
 	<!-- Decorative background elements -->
 	<div
-		class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-primary)_0%,_transparent_50%)] opacity-10"
+		class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-primary)_0%,_transparent_50%)] opacity-10"
 		aria-hidden="true"
 	></div>
 	<div
-		class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--color-accent)_0%,_transparent_50%)] opacity-10"
+		class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--color-accent)_0%,_transparent_50%)] opacity-10"
 		aria-hidden="true"
 	></div>
 
 	<!-- Content container -->
-	<div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-28">
+	<div class="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-28">
 		<div class="text-center">
 			<!-- Cookie emoji decoration -->
 			<div class="mb-4 text-4xl sm:text-5xl" aria-hidden="true">
@@ -85,7 +85,7 @@
 	</div>
 
 	<!-- Decorative wave at bottom -->
-	<div class="absolute right-0 bottom-0 left-0" aria-hidden="true">
+	<div class="pointer-events-none absolute right-0 bottom-0 left-0" aria-hidden="true">
 		<svg
 			viewBox="0 0 1440 100"
 			fill="none"
