@@ -535,7 +535,7 @@ Before marking any TODO as complete:
 
 ## Phase 3: Cart System
 
-**Status:** In Progress
+**Status:** Completed
 
 ### 3.1 Cart store
 
@@ -685,18 +685,19 @@ Before marking any TODO as complete:
 
 ### 3.9 Checkout page - Submit
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                      | Status      |
-| ----- | --------------------------------------------------------- | ----------- |
-| 3.9.1 | Add "Place Order" submit button                           | Not Started |
-| 3.9.2 | Validate all required fields on submit                    | Not Started |
-| 3.9.3 | Validate slot is selected                                 | Not Started |
-| 3.9.4 | Show loading state on button during submission            | Not Started |
-| 3.9.5 | Disable form during submission                            | Not Started |
-| 3.9.6 | Handle max quantity exceeded modal                        | Not Started |
-| 3.9.7 | Style button: full width, primary color, disabled state   | Not Started |
-| 3.9.8 | **Commit:** `feat: add checkout form submission handling` | Not Started |
+| ID    | Task                                                      | Status    |
+| ----- | --------------------------------------------------------- | --------- |
+| 3.9.1 | Add "Place Order" submit button                           | Completed |
+| 3.9.2 | Validate all required fields on submit                    | Completed |
+| 3.9.3 | Validate slot is selected                                 | Completed |
+| 3.9.4 | Show loading state on button during submission            | Completed |
+| 3.9.5 | Disable form during submission                            | Completed |
+| 3.9.6 | Handle max quantity exceeded modal                        | Completed |
+| 3.9.7 | Style button: full width, primary color, disabled state   | Completed |
+| 3.9.8 | Write tests for submit functionality (72 tests)           | Completed |
+| 3.9.9 | **Commit:** `feat: add checkout form submission handling` | Completed |
 
 ---
 

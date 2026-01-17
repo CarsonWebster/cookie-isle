@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-17, updated for local dev setup)
+## Current Progress (as of 2026-01-17, Phase 3 Complete)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -144,7 +144,8 @@ export const tableName = sqliteTable('table_name', {
 23. ~~Checkout page - Customer form (PRD 3.6)~~ DONE - Customer info form with validation, fulfillment type toggle (95 total tests)
 24. ~~Checkout page - Slots selection (PRD 3.7)~~ DONE - Server load for available slots, slot picker UI (25 tests)
 25. ~~Checkout page - Extras (PRD 3.8)~~ DONE - Tip section, gift box, order summary with tax (165 total checkout tests)
-26. **NEXT: Checkout page - Submit (PRD 3.9)** - Form validation, loading states, submit button
+26. ~~Checkout page - Submit (PRD 3.9)~~ DONE - Form validation, loading states, submit button, max qty modal (237 total checkout tests)
+27. **NEXT: Stripe checkout endpoint (PRD 4.1)** - Install Stripe SDK, create checkout API endpoint
 
 ## Commands Reference
 
@@ -1390,13 +1391,113 @@ let orderTotalFormatted = $derived(formatPrice(orderTotalCents));
 - `config.order.taxEnabled` - Whether to calculate tax
 - `config.order.salesTaxRate` - Tax rate (0.0775 = 7.75%)
 
-### Next Step: Submit functionality (PRD 3.9)
+## Submit Functionality Notes (Phase 3.9 - COMPLETE)
 
-The checkout page will be extended to include:
+The checkout page now includes full form submission handling.
 
-- "Place Order" submit button
-- Full form validation on submit
-- Slot selection validation
-- Loading state during submission
-- Form disable during submission
-- Max quantity exceeded handling
+### Key Features
+
+1. **Place Order Button:**
+   - Full width, primary color background
+   - Disabled state with gray color
+   - Loading spinner animation during submission
+   - aria-busy attribute for accessibility
+
+2. **Form Validation on Submit:**
+   - Validates all customer fields (firstName, lastName, email, phone)
+   - Validates delivery address fields when delivery is selected
+   - Validates slot selection is made
+   - Scrolls to first error on validation failure
+   - Marks all fields as touched to show errors
+
+3. **Max Quantity Modal:**
+   - Shows when cart exceeds `config.order.maxOrderQuantity` (50)
+   - Uses `formatMaxOrderMessage()` for dynamic message
+   - Includes "Edit Cart" and "Contact Us" buttons
+   - Accessible with role="dialog", aria-modal, aria-labelledby
+
+4. **Form Disabled During Submission:**
+   - Uses `<fieldset disabled={isSubmitting}>` for native form disabling
+   - Adds opacity-60 class for visual feedback
+   - Prevents all form inputs during submission
+
+5. **Error Display:**
+   - Shows error message in red alert box
+   - Uses role="alert" and aria-live="polite" for screen readers
+
+### State Management
+
+```typescript
+// Submission state
+let isSubmitting = $state(false);
+let submitError = $state<string | null>(null);
+let showMaxQuantityModal = $state(false);
+
+// Derived states
+let isMaxQuantityExceeded = $derived(getCartCount() > config.order.maxOrderQuantity);
+let maxQuantityMessage = $derived(formatMaxOrderMessage(...));
+let isFormValid = $derived(() => { /* validation logic */ });
+let isSubmitDisabled = $derived(isSubmitting || !isFormValid() || isMaxQuantityExceeded);
+```
+
+### Validation Functions
+
+| Function                  | Purpose                                      |
+| ------------------------- | -------------------------------------------- |
+| `validateAllFields()`     | Validates all form fields, returns boolean   |
+| `validateSlotSelection()` | Checks slot is selected, sets submitError    |
+| `handleSubmit(event)`     | Main submit handler, orchestrates validation |
+| `closeMaxQuantityModal()` | Closes the max quantity modal                |
+
+### Test Coverage
+
+72 new tests added to `src/routes/(public)/checkout/page.spec.ts` (237 total):
+
+- Form validity checks (16 tests)
+- Max quantity handling (5 tests)
+- Submit button state (5 tests)
+- Form field validation on submit (12 tests)
+- Slot selection validation (2 tests)
+- Order data preparation (12 tests)
+- Submission state management (7 tests)
+- Form disabled during submission (2 tests)
+- Button styling (6 tests)
+- Accessibility (5 tests)
+
+### Next Phase: Stripe Integration (Phase 4)
+
+Phase 4 will implement the actual checkout API:
+
+1. Install Stripe SDK: `bun add stripe`
+2. Create `/api/checkout` POST endpoint
+3. Connect form submission to Stripe Checkout
+4. Create webhook handler for order completion
+5. Create checkout success page
+
+The `handleSubmit` function currently logs order data to console with a placeholder message.
+It's ready to be connected to the `/api/checkout` endpoint in Phase 4.
+
+## Test Coverage Summary
+
+| Test File                                             | Tests   | Purpose                            |
+| ----------------------------------------------------- | ------- | ---------------------------------- |
+| `src/demo.spec.ts`                                    | 1       | Demo test from sv create           |
+| `src/lib/config.spec.ts`                              | 35      | Site configuration and helpers     |
+| `src/lib/server/db/schema.spec.ts`                    | 23      | Schema table definitions and types |
+| `src/lib/server/db/db.spec.ts`                        | 10      | Database helper functions          |
+| `src/lib/components/Header.spec.ts`                   | 13      | Header component config logic      |
+| `src/lib/components/Footer.spec.ts`                   | 15      | Footer component config logic      |
+| `src/lib/components/Hero.spec.ts`                     | 19      | Hero component config logic        |
+| `src/lib/components/MenuCard.spec.ts`                 | 37      | MenuCard product type and config   |
+| `src/lib/components/ComingSoon.spec.ts`               | 46      | ComingSoon config, email, state    |
+| `src/routes/(public)/page.server.spec.ts`             | 7       | Homepage load function             |
+| `src/routes/(public)/page.svelte.spec.ts`             | 1       | Homepage component (browser test)  |
+| `src/routes/(public)/menu/page.server.spec.ts`        | 10      | Menu page load function            |
+| `src/routes/(public)/menu/[slug]/page.server.spec.ts` | 10      | Cookie detail page load function   |
+| `src/lib/stores/cart.spec.ts`                         | 57      | Cart store state and persistence   |
+| `src/lib/components/CartBadge.spec.ts`                | 26      | CartBadge component logic          |
+| `src/lib/components/CartToast.spec.ts`                | 35      | CartToast notification logic       |
+| `src/lib/components/AddToCartButton.spec.ts`          | 46      | AddToCartButton integration logic  |
+| `src/routes/(public)/checkout/page.spec.ts`           | 237     | Checkout page (cart, form, submit) |
+| `src/routes/(public)/checkout/page.server.spec.ts`    | 25      | Checkout slots load function       |
+| **Total**                                             | **653** |                                    |

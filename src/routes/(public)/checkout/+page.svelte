@@ -1,13 +1,14 @@
 <script lang="ts">
 	/**
-	 * Checkout Page - Cart Display, Customer Form, Slot Selection & Extras
+	 * Checkout Page - Cart Display, Customer Form, Slot Selection, Extras & Submit
 	 *
 	 * Displays the user's cart with quantity controls, remove buttons, and subtotal.
 	 * Shows empty state when cart is empty with link to browse menu.
 	 * Includes customer information form, fulfillment type selection, slot picker,
-	 * tip selection, gift box option, and order summary with tax calculation.
+	 * tip selection, gift box option, order summary with tax calculation, and
+	 * form submission with validation and loading states.
 	 *
-	 * PRD Reference: 3.5, 3.6, 3.7, 3.8
+	 * PRD Reference: 3.5, 3.6, 3.7, 3.8, 3.9
 	 */
 
 	import { onMount } from 'svelte';
@@ -16,12 +17,14 @@
 		formatPrice,
 		isZipAllowedForDelivery,
 		calculateTax,
-		calculateTip
+		calculateTip,
+		formatMaxOrderMessage
 	} from '$lib/config';
 	import {
 		getItems,
 		getCartTotal,
 		getCartTotalFormatted,
+		getCartCount,
 		isCartEmpty,
 		updateQuantity,
 		removeFromCart,
@@ -364,6 +367,187 @@
 			textarea.value = giftMessage;
 		}
 	}
+
+	// ============================================================================
+	// Form Submission State (PRD 3.9)
+	// ============================================================================
+
+	// Submission state
+	let isSubmitting = $state(false);
+	let submitError = $state<string | null>(null);
+	let showMaxQuantityModal = $state(false);
+
+	// Check if max order quantity is exceeded
+	let isMaxQuantityExceeded = $derived(getCartCount() > config.order.maxOrderQuantity);
+	let maxQuantityMessage = $derived(
+		formatMaxOrderMessage(config.order.maxOrderQuantity, config.contact.email)
+	);
+
+	// Derived validation state for form completeness
+	let isFormValid = $derived(() => {
+		// Check customer info fields
+		if (!firstName.trim() || !lastName.trim() || !email.trim() || !phone.trim()) {
+			return false;
+		}
+		if (!isValidEmail || !isValidPhone) {
+			return false;
+		}
+
+		// Check delivery address if delivery is selected
+		if (fulfillmentType === 'delivery') {
+			if (!street.trim() || !city.trim() || !zip.trim()) {
+				return false;
+			}
+			if (!isValidZip || !isDeliveryZipAllowed) {
+				return false;
+			}
+		}
+
+		// Check slot selection
+		if (!selectedSlotId) {
+			return false;
+		}
+
+		// Check cart is not empty
+		if (isCartEmpty()) {
+			return false;
+		}
+
+		return true;
+	});
+
+	// Button disabled state
+	let isSubmitDisabled = $derived(isSubmitting || !isFormValid() || isMaxQuantityExceeded);
+
+	/**
+	 * Validates all form fields and returns whether the form is valid
+	 */
+	function validateAllFields(): boolean {
+		let isValid = true;
+
+		// Validate customer fields
+		isValid = validateField('firstName') && isValid;
+		isValid = validateField('lastName') && isValid;
+		isValid = validateField('email') && isValid;
+		isValid = validateField('phone') && isValid;
+
+		// Validate delivery fields if applicable
+		if (fulfillmentType === 'delivery') {
+			isValid = validateField('street') && isValid;
+			isValid = validateField('city') && isValid;
+			isValid = validateField('zip') && isValid;
+		}
+
+		// Mark all fields as touched
+		touched = {
+			firstName: true,
+			lastName: true,
+			email: true,
+			phone: true,
+			street: true,
+			city: true,
+			zip: true
+		};
+
+		return isValid;
+	}
+
+	/**
+	 * Validates slot selection
+	 */
+	function validateSlotSelection(): boolean {
+		if (!selectedSlotId) {
+			submitError = 'Please select a fulfillment time slot';
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Handles form submission
+	 */
+	async function handleSubmit(event: Event) {
+		event.preventDefault();
+
+		// Clear any previous errors
+		submitError = null;
+
+		// Check max quantity first
+		if (isMaxQuantityExceeded) {
+			showMaxQuantityModal = true;
+			return;
+		}
+
+		// Validate all fields
+		const isFieldsValid = validateAllFields();
+		const isSlotValid = validateSlotSelection();
+
+		if (!isFieldsValid || !isSlotValid) {
+			// Scroll to first error
+			const firstError = document.querySelector('.text-red-500');
+			if (firstError) {
+				firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}
+			return;
+		}
+
+		// Set submitting state
+		isSubmitting = true;
+
+		try {
+			// TODO: Phase 4 - POST to /api/checkout
+			// For now, just simulate a delay and log the order data
+			await new Promise((resolve) => setTimeout(resolve, 1500));
+
+			const orderData = {
+				customer: {
+					firstName,
+					lastName,
+					email,
+					phone
+				},
+				fulfillmentType,
+				deliveryAddress:
+					fulfillmentType === 'delivery'
+						? {
+								street,
+								apt: apt || undefined,
+								city,
+								state: addressState,
+								zip
+							}
+						: undefined,
+				slotId: selectedSlotId,
+				tipAmountCents,
+				includeGiftBox,
+				giftMessage: includeGiftBox ? giftMessage : undefined,
+				items: getItems(),
+				subtotalCents,
+				taxCents,
+				giftBoxCents,
+				orderTotalCents
+			};
+
+			console.log('Order data prepared for submission:', orderData);
+
+			// For Phase 3.9, we show a placeholder message
+			// Phase 4 will implement actual Stripe checkout redirect
+			submitError =
+				'Checkout is almost ready! Stripe integration coming in Phase 4. Order data logged to console.';
+		} catch (error) {
+			console.error('Checkout error:', error);
+			submitError = 'An error occurred while processing your order. Please try again.';
+		} finally {
+			isSubmitting = false;
+		}
+	}
+
+	/**
+	 * Closes the max quantity modal
+	 */
+	function closeMaxQuantityModal() {
+		showMaxQuantityModal = false;
+	}
 </script>
 
 <svelte:head>
@@ -632,306 +816,308 @@
 						Please provide your contact details for order updates.
 					</p>
 
-					<form class="mt-6 space-y-6" novalidate>
-						<!-- Name Fields -->
-						<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-							<!-- First Name -->
-							<div>
-								<label for="firstName" class="block text-sm font-medium text-secondary">
-									First Name <span class="text-red-500">*</span>
-								</label>
-								<input
-									type="text"
-									id="firstName"
-									name="firstName"
-									bind:value={firstName}
-									onblur={() => handleBlur('firstName')}
-									class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.firstName &&
-									errors.firstName
-										? 'border-red-500'
-										: 'border-tertiary-medium'}"
-									placeholder="Jane"
-									autocomplete="given-name"
-									required
-								/>
-								{#if touched.firstName && errors.firstName}
-									<p class="mt-1 text-sm text-red-500">{errors.firstName}</p>
-								{/if}
-							</div>
-
-							<!-- Last Name -->
-							<div>
-								<label for="lastName" class="block text-sm font-medium text-secondary">
-									Last Name <span class="text-red-500">*</span>
-								</label>
-								<input
-									type="text"
-									id="lastName"
-									name="lastName"
-									bind:value={lastName}
-									onblur={() => handleBlur('lastName')}
-									class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.lastName &&
-									errors.lastName
-										? 'border-red-500'
-										: 'border-tertiary-medium'}"
-									placeholder="Doe"
-									autocomplete="family-name"
-									required
-								/>
-								{#if touched.lastName && errors.lastName}
-									<p class="mt-1 text-sm text-red-500">{errors.lastName}</p>
-								{/if}
-							</div>
-						</div>
-
-						<!-- Contact Fields -->
-						<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-							<!-- Email -->
-							<div>
-								<label for="email" class="block text-sm font-medium text-secondary">
-									Email <span class="text-red-500">*</span>
-								</label>
-								<input
-									type="email"
-									id="email"
-									name="email"
-									bind:value={email}
-									onblur={() => handleBlur('email')}
-									class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.email &&
-									errors.email
-										? 'border-red-500'
-										: 'border-tertiary-medium'}"
-									placeholder="jane@example.com"
-									autocomplete="email"
-									required
-								/>
-								{#if touched.email && errors.email}
-									<p class="mt-1 text-sm text-red-500">{errors.email}</p>
-								{/if}
-							</div>
-
-							<!-- Phone -->
-							<div>
-								<label for="phone" class="block text-sm font-medium text-secondary">
-									Phone <span class="text-red-500">*</span>
-								</label>
-								<input
-									type="tel"
-									id="phone"
-									name="phone"
-									value={phone}
-									oninput={handlePhoneInput}
-									onblur={() => handleBlur('phone')}
-									class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.phone &&
-									errors.phone
-										? 'border-red-500'
-										: 'border-tertiary-medium'}"
-									placeholder="(555) 123-4567"
-									autocomplete="tel"
-									required
-								/>
-								{#if touched.phone && errors.phone}
-									<p class="mt-1 text-sm text-red-500">{errors.phone}</p>
-								{/if}
-							</div>
-						</div>
-
-						<!-- Fulfillment Type Toggle -->
-						{#if pickupEnabled || deliveryEnabled}
-							<fieldset>
-								<legend class="block text-sm font-medium text-secondary">
-									How would you like to receive your order? <span class="text-red-500">*</span>
-								</legend>
-								<div class="mt-2 flex gap-2">
-									{#if pickupEnabled}
-										<button
-											type="button"
-											onclick={() => (fulfillmentType = 'pickup')}
-											class="flex-1 rounded-lg border-2 px-4 py-3 text-center font-medium transition-all {fulfillmentType ===
-											'pickup'
-												? 'border-primary bg-primary/10 text-primary'
-												: 'border-tertiary-medium bg-white text-text-light hover:border-primary/50'}"
-										>
-											<svg
-												class="mx-auto mb-1 h-5 w-5"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24"
-												aria-hidden="true"
-											>
-												<path
-													stroke-linecap="round"
-													stroke-linejoin="round"
-													stroke-width="2"
-													d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-												/>
-												<path
-													stroke-linecap="round"
-													stroke-linejoin="round"
-													stroke-width="2"
-													d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-												/>
-											</svg>
-											Pickup
-										</button>
-									{/if}
-									{#if deliveryEnabled}
-										<button
-											type="button"
-											onclick={() => (fulfillmentType = 'delivery')}
-											class="flex-1 rounded-lg border-2 px-4 py-3 text-center font-medium transition-all {fulfillmentType ===
-											'delivery'
-												? 'border-primary bg-primary/10 text-primary'
-												: 'border-tertiary-medium bg-white text-text-light hover:border-primary/50'}"
-										>
-											<svg
-												class="mx-auto mb-1 h-5 w-5"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24"
-												aria-hidden="true"
-											>
-												<path
-													stroke-linecap="round"
-													stroke-linejoin="round"
-													stroke-width="2"
-													d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"
-												/>
-											</svg>
-											Delivery
-										</button>
+					<form class="mt-6 space-y-6" novalidate onsubmit={handleSubmit}>
+						<fieldset disabled={isSubmitting} class="space-y-6 disabled:opacity-60">
+							<!-- Name Fields -->
+							<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+								<!-- First Name -->
+								<div>
+									<label for="firstName" class="block text-sm font-medium text-secondary">
+										First Name <span class="text-red-500">*</span>
+									</label>
+									<input
+										type="text"
+										id="firstName"
+										name="firstName"
+										bind:value={firstName}
+										onblur={() => handleBlur('firstName')}
+										class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.firstName &&
+										errors.firstName
+											? 'border-red-500'
+											: 'border-tertiary-medium'}"
+										placeholder="Jane"
+										autocomplete="given-name"
+										required
+									/>
+									{#if touched.firstName && errors.firstName}
+										<p class="mt-1 text-sm text-red-500">{errors.firstName}</p>
 									{/if}
 								</div>
-								{#if fulfillmentType === 'pickup'}
-									<p class="mt-2 text-sm text-text-light">
-										Pickup location: {config.fulfillment.pickupLocation}
-									</p>
-								{:else if fulfillmentType === 'delivery'}
-									<p class="mt-2 text-sm text-text-light">
-										We deliver to: {config.fulfillment.deliveryArea}
-									</p>
-								{/if}
-							</fieldset>
-						{/if}
 
-						<!-- Delivery Address Fields (conditional) -->
-						{#if showDeliveryFields}
-							<div class="rounded-lg border border-tertiary-medium bg-tertiary/50 p-4">
-								<h3 class="text-sm font-medium text-secondary">Delivery Address</h3>
+								<!-- Last Name -->
+								<div>
+									<label for="lastName" class="block text-sm font-medium text-secondary">
+										Last Name <span class="text-red-500">*</span>
+									</label>
+									<input
+										type="text"
+										id="lastName"
+										name="lastName"
+										bind:value={lastName}
+										onblur={() => handleBlur('lastName')}
+										class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.lastName &&
+										errors.lastName
+											? 'border-red-500'
+											: 'border-tertiary-medium'}"
+										placeholder="Doe"
+										autocomplete="family-name"
+										required
+									/>
+									{#if touched.lastName && errors.lastName}
+										<p class="mt-1 text-sm text-red-500">{errors.lastName}</p>
+									{/if}
+								</div>
+							</div>
 
-								<div class="mt-4 space-y-4">
-									<!-- Street Address -->
-									<div>
-										<label for="street" class="block text-sm font-medium text-secondary">
-											Street Address <span class="text-red-500">*</span>
-										</label>
-										<input
-											type="text"
-											id="street"
-											name="street"
-											bind:value={street}
-											onblur={() => handleBlur('street')}
-											class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.street &&
-											errors.street
-												? 'border-red-500'
-												: 'border-tertiary-medium'}"
-											placeholder="123 Main St"
-											autocomplete="street-address"
-											required
-										/>
-										{#if touched.street && errors.street}
-											<p class="mt-1 text-sm text-red-500">{errors.street}</p>
+							<!-- Contact Fields -->
+							<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+								<!-- Email -->
+								<div>
+									<label for="email" class="block text-sm font-medium text-secondary">
+										Email <span class="text-red-500">*</span>
+									</label>
+									<input
+										type="email"
+										id="email"
+										name="email"
+										bind:value={email}
+										onblur={() => handleBlur('email')}
+										class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.email &&
+										errors.email
+											? 'border-red-500'
+											: 'border-tertiary-medium'}"
+										placeholder="jane@example.com"
+										autocomplete="email"
+										required
+									/>
+									{#if touched.email && errors.email}
+										<p class="mt-1 text-sm text-red-500">{errors.email}</p>
+									{/if}
+								</div>
+
+								<!-- Phone -->
+								<div>
+									<label for="phone" class="block text-sm font-medium text-secondary">
+										Phone <span class="text-red-500">*</span>
+									</label>
+									<input
+										type="tel"
+										id="phone"
+										name="phone"
+										value={phone}
+										oninput={handlePhoneInput}
+										onblur={() => handleBlur('phone')}
+										class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.phone &&
+										errors.phone
+											? 'border-red-500'
+											: 'border-tertiary-medium'}"
+										placeholder="(555) 123-4567"
+										autocomplete="tel"
+										required
+									/>
+									{#if touched.phone && errors.phone}
+										<p class="mt-1 text-sm text-red-500">{errors.phone}</p>
+									{/if}
+								</div>
+							</div>
+
+							<!-- Fulfillment Type Toggle -->
+							{#if pickupEnabled || deliveryEnabled}
+								<fieldset>
+									<legend class="block text-sm font-medium text-secondary">
+										How would you like to receive your order? <span class="text-red-500">*</span>
+									</legend>
+									<div class="mt-2 flex gap-2">
+										{#if pickupEnabled}
+											<button
+												type="button"
+												onclick={() => (fulfillmentType = 'pickup')}
+												class="flex-1 rounded-lg border-2 px-4 py-3 text-center font-medium transition-all {fulfillmentType ===
+												'pickup'
+													? 'border-primary bg-primary/10 text-primary'
+													: 'border-tertiary-medium bg-white text-text-light hover:border-primary/50'}"
+											>
+												<svg
+													class="mx-auto mb-1 h-5 w-5"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+													aria-hidden="true"
+												>
+													<path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="2"
+														d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+													/>
+													<path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="2"
+														d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+													/>
+												</svg>
+												Pickup
+											</button>
+										{/if}
+										{#if deliveryEnabled}
+											<button
+												type="button"
+												onclick={() => (fulfillmentType = 'delivery')}
+												class="flex-1 rounded-lg border-2 px-4 py-3 text-center font-medium transition-all {fulfillmentType ===
+												'delivery'
+													? 'border-primary bg-primary/10 text-primary'
+													: 'border-tertiary-medium bg-white text-text-light hover:border-primary/50'}"
+											>
+												<svg
+													class="mx-auto mb-1 h-5 w-5"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+													aria-hidden="true"
+												>
+													<path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="2"
+														d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"
+													/>
+												</svg>
+												Delivery
+											</button>
 										{/if}
 									</div>
+									{#if fulfillmentType === 'pickup'}
+										<p class="mt-2 text-sm text-text-light">
+											Pickup location: {config.fulfillment.pickupLocation}
+										</p>
+									{:else if fulfillmentType === 'delivery'}
+										<p class="mt-2 text-sm text-text-light">
+											We deliver to: {config.fulfillment.deliveryArea}
+										</p>
+									{/if}
+								</fieldset>
+							{/if}
 
-									<!-- Apt/Suite -->
-									<div>
-										<label for="apt" class="block text-sm font-medium text-secondary">
-											Apt / Suite / Unit
-										</label>
-										<input
-											type="text"
-											id="apt"
-											name="apt"
-											bind:value={apt}
-											class="mt-1 block w-full rounded-lg border border-tertiary-medium px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
-											placeholder="Apt 4B (optional)"
-											autocomplete="address-line2"
-										/>
-									</div>
+							<!-- Delivery Address Fields (conditional) -->
+							{#if showDeliveryFields}
+								<div class="rounded-lg border border-tertiary-medium bg-tertiary/50 p-4">
+									<h3 class="text-sm font-medium text-secondary">Delivery Address</h3>
 
-									<!-- City, State, ZIP -->
-									<div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
-										<!-- City -->
-										<div class="col-span-2 sm:col-span-2">
-											<label for="city" class="block text-sm font-medium text-secondary">
-												City <span class="text-red-500">*</span>
+									<div class="mt-4 space-y-4">
+										<!-- Street Address -->
+										<div>
+											<label for="street" class="block text-sm font-medium text-secondary">
+												Street Address <span class="text-red-500">*</span>
 											</label>
 											<input
 												type="text"
-												id="city"
-												name="city"
-												bind:value={city}
-												onblur={() => handleBlur('city')}
-												class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.city &&
-												errors.city
+												id="street"
+												name="street"
+												bind:value={street}
+												onblur={() => handleBlur('street')}
+												class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.street &&
+												errors.street
 													? 'border-red-500'
 													: 'border-tertiary-medium'}"
-												placeholder="Coronado"
-												autocomplete="address-level2"
+												placeholder="123 Main St"
+												autocomplete="street-address"
 												required
 											/>
-											{#if touched.city && errors.city}
-												<p class="mt-1 text-sm text-red-500">{errors.city}</p>
+											{#if touched.street && errors.street}
+												<p class="mt-1 text-sm text-red-500">{errors.street}</p>
 											{/if}
 										</div>
 
-										<!-- State -->
+										<!-- Apt/Suite -->
 										<div>
-											<label for="addressState" class="block text-sm font-medium text-secondary">
-												State
+											<label for="apt" class="block text-sm font-medium text-secondary">
+												Apt / Suite / Unit
 											</label>
 											<input
 												type="text"
-												id="addressState"
-												name="addressState"
-												bind:value={addressState}
+												id="apt"
+												name="apt"
+												bind:value={apt}
 												class="mt-1 block w-full rounded-lg border border-tertiary-medium px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
-												placeholder="CA"
-												maxlength="2"
-												autocomplete="address-level1"
+												placeholder="Apt 4B (optional)"
+												autocomplete="address-line2"
 											/>
 										</div>
 
-										<!-- ZIP -->
-										<div>
-											<label for="zip" class="block text-sm font-medium text-secondary">
-												ZIP <span class="text-red-500">*</span>
-											</label>
-											<input
-												type="text"
-												id="zip"
-												name="zip"
-												bind:value={zip}
-												onblur={() => handleBlur('zip')}
-												class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.zip &&
-												errors.zip
-													? 'border-red-500'
-													: 'border-tertiary-medium'}"
-												placeholder="92118"
-												maxlength="5"
-												pattern="[0-9]{5}"
-												autocomplete="postal-code"
-												required
-											/>
-											{#if touched.zip && errors.zip}
-												<p class="mt-1 text-sm text-red-500">{errors.zip}</p>
-											{/if}
+										<!-- City, State, ZIP -->
+										<div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+											<!-- City -->
+											<div class="col-span-2 sm:col-span-2">
+												<label for="city" class="block text-sm font-medium text-secondary">
+													City <span class="text-red-500">*</span>
+												</label>
+												<input
+													type="text"
+													id="city"
+													name="city"
+													bind:value={city}
+													onblur={() => handleBlur('city')}
+													class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.city &&
+													errors.city
+														? 'border-red-500'
+														: 'border-tertiary-medium'}"
+													placeholder="Coronado"
+													autocomplete="address-level2"
+													required
+												/>
+												{#if touched.city && errors.city}
+													<p class="mt-1 text-sm text-red-500">{errors.city}</p>
+												{/if}
+											</div>
+
+											<!-- State -->
+											<div>
+												<label for="addressState" class="block text-sm font-medium text-secondary">
+													State
+												</label>
+												<input
+													type="text"
+													id="addressState"
+													name="addressState"
+													bind:value={addressState}
+													class="mt-1 block w-full rounded-lg border border-tertiary-medium px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+													placeholder="CA"
+													maxlength="2"
+													autocomplete="address-level1"
+												/>
+											</div>
+
+											<!-- ZIP -->
+											<div>
+												<label for="zip" class="block text-sm font-medium text-secondary">
+													ZIP <span class="text-red-500">*</span>
+												</label>
+												<input
+													type="text"
+													id="zip"
+													name="zip"
+													bind:value={zip}
+													onblur={() => handleBlur('zip')}
+													class="mt-1 block w-full rounded-lg border px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none {touched.zip &&
+													errors.zip
+														? 'border-red-500'
+														: 'border-tertiary-medium'}"
+													placeholder="92118"
+													maxlength="5"
+													pattern="[0-9]{5}"
+													autocomplete="postal-code"
+													required
+												/>
+												{#if touched.zip && errors.zip}
+													<p class="mt-1 text-sm text-red-500">{errors.zip}</p>
+												{/if}
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-						{/if}
+							{/if}
+						</fieldset>
 					</form>
 				</div>
 
@@ -1263,8 +1449,90 @@
 						<span class="text-2xl font-bold text-primary">{orderTotalFormatted}</span>
 					</div>
 
+					<!-- Submit Error Message -->
+					{#if submitError}
+						<div
+							class="mt-4 rounded-lg border border-red-200 bg-red-50 p-4"
+							role="alert"
+							aria-live="polite"
+						>
+							<div class="flex items-start gap-3">
+								<svg
+									class="h-5 w-5 flex-shrink-0 text-red-500"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+									/>
+								</svg>
+								<p class="text-sm text-red-700">{submitError}</p>
+							</div>
+						</div>
+					{/if}
+
+					<!-- Place Order Button (PRD 3.9) -->
+					<div class="mt-6">
+						<button
+							type="button"
+							onclick={handleSubmit}
+							disabled={isSubmitDisabled}
+							class="flex w-full items-center justify-center rounded-full px-8 py-4 text-lg font-semibold shadow-lg transition-all duration-200 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none
+								{isSubmitDisabled
+								? 'cursor-not-allowed bg-gray-400 text-gray-200'
+								: 'bg-primary text-white hover:bg-btn-hover-bg hover:shadow-xl'}"
+							aria-busy={isSubmitting}
+						>
+							{#if isSubmitting}
+								<!-- Loading spinner -->
+								<svg
+									class="mr-3 h-5 w-5 animate-spin"
+									fill="none"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
+									<circle
+										class="opacity-25"
+										cx="12"
+										cy="12"
+										r="10"
+										stroke="currentColor"
+										stroke-width="4"
+									></circle>
+									<path
+										class="opacity-75"
+										fill="currentColor"
+										d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+									></path>
+								</svg>
+								Processing...
+							{:else}
+								Place Order
+								<svg
+									class="ml-2 h-5 w-5"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+									/>
+								</svg>
+							{/if}
+						</button>
+					</div>
+
 					<!-- Continue Shopping Link -->
-					<div class="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+					<div class="mt-4 text-center">
 						<a
 							href="/menu"
 							class="inline-flex items-center justify-center text-primary transition-colors hover:text-btn-hover-bg focus:outline-none"
@@ -1285,12 +1553,97 @@
 							</svg>
 							Continue Shopping
 						</a>
-
-						<!-- Placeholder for future checkout button (Phase 3.9) -->
-						<div class="text-sm text-text-light italic">Checkout options coming soon...</div>
 					</div>
 				</div>
 			</div>
 		{/if}
 	</div>
 </section>
+
+<!-- Max Quantity Exceeded Modal (PRD 3.9) -->
+{#if showMaxQuantityModal}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_interactive_supports_focus -->
+	<div
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+		onclick={closeMaxQuantityModal}
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="max-qty-title"
+	>
+		<div
+			class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+			onclick={(e) => e.stopPropagation()}
+		>
+			<!-- Modal Header -->
+			<div class="flex items-start gap-4">
+				<div
+					class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-yellow-100"
+				>
+					<svg
+						class="h-6 w-6 text-yellow-600"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						aria-hidden="true"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+						/>
+					</svg>
+				</div>
+				<div class="flex-1">
+					<h3 id="max-qty-title" class="text-lg font-semibold text-secondary">
+						Order Quantity Limit
+					</h3>
+					<p class="mt-2 text-sm text-text-light">
+						{maxQuantityMessage}
+					</p>
+				</div>
+			</div>
+
+			<!-- Modal Actions -->
+			<div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+				<a
+					href="/menu"
+					class="inline-flex items-center justify-center rounded-lg border border-tertiary-medium px-4 py-2.5 text-sm font-medium text-secondary transition-colors hover:bg-tertiary-light focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none"
+				>
+					Edit Cart
+				</a>
+				{#if config.contact.emailEnabled}
+					<a
+						href="mailto:{config.contact.email}?subject=Large%20Order%20Inquiry"
+						class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-btn-hover-bg focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none"
+					>
+						Contact Us
+						<svg
+							class="ml-2 h-4 w-4"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							aria-hidden="true"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+							/>
+						</svg>
+					</a>
+				{/if}
+				<button
+					type="button"
+					onclick={closeMaxQuantityModal}
+					class="inline-flex items-center justify-center rounded-lg border border-tertiary-medium px-4 py-2.5 text-sm font-medium text-secondary transition-colors hover:bg-tertiary-light focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none sm:order-first"
+				>
+					Close
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}

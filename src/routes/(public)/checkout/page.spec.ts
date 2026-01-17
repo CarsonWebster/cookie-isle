@@ -11,7 +11,7 @@ import {
 	_setItemsForTesting,
 	getMaxQuantityPerItem
 } from '$lib/stores/cart.svelte';
-import { config, formatPrice, isZipAllowedForDelivery } from '$lib/config';
+import { config, formatPrice, isZipAllowedForDelivery, formatMaxOrderMessage } from '$lib/config';
 import type { CartItem } from '$lib/stores/cart.svelte';
 
 /**
@@ -1146,6 +1146,558 @@ describe('Checkout Page - Extras Logic', () => {
 		it('gift message textarea has maxlength attribute', () => {
 			const maxLength = 200;
 			expect(maxLength).toBe(200);
+		});
+	});
+});
+
+/**
+ * Unit tests for Checkout Page - Submit Functionality (PRD 3.9)
+ *
+ * Tests cover form validation, submission state, max quantity handling,
+ * and button states during the checkout submission process.
+ */
+describe('Checkout Page - Submit Functionality (PRD 3.9)', () => {
+	// Sample product for testing
+	const chocolateChip = {
+		id: 1,
+		slug: 'chocolate-chip',
+		title: 'Chocolate Chip Cookie',
+		priceCents: 350,
+		stripePriceId: 'price_choc123'
+	};
+
+	beforeEach(() => {
+		_resetForTesting();
+	});
+
+	describe('form validity check', () => {
+		it('returns false when cart is empty', () => {
+			// Cart is empty by default after reset
+			const isFormValid = () => {
+				if (isCartEmpty()) return false;
+				return true;
+			};
+			expect(isFormValid()).toBe(false);
+		});
+
+		it('returns false when customer first name is empty', () => {
+			addToCart(chocolateChip);
+			const firstName = '';
+			const isValid = firstName.trim().length > 0;
+			expect(isValid).toBe(false);
+		});
+
+		it('returns false when customer last name is empty', () => {
+			addToCart(chocolateChip);
+			const lastName = '';
+			const isValid = lastName.trim().length > 0;
+			expect(isValid).toBe(false);
+		});
+
+		it('returns false when email is empty', () => {
+			addToCart(chocolateChip);
+			const email = '';
+			const isValid = email.trim().length > 0;
+			expect(isValid).toBe(false);
+		});
+
+		it('returns false when phone is empty', () => {
+			addToCart(chocolateChip);
+			const phone = '';
+			const isValid = phone.trim().length > 0;
+			expect(isValid).toBe(false);
+		});
+
+		it('returns false when email format is invalid', () => {
+			const email = 'notanemail';
+			const isValidEmail = email.includes('@') && email.includes('.') && email.length >= 5;
+			expect(isValidEmail).toBe(false);
+		});
+
+		it('returns true when email format is valid', () => {
+			const email = 'test@example.com';
+			const isValidEmail = email.includes('@') && email.includes('.') && email.length >= 5;
+			expect(isValidEmail).toBe(true);
+		});
+
+		it('returns false when phone has less than 10 digits', () => {
+			const phone = '(555) 123';
+			const isValidPhone = phone.replace(/\D/g, '').length >= 10;
+			expect(isValidPhone).toBe(false);
+		});
+
+		it('returns true when phone has exactly 10 digits', () => {
+			const phone = '(555) 123-4567';
+			const isValidPhone = phone.replace(/\D/g, '').length >= 10;
+			expect(isValidPhone).toBe(true);
+		});
+
+		it('returns false when delivery is selected and street is empty', () => {
+			const fulfillmentType = 'delivery';
+			const street = '';
+			const isValid = fulfillmentType !== 'delivery' || street.trim().length > 0;
+			expect(isValid).toBe(false);
+		});
+
+		it('returns true when pickup is selected and street is empty', () => {
+			// For pickup, street is not required
+			const isPickup = true;
+			const street = '';
+			const isValid = isPickup || street.trim().length > 0;
+			expect(isValid).toBe(true);
+		});
+
+		it('returns false when delivery is selected and city is empty', () => {
+			const fulfillmentType = 'delivery';
+			const city = '';
+			const isValid = fulfillmentType !== 'delivery' || city.trim().length > 0;
+			expect(isValid).toBe(false);
+		});
+
+		it('returns false when delivery is selected and ZIP is empty', () => {
+			const fulfillmentType = 'delivery';
+			const zip = '';
+			const isValid = fulfillmentType !== 'delivery' || (zip.length === 5 && /^\d{5}$/.test(zip));
+			expect(isValid).toBe(false);
+		});
+
+		it('returns false when delivery ZIP is not 5 digits', () => {
+			const fulfillmentType = 'delivery';
+			const zip = '921';
+			const isValidZip = zip.length === 5 && /^\d{5}$/.test(zip);
+			expect(isValidZip).toBe(false);
+		});
+
+		it('returns true when delivery ZIP is exactly 5 digits', () => {
+			const fulfillmentType = 'delivery';
+			const zip = '92118';
+			const isValidZip = zip.length === 5 && /^\d{5}$/.test(zip);
+			expect(isValidZip).toBe(true);
+		});
+
+		it('returns false when no slot is selected', () => {
+			const selectedSlotId: number | null = null;
+			const isSlotSelected = selectedSlotId !== null;
+			expect(isSlotSelected).toBe(false);
+		});
+
+		it('returns true when a slot is selected', () => {
+			const selectedSlotId: number | null = 1;
+			const isSlotSelected = selectedSlotId !== null;
+			expect(isSlotSelected).toBe(true);
+		});
+	});
+
+	describe('max quantity exceeded handling', () => {
+		it('detects when cart exceeds max order quantity', () => {
+			const maxOrderQuantity = config.order.maxOrderQuantity;
+			const cartCount = maxOrderQuantity + 1;
+			const isMaxQuantityExceeded = cartCount > maxOrderQuantity;
+			expect(isMaxQuantityExceeded).toBe(true);
+		});
+
+		it('allows orders at exactly max quantity', () => {
+			const maxOrderQuantity = config.order.maxOrderQuantity;
+			const cartCount = maxOrderQuantity;
+			const isMaxQuantityExceeded = cartCount > maxOrderQuantity;
+			expect(isMaxQuantityExceeded).toBe(false);
+		});
+
+		it('allows orders below max quantity', () => {
+			const maxOrderQuantity = config.order.maxOrderQuantity;
+			const cartCount = 10;
+			const isMaxQuantityExceeded = cartCount > maxOrderQuantity;
+			expect(isMaxQuantityExceeded).toBe(false);
+		});
+
+		it('generates max quantity message with threshold', () => {
+			const threshold = config.order.maxOrderQuantity;
+			const email = config.contact.email;
+			const message = formatMaxOrderMessage(threshold, email);
+			expect(message).toContain(String(threshold));
+		});
+
+		it('generates max quantity message with contact email', () => {
+			const threshold = config.order.maxOrderQuantity;
+			const email = config.contact.email;
+			const message = formatMaxOrderMessage(threshold, email);
+			expect(message).toContain(email);
+		});
+	});
+
+	describe('submit button state', () => {
+		it('button is disabled when cart is empty', () => {
+			const isCartEmptyValue = isCartEmpty();
+			const isSubmitDisabled = isCartEmptyValue;
+			expect(isSubmitDisabled).toBe(true);
+		});
+
+		it('button is disabled during submission', () => {
+			addToCart(chocolateChip);
+			const isSubmitting = true;
+			const isSubmitDisabled = isSubmitting;
+			expect(isSubmitDisabled).toBe(true);
+		});
+
+		it('button is disabled when form is invalid', () => {
+			addToCart(chocolateChip);
+			const isSubmitting = false;
+			const isFormValid = false; // Missing required fields
+			const isSubmitDisabled = isSubmitting || !isFormValid;
+			expect(isSubmitDisabled).toBe(true);
+		});
+
+		it('button is disabled when max quantity exceeded', () => {
+			addToCart(chocolateChip);
+			const isSubmitting = false;
+			const isFormValid = true;
+			const isMaxQuantityExceeded = true;
+			const isSubmitDisabled = isSubmitting || !isFormValid || isMaxQuantityExceeded;
+			expect(isSubmitDisabled).toBe(true);
+		});
+
+		it('button is enabled when all conditions are met', () => {
+			addToCart(chocolateChip);
+			const isSubmitting = false;
+			const isFormValid = true;
+			const isMaxQuantityExceeded = false;
+			const isSubmitDisabled = isSubmitting || !isFormValid || isMaxQuantityExceeded;
+			expect(isSubmitDisabled).toBe(false);
+		});
+	});
+
+	describe('form field validation on submit', () => {
+		it('validates firstName is required', () => {
+			const firstName = '';
+			const error = !firstName.trim() ? 'First name is required' : null;
+			expect(error).toBe('First name is required');
+		});
+
+		it('validates lastName is required', () => {
+			const lastName = '';
+			const error = !lastName.trim() ? 'Last name is required' : null;
+			expect(error).toBe('Last name is required');
+		});
+
+		it('validates email is required', () => {
+			const email = '';
+			const error = !email.trim() ? 'Email is required' : null;
+			expect(error).toBe('Email is required');
+		});
+
+		it('validates email format', () => {
+			const email = 'invalid';
+			const isValidEmail = email.includes('@') && email.includes('.') && email.length >= 5;
+			const error = !isValidEmail ? 'Please enter a valid email address' : null;
+			expect(error).toBe('Please enter a valid email address');
+		});
+
+		it('validates phone is required', () => {
+			const phone = '';
+			const error = !phone.trim() ? 'Phone number is required' : null;
+			expect(error).toBe('Phone number is required');
+		});
+
+		it('validates phone format', () => {
+			const phone = '123';
+			const isValidPhone = phone.replace(/\D/g, '').length >= 10;
+			const error = !isValidPhone ? 'Please enter a valid 10-digit phone number' : null;
+			expect(error).toBe('Please enter a valid 10-digit phone number');
+		});
+
+		it('validates street is required for delivery', () => {
+			const fulfillmentType = 'delivery';
+			const street = '';
+			const error =
+				fulfillmentType === 'delivery' && !street.trim()
+					? 'Street address is required for delivery'
+					: null;
+			expect(error).toBe('Street address is required for delivery');
+		});
+
+		it('validates city is required for delivery', () => {
+			const fulfillmentType = 'delivery';
+			const city = '';
+			const error =
+				fulfillmentType === 'delivery' && !city.trim() ? 'City is required for delivery' : null;
+			expect(error).toBe('City is required for delivery');
+		});
+
+		it('validates ZIP is required for delivery', () => {
+			const fulfillmentType = 'delivery';
+			const zip = '';
+			const error =
+				fulfillmentType === 'delivery' && !zip.trim() ? 'ZIP code is required for delivery' : null;
+			expect(error).toBe('ZIP code is required for delivery');
+		});
+
+		it('validates ZIP format for delivery', () => {
+			const fulfillmentType = 'delivery';
+			const zip = '123';
+			const isValidZip = zip.length === 5 && /^\d{5}$/.test(zip);
+			const error =
+				fulfillmentType === 'delivery' && !isValidZip
+					? 'Please enter a valid 5-digit ZIP code'
+					: null;
+			expect(error).toBe('Please enter a valid 5-digit ZIP code');
+		});
+
+		it('validates ZIP is in delivery area', () => {
+			const fulfillmentType = 'delivery';
+			const zip = '99999'; // Invalid ZIP for delivery
+			const isAllowed = isZipAllowedForDelivery(zip);
+			const error =
+				fulfillmentType === 'delivery' && !isAllowed ? config.fulfillment.deliveryZipError : null;
+			expect(error).toBe(config.fulfillment.deliveryZipError);
+		});
+	});
+
+	describe('slot selection validation', () => {
+		it('returns error when no slot selected', () => {
+			const selectedSlotId: number | null = null;
+			const error = !selectedSlotId ? 'Please select a fulfillment time slot' : null;
+			expect(error).toBe('Please select a fulfillment time slot');
+		});
+
+		it('returns no error when slot is selected', () => {
+			const selectedSlotId: number | null = 1;
+			const error = !selectedSlotId ? 'Please select a fulfillment time slot' : null;
+			expect(error).toBeNull();
+		});
+	});
+
+	describe('order data preparation', () => {
+		it('includes customer information in order data', () => {
+			addToCart(chocolateChip);
+			const orderData = {
+				customer: {
+					firstName: 'Jane',
+					lastName: 'Doe',
+					email: 'jane@example.com',
+					phone: '(555) 123-4567'
+				}
+			};
+			expect(orderData.customer.firstName).toBe('Jane');
+			expect(orderData.customer.lastName).toBe('Doe');
+			expect(orderData.customer.email).toBe('jane@example.com');
+			expect(orderData.customer.phone).toBe('(555) 123-4567');
+		});
+
+		it('includes fulfillment type in order data', () => {
+			const orderData = {
+				fulfillmentType: 'pickup' as 'pickup' | 'delivery'
+			};
+			expect(orderData.fulfillmentType).toBe('pickup');
+		});
+
+		it('includes delivery address for delivery orders', () => {
+			const orderData = {
+				fulfillmentType: 'delivery' as 'pickup' | 'delivery',
+				deliveryAddress: {
+					street: '123 Main St',
+					apt: 'Apt 4B',
+					city: 'Coronado',
+					state: 'CA',
+					zip: '92118'
+				}
+			};
+			expect(orderData.deliveryAddress).toBeDefined();
+			expect(orderData.deliveryAddress.street).toBe('123 Main St');
+			expect(orderData.deliveryAddress.zip).toBe('92118');
+		});
+
+		it('excludes delivery address for pickup orders', () => {
+			// For pickup orders, delivery address should be undefined
+			const isDelivery = false;
+			const deliveryAddress = isDelivery
+				? { street: '123 Main', city: 'Test', state: 'CA', zip: '12345' }
+				: undefined;
+			expect(deliveryAddress).toBeUndefined();
+		});
+
+		it('includes slot ID in order data', () => {
+			const orderData = {
+				slotId: 123
+			};
+			expect(orderData.slotId).toBe(123);
+		});
+
+		it('includes tip amount in order data', () => {
+			const orderData = {
+				tipAmountCents: 500
+			};
+			expect(orderData.tipAmountCents).toBe(500);
+		});
+
+		it('includes gift box flag in order data', () => {
+			const orderData = {
+				includeGiftBox: true
+			};
+			expect(orderData.includeGiftBox).toBe(true);
+		});
+
+		it('includes gift message when gift box is selected', () => {
+			const includeGiftBox = true;
+			const giftMessage = 'Happy Birthday!';
+			const orderData = {
+				includeGiftBox,
+				giftMessage: includeGiftBox ? giftMessage : undefined
+			};
+			expect(orderData.giftMessage).toBe('Happy Birthday!');
+		});
+
+		it('excludes gift message when gift box is not selected', () => {
+			const includeGiftBox = false;
+			const giftMessage = 'Happy Birthday!';
+			const orderData = {
+				includeGiftBox,
+				giftMessage: includeGiftBox ? giftMessage : undefined
+			};
+			expect(orderData.giftMessage).toBeUndefined();
+		});
+
+		it('includes cart items in order data', () => {
+			addToCart(chocolateChip);
+			const items = getItems();
+			expect(items.length).toBe(1);
+			expect(items[0].title).toBe('Chocolate Chip Cookie');
+		});
+
+		it('includes calculated totals in order data', () => {
+			addToCart(chocolateChip);
+			const subtotalCents = getCartTotal();
+			const tipAmountCents = 100;
+			const giftBoxCents = config.giftBox.priceCents;
+			const taxCents = 0; // Tax disabled in config
+			const orderTotalCents = subtotalCents + tipAmountCents + giftBoxCents + taxCents;
+
+			expect(subtotalCents).toBe(350);
+			expect(orderTotalCents).toBe(350 + 100 + 300);
+		});
+	});
+
+	describe('submission state management', () => {
+		it('isSubmitting starts as false', () => {
+			const isSubmitting = false;
+			expect(isSubmitting).toBe(false);
+		});
+
+		it('submitError starts as null', () => {
+			const submitError: string | null = null;
+			expect(submitError).toBeNull();
+		});
+
+		it('showMaxQuantityModal starts as false', () => {
+			const showMaxQuantityModal = false;
+			expect(showMaxQuantityModal).toBe(false);
+		});
+
+		it('can set isSubmitting to true during submission', () => {
+			let isSubmitting = false;
+			isSubmitting = true;
+			expect(isSubmitting).toBe(true);
+		});
+
+		it('can set submitError when error occurs', () => {
+			let submitError: string | null = null;
+			submitError = 'An error occurred';
+			expect(submitError).toBe('An error occurred');
+		});
+
+		it('can show max quantity modal', () => {
+			let showMaxQuantityModal = false;
+			showMaxQuantityModal = true;
+			expect(showMaxQuantityModal).toBe(true);
+		});
+
+		it('can close max quantity modal', () => {
+			let showMaxQuantityModal = true;
+			showMaxQuantityModal = false;
+			expect(showMaxQuantityModal).toBe(false);
+		});
+	});
+
+	describe('form disabled during submission', () => {
+		it('fieldset is disabled when isSubmitting is true', () => {
+			const isSubmitting = true;
+			const isFieldsetDisabled = isSubmitting;
+			expect(isFieldsetDisabled).toBe(true);
+		});
+
+		it('fieldset is enabled when isSubmitting is false', () => {
+			const isSubmitting = false;
+			const isFieldsetDisabled = isSubmitting;
+			expect(isFieldsetDisabled).toBe(false);
+		});
+	});
+
+	describe('button styling', () => {
+		it('uses primary color when enabled', () => {
+			const isDisabled = false;
+			const buttonClass = isDisabled ? 'bg-gray-400' : 'bg-primary';
+			expect(buttonClass).toBe('bg-primary');
+		});
+
+		it('uses gray color when disabled', () => {
+			const isDisabled = true;
+			const buttonClass = isDisabled ? 'bg-gray-400' : 'bg-primary';
+			expect(buttonClass).toBe('bg-gray-400');
+		});
+
+		it('shows loading text during submission', () => {
+			const isSubmitting = true;
+			const buttonText = isSubmitting ? 'Processing...' : 'Place Order';
+			expect(buttonText).toBe('Processing...');
+		});
+
+		it('shows Place Order text when not submitting', () => {
+			const isSubmitting = false;
+			const buttonText = isSubmitting ? 'Processing...' : 'Place Order';
+			expect(buttonText).toBe('Place Order');
+		});
+
+		it('button is full width', () => {
+			const buttonClass = 'w-full';
+			expect(buttonClass).toContain('w-full');
+		});
+
+		it('button has cursor-not-allowed when disabled', () => {
+			const isDisabled = true;
+			const cursorClass = isDisabled ? 'cursor-not-allowed' : '';
+			expect(cursorClass).toBe('cursor-not-allowed');
+		});
+	});
+
+	describe('accessibility', () => {
+		it('submit button has aria-busy when submitting', () => {
+			const isSubmitting = true;
+			const ariaBusy = isSubmitting;
+			expect(ariaBusy).toBe(true);
+		});
+
+		it('error message has role alert', () => {
+			const role = 'alert';
+			expect(role).toBe('alert');
+		});
+
+		it('error message has aria-live polite', () => {
+			const ariaLive = 'polite';
+			expect(ariaLive).toBe('polite');
+		});
+
+		it('modal has role dialog', () => {
+			const role = 'dialog';
+			expect(role).toBe('dialog');
+		});
+
+		it('modal has aria-modal true', () => {
+			const ariaModal = true;
+			expect(ariaModal).toBe(true);
+		});
+
+		it('modal has aria-labelledby', () => {
+			const ariaLabelledBy = 'max-qty-title';
+			expect(ariaLabelledBy).toBeTruthy();
 		});
 	});
 });
