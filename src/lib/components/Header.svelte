@@ -44,7 +44,7 @@
 	<div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
 		<!-- Logo -->
 		<a href="/" class="flex items-center gap-2 text-header-text">
-			<span class="text-2xl">🍪</span>
+			<img src="/images/CookieIsleLogo.png" alt="" class="h-10 w-auto" aria-hidden="true" />
 			<span class="text-xl font-semibold">{config.title}</span>
 		</a>
 
@@ -180,7 +180,7 @@
 	<!-- Mobile Nav Header -->
 	<div class="flex items-center justify-between border-b border-tertiary-medium p-4">
 		<a href="/" class="flex items-center gap-2 text-secondary" onclick={closeMobileMenu}>
-			<span class="text-2xl">🍪</span>
+			<img src="/images/CookieIsleLogo.png" alt="" class="h-8 w-auto" aria-hidden="true" />
 			<span class="text-lg font-semibold">{config.title}</span>
 		</a>
 		<button onclick={closeMobileMenu} aria-label="Close menu" class="p-2 text-secondary">

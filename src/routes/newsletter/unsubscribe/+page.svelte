@@ -22,7 +22,7 @@
 	<div class="w-full max-w-md">
 		<!-- Logo and Title -->
 		<div class="text-center">
-			<div class="mb-4 text-5xl">🍪</div>
+			<img src="/images/Cookieart.png" alt="" class="mx-auto mb-4 h-16 w-auto" aria-hidden="true" />
 			<h1 class="text-2xl font-bold tracking-tight text-secondary">{config.title}</h1>
 		</div>
 

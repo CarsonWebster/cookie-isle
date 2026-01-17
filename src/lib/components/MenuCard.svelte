@@ -60,10 +60,10 @@
 		{:else}
 			<!-- Placeholder when no image -->
 			<div
-				class="flex h-full w-full items-center justify-center bg-tertiary-medium text-6xl"
+				class="flex h-full w-full items-center justify-center bg-tertiary-medium"
 				aria-label="Cookie placeholder"
 			>
-				<span aria-hidden="true">🍪</span>
+				<img src="/images/Cookieart.png" alt="" class="h-16 w-auto" aria-hidden="true" />
 			</div>
 		{/if}
 	</a>

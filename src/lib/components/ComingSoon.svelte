@@ -96,8 +96,12 @@
 	<div class="relative z-10 mx-auto max-w-2xl px-4 py-16 text-center sm:px-6 lg:px-8">
 		<!-- Logo / Brand -->
 		<div class="mb-8">
-			<div class="mb-4 text-6xl sm:text-7xl" aria-hidden="true">
-				<span class="inline-block animate-bounce">🍪</span>
+			<div class="mb-4" aria-hidden="true">
+				<img
+					src="/images/Cookieart.png"
+					alt=""
+					class="mx-auto h-20 w-auto animate-bounce sm:h-24"
+				/>
 			</div>
 			<h1 class="text-3xl font-bold tracking-tight text-secondary sm:text-4xl md:text-5xl">
 				{config.title}

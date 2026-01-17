@@ -1,7 +1,6 @@
 <script lang="ts">
 	import './layout.css';
 	import { config } from '$lib/config';
-	import favicon from '$lib/assets/favicon.svg';
 	import ComingSoon from '$lib/components/ComingSoon.svelte';
 	import CartToast from '$lib/components/CartToast.svelte';
 
@@ -20,9 +19,6 @@
 	<meta name="title" content={config.title} />
 	<meta name="description" content={config.description} />
 	<meta name="author" content={config.author} />
-
-	<!-- Favicon -->
-	<link rel="icon" type="image/svg+xml" href={favicon} />
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website" />

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { config } from '$lib/config';
-	import favicon from '$lib/assets/favicon.svg';
 	import type { ActionData } from './$types';
 
 	let { form }: { form: ActionData } = $props();
@@ -26,9 +25,9 @@
 		<!-- Logo and Title -->
 		<div class="text-center">
 			<div
-				class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-tertiary-medium"
+				class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-tertiary-medium"
 			>
-				<img src={favicon} alt="" class="h-10 w-10" aria-hidden="true" />
+				<img src="/images/CookieIsleLogo.png" alt="" class="h-16 w-auto" aria-hidden="true" />
 			</div>
 			<h1 class="mt-4 text-2xl font-bold tracking-tight text-secondary">Admin Login</h1>
 			<p class="mt-2 text-sm text-text-light">Enter your password to access the admin dashboard</p>

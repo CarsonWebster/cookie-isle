@@ -77,7 +77,7 @@
 					<div
 						class="flex aspect-[3/2] w-full items-center justify-center rounded-xl bg-tertiary-medium shadow-lg"
 					>
-						<span class="text-9xl" aria-hidden="true">🍪</span>
+						<img src="/images/Cookieart.png" alt="" class="h-32 w-auto" aria-hidden="true" />
 					</div>
 				{/if}
 			</div>

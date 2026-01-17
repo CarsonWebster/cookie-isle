@@ -38,9 +38,13 @@
 	<!-- Content container -->
 	<div class="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-28">
 		<div class="text-center">
-			<!-- Cookie emoji decoration -->
-			<div class="mb-4 text-4xl sm:text-5xl" aria-hidden="true">
-				<span class="inline-block animate-bounce">🍪</span>
+			<!-- Cookie decoration -->
+			<div class="mb-4" aria-hidden="true">
+				<img
+					src="/images/Cookieart.png"
+					alt=""
+					class="mx-auto h-16 w-auto animate-bounce sm:h-20"
+				/>
 			</div>
 
 			<!-- Title -->

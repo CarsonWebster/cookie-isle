@@ -63,7 +63,7 @@
 			<div class="flex h-full flex-col">
 				<!-- Logo/Brand -->
 				<div class="flex items-center gap-3 border-b border-footer-text/20 px-6 py-4">
-					<span class="text-3xl">🍪</span>
+					<img src="/images/CookieIsleLogo.png" alt="" class="h-10 w-auto" aria-hidden="true" />
 					<div>
 						<h1 class="text-lg font-bold text-footer-text">{config.title}</h1>
 						<p class="text-sm text-footer-text/70">Admin Dashboard</p>
@@ -103,7 +103,7 @@
 		<div class="fixed top-0 right-0 left-0 z-20 bg-footer-bg md:hidden">
 			<div class="flex items-center justify-between px-4 py-3">
 				<div class="flex items-center gap-2">
-					<span class="text-2xl">🍪</span>
+					<img src="/images/CookieIsleLogo.png" alt="" class="h-8 w-auto" aria-hidden="true" />
 					<h1 class="text-lg font-bold text-footer-text">{config.title}</h1>
 				</div>
 				<button
@@ -166,7 +166,7 @@
 			<div class="flex h-full flex-col">
 				<!-- Logo/Brand -->
 				<div class="flex items-center gap-3 border-b border-footer-text/20 px-6 py-4">
-					<span class="text-3xl">🍪</span>
+					<img src="/images/CookieIsleLogo.png" alt="" class="h-10 w-auto" aria-hidden="true" />
 					<div>
 						<h2 class="text-lg font-bold text-footer-text">{config.title}</h2>
 						<p class="text-sm text-footer-text/70">Admin Dashboard</p>
