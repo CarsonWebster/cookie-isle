@@ -419,7 +419,7 @@ Before marking any TODO as complete:
 
 ## Phase 2: Public Pages
 
-**Status:** In Progress
+**Status:** Completed
 
 ### 2.1 Hero component
 
@@ -517,19 +517,19 @@ Before marking any TODO as complete:
 
 ### 2.7 Coming soon mode
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                                          | Status      |
-| ----- | ----------------------------------------------------------------------------- | ----------- |
-| 2.7.1 | Create `src/lib/components/ComingSoon.svelte`                                 | Not Started |
-| 2.7.2 | Add logo, title, and coming soon headline                                     | Not Started |
-| 2.7.3 | Add newsletter signup form                                                    | Not Started |
-| 2.7.4 | Add email contact link                                                        | Not Started |
-| 2.7.5 | Add social media links                                                        | Not Started |
-| 2.7.6 | Style with centered layout, gradient background                               | Not Started |
-| 2.7.7 | Update root layout to show ComingSoon when `comingSoonMode` is true in config | Not Started |
-| 2.7.8 | Write component test in `tests/unit/ComingSoon.test.svelte.ts`                | Not Started |
-| 2.7.9 | **Commit:** `feat: create coming soon page with toggle`                       | Not Started |
+| ID    | Task                                                                          | Status    |
+| ----- | ----------------------------------------------------------------------------- | --------- |
+| 2.7.1 | Create `src/lib/components/ComingSoon.svelte`                                 | Completed |
+| 2.7.2 | Add logo, title, and coming soon headline                                     | Completed |
+| 2.7.3 | Add newsletter signup form                                                    | Completed |
+| 2.7.4 | Add email contact link                                                        | Completed |
+| 2.7.5 | Add social media links                                                        | Completed |
+| 2.7.6 | Style with centered layout, gradient background                               | Completed |
+| 2.7.7 | Update root layout to show ComingSoon when `comingSoonMode` is true in config | Completed |
+| 2.7.8 | Write component test in `src/lib/components/ComingSoon.spec.ts` (46 tests)    | Completed |
+| 2.7.9 | **Commit:** `feat: create coming soon page with toggle`                       | Completed |
 
 ---
 

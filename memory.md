@@ -34,6 +34,7 @@ This file contains useful findings for future agents working on this project.
   - Meta tags: title, description, og:image, twitter cards, theme-color from config
   - Favicon: SVG favicon from `src/lib/assets/favicon.svg`
   - Uses `$lib/config` for dynamic values (title, description, baseUrl, colors)
+  - Now includes conditional ComingSoon rendering based on `config.features.comingSoonMode`
 - 1.3: Header Component COMPLETE
   - Implementation: `src/lib/components/Header.svelte` - Svelte 5 runes, mobile nav
   - Tests: `src/lib/components/Header.spec.ts` (13 tests) - Config integration tests
@@ -47,7 +48,7 @@ This file contains useful findings for future agents working on this project.
   - Main element has `flex-1` class for proper footer positioning
   - Homepage moved to `src/routes/(public)/+page.svelte` with placeholder content
 
-### Phase 2 Status: IN PROGRESS
+### Phase 2 Status: COMPLETE
 
 - 2.1: Hero Component COMPLETE
   - Implementation: `src/lib/components/Hero.svelte` - Full-width hero with gradient, CTA
@@ -64,6 +65,11 @@ This file contains useful findings for future agents working on this project.
   - Page: `src/routes/(public)/menu/[slug]/+page.svelte` - Full product details with hero image, two-column layout
   - Tests: `src/routes/(public)/menu/[slug]/page.server.spec.ts` (10 tests) - Covers 404 cases, platform unavailability, successful loads
   - Features: Hero image (16:9 on mobile, 21:9 on desktop), cookie placeholder, ingredients card, tags, large Add to Cart button, Back to Menu link
+- 2.7: Coming Soon Mode COMPLETE
+  - Implementation: `src/lib/components/ComingSoon.svelte` - Full-page coming soon landing with newsletter signup
+  - Tests: `src/lib/components/ComingSoon.spec.ts` (46 tests) - Config validation, email validation, state transitions
+  - Root layout updated to conditionally render ComingSoon when `config.features.comingSoonMode` is true
+  - Features: Gradient background (same pattern as Hero), bouncing cookie emoji, newsletter form with validation, contact email link, social media links
 
 ## Key File Locations
 
@@ -123,7 +129,8 @@ export const tableName = sqliteTable('table_name', {
 14. ~~Menu page (PRD 2.4)~~ DONE - `src/routes/(public)/menu/+page.svelte` with all products grid (10 tests)
 15. ~~Cookie detail page (PRD 2.5)~~ DONE - `src/routes/(public)/menu/[slug]/+page.svelte` with product details (10 tests)
 16. ~~About page (PRD 2.6)~~ DONE - `src/routes/(public)/about/+page.svelte` with prose styling (no server load needed)
-17. **NEXT: Coming Soon mode (PRD 2.7)** - `src/lib/components/ComingSoon.svelte` with newsletter signup
+17. ~~Coming Soon mode (PRD 2.7)~~ DONE - `src/lib/components/ComingSoon.svelte` with 46 tests
+18. **NEXT: Cart store (PRD 3.1)** - `src/lib/stores/cart.svelte.ts` with Svelte 5 runes and localStorage persistence
 
 ## Commands Reference
 
@@ -167,10 +174,11 @@ bun run db:push      # Push schema to D1
 | `src/lib/components/Footer.spec.ts`                   | 15    | Footer component config logic      |
 | `src/lib/components/Hero.spec.ts`                     | 19    | Hero component config logic        |
 | `src/lib/components/MenuCard.spec.ts`                 | 37    | MenuCard product type and config   |
+| `src/lib/components/ComingSoon.spec.ts`               | 46    | ComingSoon config, email, state    |
 | `src/routes/(public)/page.server.spec.ts`             | 7     | Homepage load function             |
 | `src/routes/(public)/menu/page.server.spec.ts`        | 10    | Menu page load function            |
 | `src/routes/(public)/menu/[slug]/page.server.spec.ts` | 10    | Cookie detail page load function   |
-| **Total**                                             | 180   |                                    |
+| **Total**                                             | 226   |                                    |
 
 ## Site Config Notes
 
@@ -593,3 +601,99 @@ The `src/routes/(public)/about/+page.svelte` page implements:
 - **About:** Static content, no server load, prose-styled article, max-w-4xl container
 - **Menu/Homepage:** Dynamic content, server load from D1, card grid layout, max-w-7xl container
 - **Cookie Detail:** Dynamic content, server load with slug param, hero image + details layout
+
+## ComingSoon Component Notes
+
+The `src/lib/components/ComingSoon.svelte` component implements:
+
+1. **Full-Page Landing:**
+   - Replaces normal site when `config.features.comingSoonMode` is true
+   - Centered content with min-h-screen flexbox layout
+   - Same gradient background pattern as Hero component
+
+2. **Content Sections:**
+   - Logo: Bouncing cookie emoji + site title
+   - Coming Soon headline from `config.features.comingSoonHeadline`
+   - Multi-line description from `config.features.comingSoonText` (uses `whitespace-pre-line`)
+   - Newsletter signup form (conditional on `config.newsletter.enabled`)
+   - Contact email link (conditional on `config.contact.emailEnabled`)
+   - Social media icons (conditional on each platform's enabled flag)
+
+3. **Newsletter Form:**
+   - Svelte 5 state management with `$state()` runes
+   - Email validation: `isValidEmail = $derived(email.includes('@') && email.includes('.'))`
+   - Three states: `'idle' | 'success' | 'error'`
+   - Loading spinner during submission
+   - Success/error messages from config
+   - TODO: Connect to `/api/newsletter` in Phase 4.6
+
+4. **Conditional Rendering in Root Layout:**
+   ```svelte
+   {#if showComingSoon}
+   	<ComingSoon />
+   {:else}
+   	<div class="flex min-h-screen flex-col bg-tertiary">
+   		{@render children()}
+   	</div>
+   {/if}
+   ```
+
+### Enabling Coming Soon Mode
+
+To enable coming soon mode, set `comingSoonMode: true` in `src/lib/config.ts`:
+
+```typescript
+features: {
+	comingSoonMode: true,  // Set to true to show coming soon page
+	comingSoonHeadline: 'Coming Soon',
+	comingSoonText: `I'm busy baking up something special!...`
+}
+```
+
+### ComingSoon vs Regular Site
+
+When `comingSoonMode` is **false** (default):
+
+- Root layout renders normal site with Header/Footer via children slot
+- All public routes work normally
+
+When `comingSoonMode` is **true**:
+
+- Root layout renders only the ComingSoon component
+- No Header, Footer, or other routes are visible
+- Newsletter signup is the primary CTA
+
+## Phase 3 Preview: Cart System
+
+The next major task is implementing the cart system. Key files to create:
+
+1. `src/lib/stores/cart.svelte.ts` - Cart state with Svelte 5 runes
+2. `src/lib/components/CartBadge.svelte` - Badge showing item count in header
+3. `src/lib/components/CartToast.svelte` - "Added to cart" notification
+4. `src/lib/components/AddToCartButton.svelte` - Reusable add to cart button
+5. `src/routes/(public)/checkout/+page.svelte` - Checkout page
+
+### Cart Store Pattern (PRD 3.1)
+
+```typescript
+// src/lib/stores/cart.svelte.ts
+interface CartItem {
+	productId: number;
+	slug: string;
+	title: string;
+	priceCents: number;
+	stripePriceId: string;
+	quantity: number;
+}
+
+let items = $state<CartItem[]>([]);
+let cartCount = $derived(items.reduce((sum, item) => sum + item.quantity, 0));
+let cartTotal = $derived(items.reduce((sum, item) => sum + item.priceCents * item.quantity, 0));
+
+// localStorage persistence with SSR safety
+$effect(() => {
+	if (typeof window !== 'undefined') {
+		localStorage.setItem('cart', JSON.stringify(items));
+	}
+});
+```
