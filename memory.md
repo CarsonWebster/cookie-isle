@@ -160,7 +160,8 @@ export const tableName = sqliteTable('table_name', {
 33. ~~Connect newsletter form (PRD 4.6)~~ DONE - ComingSoon component now POSTs to `/api/newsletter`
 34. ~~Admin orders list page (PRD 6.7)~~ DONE - `src/routes/admin/orders/` with 24 tests
 35. ~~Order detail page (PRD 6.8)~~ DONE - `src/routes/admin/orders/[id]/` with 31 tests
-36. **NEXT: Phase 6.9 - Products List Page** - View and manage all products with inline toggles
+36. ~~Products list page (PRD 6.9)~~ DONE - `src/routes/admin/products/` with 21 tests
+37. **NEXT: Phase 6.10 - Product Create Page** - Form to add new products with image upload
 
 ## Commands Reference
 
@@ -241,7 +242,8 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/admin/layout.server.spec.ts`                   | 48    | Admin auth guard layout              |
 | `src/routes/admin/orders/page.server.spec.ts`              | 24    | Admin orders list with filters       |
 | `src/routes/admin/orders/[id]/page.server.spec.ts`         | 31    | Order detail page with status update |
-| **Total**                                                  | 1076  |                                      |
+| `src/routes/admin/products/page.server.spec.ts`            | 21    | Admin products list with toggles     |
+| **Total**                                                  | 1097  |                                      |
 
 ## Site Config Notes
 
@@ -2874,6 +2876,139 @@ All PRD requirements completed:
 - ✓ Form action to update status
 - ✓ Back to Orders link
 - ✓ Comprehensive unit tests (31 tests)
-- Products CRUD pages (PRD 6.9-6.11)
+- ✓ **Products list page (PRD 6.9) - COMPLETED**
+- ✓ Display products table with thumbnails, price, status
+- ✓ Inline active/inactive toggle switches
+- ✓ Featured badges for featured products
+- ✓ Edit button for each product
+- ✓ Add Product button linking to /admin/products/new
+- ✓ Responsive desktop/mobile layouts
+- ✓ Comprehensive unit tests (21 tests)
+- **NEXT:** Product create page (PRD 6.10)
+- Product edit page (PRD 6.11)
 - Fulfillment slots management (PRD 6.12)
 - Newsletter subscribers list (PRD 6.13)
+
+## Admin Products List Page Notes (Phase 6.9 - COMPLETE)
+
+The `src/routes/admin/products/` page implements product catalog management.
+
+### Key Features
+
+1. **Products Table Display:**
+   - Desktop: HTML table with columns for Image, Product, Price, Status, Active toggle, Actions
+   - Mobile: Card layout with stacked content
+   - Cookie emoji (🍪) placeholder when no image URL
+   - Featured badge (yellow) for featured products
+   - Status badge (green=Active, red=Inactive)
+
+2. **Inline Active Toggle:**
+   - Toggle switch design with sliding circle animation
+   - Form action `toggleActive` with `use:enhance` for no-refresh updates
+   - Sends productId and new active boolean value
+   - Uses `bg-primary` when active, `bg-gray-200` when inactive
+
+3. **Data Loading:**
+   - Query all products ordered by `sortOrder ASC`, then `title ASC`
+   - Format prices using `formatPrice()` helper
+   - Returns empty array gracefully when DB unavailable
+
+4. **Empty State:**
+   - "No products found" message with cookie emoji
+   - "Add your first product to get started" subtitle
+   - Shown when products array is empty
+
+### Server Functions
+
+| Function             | Purpose                                |
+| -------------------- | -------------------------------------- |
+| `queryProducts()`    | Load all products with price formatting|
+| `toggleProductActive()` | Update product active status        |
+| `load()`             | PageServerLoad function                |
+| `actions.toggleActive` | Form action for toggle switch       |
+
+### AdminProduct Interface
+
+```typescript
+interface AdminProduct {
+	id: number;
+	slug: string;
+	title: string;
+	priceCents: number;
+	priceFormatted: string; // "$X.XX"
+	stripePriceId: string;
+	description: string | null;
+	imageUrl: string | null;
+	featured: boolean | null;
+	active: boolean | null;
+	sortOrder: number | null;
+}
+```
+
+### Form Action Pattern
+
+```typescript
+// In +page.svelte
+<form method="POST" action="?/toggleActive" use:enhance>
+	<input type="hidden" name="productId" value={product.id} />
+	<input type="hidden" name="active" value={!product.active} />
+	<button type="submit">
+		<!-- Toggle switch UI -->
+	</button>
+</form>
+
+// In +page.server.ts
+export const actions: Actions = {
+	toggleActive: async ({ platform, request }) => {
+		const formData = await request.formData();
+		const productId = parseInt(formData.get('productId') as string, 10);
+		const active = formData.get('active') === 'true';
+		// ... validation and update
+	}
+};
+```
+
+### Test Coverage
+
+21 tests covering:
+
+- `queryProducts()` - Ordering, formatting, null handling
+- `toggleProductActive()` - Success and error cases
+- `load()` - Platform availability, error handling
+- `actions.toggleActive` - Form validation, DB errors, toggle states
+
+### Responsive Design Pattern
+
+```svelte
+<!-- Desktop Table (hidden on mobile) -->
+<div class="hidden md:block">
+	<table>...</table>
+</div>
+
+<!-- Mobile Cards (hidden on desktop) -->
+<div class="space-y-4 md:hidden">
+	{#each products as product}
+		<div class="card">...</div>
+	{/each}
+</div>
+```
+
+### Toggle Switch Styling
+
+```svelte
+<button
+	class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+	       {product.active ? 'bg-primary' : 'bg-gray-200'}"
+>
+	<span
+		class="inline-block h-4 w-4 rounded-full bg-white shadow-lg transition-transform
+		       {product.active ? 'translate-x-6' : 'translate-x-1'}"
+	></span>
+</button>
+```
+
+### Next Steps
+
+- Product create page (6.10) - Form with image upload to R2
+- Product edit page (6.11) - Pre-populated form with delete option
+- Image upload endpoint is already in PRD (5.1) but not yet implemented

@@ -1006,22 +1006,22 @@ Before marking any TODO as complete:
 
 ### 6.9 Products list page
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                                          | Status      |
-| ------ | ----------------------------------------------------------------------------- | ----------- |
-| 6.9.1  | Create `src/routes/admin/products/+page.server.ts`                            | Not Started |
-| 6.9.2  | Load all products ordered by sort_order                                       | Not Started |
-| 6.9.3  | Create `src/routes/admin/products/+page.svelte`                               | Not Started |
-| 6.9.4  | Add "Add Product" button linking to /admin/products/new                       | Not Started |
-| 6.9.5  | Display products table: Image thumbnail, Title, Price, Active toggle, Actions | Not Started |
-| 6.9.6  | Add inline toggle for active/inactive status                                  | Not Started |
-| 6.9.7  | Create form action to toggle product active status                            | Not Started |
-| 6.9.8  | Add Edit button for each product                                              | Not Started |
-| 6.9.9  | Show featured badge if product is featured                                    | Not Started |
-| 6.9.10 | Support drag-and-drop reordering (future enhancement)                         | Not Started |
-| 6.9.11 | Write page test in `tests/integration/admin-products.test.ts`                 | Not Started |
-| 6.9.12 | **Commit:** `feat: create products list page`                                 | Not Started |
+| ID     | Task                                                                          | Status    |
+| ------ | ----------------------------------------------------------------------------- | --------- |
+| 6.9.1  | Create `src/routes/admin/products/+page.server.ts`                            | Completed |
+| 6.9.2  | Load all products ordered by sort_order                                       | Completed |
+| 6.9.3  | Create `src/routes/admin/products/+page.svelte`                               | Completed |
+| 6.9.4  | Add "Add Product" button linking to /admin/products/new                       | Completed |
+| 6.9.5  | Display products table: Image thumbnail, Title, Price, Active toggle, Actions | Completed |
+| 6.9.6  | Add inline toggle for active/inactive status                                  | Completed |
+| 6.9.7  | Create form action to toggle product active status                            | Completed |
+| 6.9.8  | Add Edit button for each product                                              | Completed |
+| 6.9.9  | Show featured badge if product is featured                                    | Completed |
+| 6.9.10 | Support drag-and-drop reordering (future enhancement)                         | Deferred  |
+| 6.9.11 | Write page test in `src/routes/admin/products/page.server.spec.ts`            | Completed |
+| 6.9.12 | **Commit:** `feat: create products list page`                                 | Completed |
 
 ### 6.10 Product create page
 
