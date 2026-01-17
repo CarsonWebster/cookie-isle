@@ -164,7 +164,8 @@ export const tableName = sqliteTable('table_name', {
 37. ~~Product create page (PRD 6.10)~~ DONE - `src/routes/admin/products/new/` with 12 tests
 38. ~~Product edit page (PRD 6.11)~~ DONE - `src/routes/admin/products/[id]/` with 21 tests
 39. ~~Fulfillment slots page (PRD 6.12)~~ DONE - `src/routes/admin/slots/` with 21 tests
-40. **NEXT: Phase 6.13 - Newsletter Subscribers Page** - View and export newsletter subscribers
+40. ~~Newsletter subscribers page (PRD 6.13)~~ DONE - `src/routes/admin/newsletter/` with 23 tests
+41. **NEXT: Phase 5 (R2 Image Upload) OR Phase 7 (Data Migration & Deployment)** - R2 blocked until bucket enabled
 
 ## Commands Reference
 
@@ -249,7 +250,8 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/admin/products/new/page.server.spec.ts`        | 12    | Product create form validation       |
 | `src/routes/admin/products/[id]/page.server.spec.ts`       | 21    | Product edit form with delete        |
 | `src/routes/admin/slots/page.server.spec.ts`               | 21    | Admin slots management with capacity |
-| **Total**                                                  | 1151  |                                      |
+| `src/routes/admin/newsletter/page.server.spec.ts`          | 23    | Newsletter subscribers with CSV      |
+| **Total**                                                  | 1174  |                                      |
 
 ## Site Config Notes
 
@@ -3341,3 +3343,136 @@ export const dailyCapacity = sqliteTable('daily_capacity', {
 - Low stock warning appears when capacity is >80% used
 - Delete action includes browser confirmation dialog
 - Form resets after successful submission using `$effect`
+
+## Newsletter Subscribers Page Notes (Phase 6.13 - COMPLETE)
+
+The `src/routes/admin/newsletter/` implements the newsletter subscribers management page.
+
+### Key Features
+
+1. **Server Load Function (`+page.server.ts`):**
+   - Queries all newsletter subscribers ordered by `subscribed_at DESC` (most recent first)
+   - Returns total subscriber count
+   - Graceful fallback: returns empty array if platform/DB unavailable
+   - Error handling: catches DB errors and returns empty data
+
+2. **Newsletter Page (`+page.svelte`):**
+   - **Total Count Card:**
+     - Displays total subscriber count with email emoji icon
+     - Styled as prominent card at top of page
+   - **Export Button:**
+     - "Export to CSV" button (only shown when subscribers exist)
+     - Uses form POST to trigger CSV download
+     - Includes file download icon (📥)
+   - **Desktop Table View:**
+     - Columns: Email (with emoji), Source (colored badge), Subscribed Date (formatted)
+     - Source badges: blue for "coming-soon", gray for "website"
+     - Hover effect on rows
+   - **Mobile Card View:**
+     - Stacked card layout with email, source badge, and date
+     - Compact design for small screens
+   - **Empty State:**
+     - Shows empty mailbox emoji (📭)
+     - Helpful message: "Newsletter subscribers will appear here once people start signing up"
+
+3. **CSV Export Action:**
+   - Form action at `?/export` generates CSV file
+   - Headers: Email, Source, Subscribed Date
+   - Proper CSV escaping (doubles quotes in values)
+   - Filename includes current date: `newsletter-subscribers-YYYY-MM-DD.csv`
+   - Returns Response with CSV content-type and download headers
+   - Uses default "website" for null source values
+
+### Exported Helper Functions
+
+| Function                   | Purpose                                     |
+| -------------------------- | ------------------------------------------- |
+| `formatSubscribedDate()`   | Format ISO date to "Jan 16, 2026, 10:30 AM" |
+| `generateCSV(subscribers)` | Convert subscribers array to CSV string     |
+
+### Exported Types
+
+```typescript
+interface NewsletterSubscriber {
+	id: number;
+	email: string;
+	source: string | null;
+	subscribedAt: string | null;
+}
+
+interface NewsletterPageData {
+	subscribers: NewsletterSubscriber[];
+	totalCount: number;
+}
+```
+
+### Test Coverage
+
+23 tests in `src/routes/admin/newsletter/page.server.spec.ts`:
+
+- formatSubscribedDate (4 tests) - handles valid dates, null, invalid, time formatting
+- generateCSV (6 tests) - CSV generation, escaping, defaults, empty array
+- load function (6 tests) - platform checks, DB queries, error handling
+- export action (7 tests) - CSV response, headers, filename, content, errors
+- Type exports (2 tests)
+
+### CSV Export Implementation
+
+The export uses SvelteKit form actions (not API endpoint) for simplicity:
+
+```typescript
+export const actions: Actions = {
+	export: async ({ platform }) => {
+		// Query subscribers from D1
+		const subscribers = await db.select(...).from(newsletter).orderBy(desc(...));
+
+		// Generate CSV
+		const csv = generateCSV(subscribers);
+
+		// Return Response with download headers
+		return new Response(csv, {
+			headers: {
+				'Content-Type': 'text/csv',
+				'Content-Disposition': `attachment; filename="newsletter-subscribers-${date}.csv"`
+			}
+		});
+	}
+};
+```
+
+### Usage Pattern
+
+The page is accessible via the admin sidebar navigation:
+
+```
+Admin Sidebar > Newsletter
+```
+
+Clicking "Export to CSV" triggers:
+
+1. Form POST to `?/export` action
+2. Server queries all subscribers
+3. CSV generated with proper escaping
+4. Browser downloads file with dated filename
+
+### What's Different from Other Admin Pages
+
+- **No filters:** Shows all subscribers (no date/status filtering needed)
+- **No pagination:** All subscribers loaded at once (scalable to thousands)
+- **No edit/delete:** View-only page (subscribers managed via API)
+- **CSV export:** Only admin page with export functionality
+
+### Next Phase
+
+**Phase 6 is now COMPLETE!** All admin dashboard features have been implemented:
+
+- ✅ 6.1-6.5: Authentication (login, logout, auth guard, layout)
+- ✅ 6.6: Dashboard with stats and recent orders
+- ✅ 6.7-6.8: Orders list and detail pages
+- ✅ 6.9-6.11: Products list, create, and edit pages
+- ✅ 6.12: Fulfillment slots management
+- ✅ 6.13: Newsletter subscribers page
+
+**Next Priority:** Phase 7 (Data Migration & Deployment) - Seed products, configure Cloudflare Pages, deploy to production
+
+**Blocked:** Phase 5 (R2 Image Upload) - Waiting for R2 bucket to be enabled

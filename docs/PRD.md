@@ -864,7 +864,7 @@ Before marking any TODO as complete:
 
 ## Phase 6: Admin Dashboard
 
-**Status:** In Progress
+**Status:** Completed
 
 ### 6.1 Admin authentication
 
@@ -1090,20 +1090,20 @@ Before marking any TODO as complete:
 
 ### 6.13 Newsletter subscribers page
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID      | Task                                                            | Status      |
-| ------- | --------------------------------------------------------------- | ----------- |
-| 6.13.1  | Create `src/routes/admin/newsletter/+page.server.ts`            | Not Started |
-| 6.13.2  | Load all newsletter subscribers ordered by subscribed_at DESC   | Not Started |
-| 6.13.3  | Create `src/routes/admin/newsletter/+page.svelte`               | Not Started |
-| 6.13.4  | Display subscribers table: Email, Source, Subscribed Date       | Not Started |
-| 6.13.5  | Add total subscriber count                                      | Not Started |
-| 6.13.6  | Add "Export to CSV" button                                      | Not Started |
-| 6.13.7  | Create form action or API endpoint to generate CSV              | Not Started |
-| 6.13.8  | Trigger CSV download on click                                   | Not Started |
-| 6.13.9  | Write page test in `tests/integration/admin-newsletter.test.ts` | Not Started |
-| 6.13.10 | **Commit:** `feat: create newsletter subscribers page`          | Not Started |
+| ID      | Task                                                                 | Status      |
+| ------- | -------------------------------------------------------------------- | ----------- |
+| 6.13.1  | Create `src/routes/admin/newsletter/+page.server.ts`                 | Completed   |
+| 6.13.2  | Load all newsletter subscribers ordered by subscribed_at DESC        | Completed   |
+| 6.13.3  | Create `src/routes/admin/newsletter/+page.svelte`                    | Completed   |
+| 6.13.4  | Display subscribers table: Email, Source, Subscribed Date            | Completed   |
+| 6.13.5  | Add total subscriber count                                           | Completed   |
+| 6.13.6  | Add "Export to CSV" button                                           | Completed   |
+| 6.13.7  | Create form action to generate CSV                                   | Completed   |
+| 6.13.8  | Trigger CSV download on click                                        | Completed   |
+| 6.13.9  | Write page test in `src/routes/admin/newsletter/page.server.spec.ts` | Completed   |
+| 6.13.10 | **Commit:** `feat: create newsletter subscribers page`               | Not Started |
 
 ---
 
