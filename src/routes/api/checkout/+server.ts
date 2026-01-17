@@ -75,7 +75,7 @@ export interface CheckoutErrorResponse {
  * Validates the checkout request body structure.
  * Returns an array of error messages, or empty array if valid.
  */
-export function validateCheckoutRequest(body: unknown): string[] {
+export function _validateCheckoutRequest(body: unknown): string[] {
 	const errors: string[] = [];
 
 	if (!body || typeof body !== 'object') {
@@ -194,7 +194,7 @@ function validateCustomer(customer: Record<string, unknown>): string[] {
 		errors.push('customer.lastName is required');
 	}
 
-	if (typeof customer.email !== 'string' || !isValidEmail(customer.email)) {
+	if (typeof customer.email !== 'string' || !_isValidEmail(customer.email)) {
 		errors.push('customer.email must be a valid email address');
 	}
 
@@ -274,7 +274,7 @@ function validateDeliveryAddress(address: Record<string, unknown>): string[] {
 /**
  * Simple email validation.
  */
-function isValidEmail(email: string): boolean {
+function _isValidEmail(email: string): boolean {
 	return email.includes('@') && email.includes('.') && email.length >= 5;
 }
 
@@ -287,7 +287,7 @@ function isValidEmail(email: string): boolean {
  * Checks that products exist, are active, and prices match.
  * Returns an array of errors, or empty if all valid.
  */
-export async function validateCartItemsAgainstDb(
+export async function _validateCartItemsAgainstDb(
 	db: ReturnType<typeof getDb>,
 	items: CheckoutCartItem[]
 ): Promise<string[]> {
@@ -337,7 +337,7 @@ export async function validateCartItemsAgainstDb(
 /**
  * Builds Stripe line items from cart items, tip, and gift box.
  */
-export function buildStripeLineItems(
+export function _buildStripeLineItems(
 	items: CheckoutCartItem[],
 	tipCents: number,
 	includeGiftBox: boolean
@@ -392,7 +392,7 @@ export function buildStripeLineItems(
 /**
  * Builds order metadata for the Stripe session.
  */
-export function buildOrderMetadata(req: CheckoutRequest): Record<string, string> {
+export function _buildOrderMetadata(req: CheckoutRequest): Record<string, string> {
 	const metadata: Record<string, string> = {
 		// Customer info
 		customer_firstName: req.customer.firstName,
@@ -511,7 +511,7 @@ export const POST = async ({ request, platform, url }: RequestEvent) => {
 	}
 
 	// Validate request structure
-	const validationErrors = validateCheckoutRequest(body);
+	const validationErrors = _validateCheckoutRequest(body);
 	if (validationErrors.length > 0) {
 		return json(
 			{ error: 'Validation failed', details: validationErrors } satisfies CheckoutErrorResponse,
@@ -530,7 +530,7 @@ export const POST = async ({ request, platform, url }: RequestEvent) => {
 	}
 
 	// Validate cart items against database
-	const dbValidationErrors = await validateCartItemsAgainstDb(db, checkoutRequest.items);
+	const dbValidationErrors = await _validateCartItemsAgainstDb(db, checkoutRequest.items);
 	if (dbValidationErrors.length > 0) {
 		return json(
 			{
@@ -551,14 +551,14 @@ export const POST = async ({ request, platform, url }: RequestEvent) => {
 	}
 
 	// Build line items
-	const lineItems = buildStripeLineItems(
+	const lineItems = _buildStripeLineItems(
 		checkoutRequest.items,
 		checkoutRequest.tipCents,
 		checkoutRequest.includeGiftBox
 	);
 
 	// Build metadata
-	const metadata = buildOrderMetadata(checkoutRequest);
+	const metadata = _buildOrderMetadata(checkoutRequest);
 
 	// Create Stripe checkout session
 	try {

@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
-	isValidEmail,
-	validateNewsletterRequest,
-	normalizeEmail,
+	_isValidEmail as isValidEmail,
+	_validateNewsletterRequest as validateNewsletterRequest,
+	_normalizeEmail as normalizeEmail,
 	type NewsletterRequest
 } from './+server';
 

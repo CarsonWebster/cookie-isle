@@ -45,7 +45,7 @@ interface ParsedOrderItem {
  * Parses and validates the metadata from a Stripe checkout session.
  * Returns null if required fields are missing.
  */
-export function parseWebhookMetadata(metadata: Stripe.Metadata | null): WebhookMetadata | null {
+export function _parseWebhookMetadata(metadata: Stripe.Metadata | null): WebhookMetadata | null {
 	if (!metadata) return null;
 
 	// Check required fields
@@ -78,7 +78,7 @@ export function parseWebhookMetadata(metadata: Stripe.Metadata | null): WebhookM
  * Parses items from the items_json metadata field.
  * Returns empty array if parsing fails.
  */
-export function parseOrderItems(itemsJson: string): OrderItem[] {
+export function _parseOrderItems(itemsJson: string): OrderItem[] {
 	try {
 		const parsed: ParsedOrderItem[] = JSON.parse(itemsJson);
 		if (!Array.isArray(parsed)) return [];
@@ -100,7 +100,7 @@ export function parseOrderItems(itemsJson: string): OrderItem[] {
  * Parses delivery address from metadata.
  * Returns null if not present or parsing fails.
  */
-export function parseDeliveryAddress(addressJson: string | undefined): DeliveryAddress | null {
+export function _parseDeliveryAddress(addressJson: string | undefined): DeliveryAddress | null {
 	if (!addressJson) return null;
 
 	try {
@@ -123,14 +123,14 @@ export function parseDeliveryAddress(addressJson: string | undefined): DeliveryA
 /**
  * Calculates the subtotal from order items.
  */
-export function calculateSubtotal(items: OrderItem[]): number {
+export function _calculateSubtotal(items: OrderItem[]): number {
 	return items.reduce((sum, item) => sum + item.priceCents * item.quantity, 0);
 }
 
 /**
  * Calculates the total quantity of cookies in an order.
  */
-export function calculateTotalQuantity(items: OrderItem[]): number {
+export function _calculateTotalQuantity(items: OrderItem[]): number {
 	return items.reduce((sum, item) => sum + item.quantity, 0);
 }
 
@@ -142,17 +142,17 @@ export function calculateTotalQuantity(items: OrderItem[]): number {
  * Inserts a new order into the database.
  * Returns the inserted order ID.
  */
-export async function insertOrder(
+export async function _insertOrder(
 	db: ReturnType<typeof getDb>,
 	sessionId: string,
 	metadata: WebhookMetadata,
 	amountTotal: number
 ): Promise<number> {
-	const items = parseOrderItems(metadata.items_json);
-	const subtotalCents = calculateSubtotal(items);
+	const items = _parseOrderItems(metadata.items_json);
+	const subtotalCents = _calculateSubtotal(items);
 	const tipCents = parseInt(metadata.tip_cents, 10) || 0;
 	const includeGiftBox = metadata.include_gift_box === 'true';
-	const deliveryAddress = parseDeliveryAddress(metadata.delivery_address);
+	const deliveryAddress = _parseDeliveryAddress(metadata.delivery_address);
 
 	// Calculate tax (if enabled)
 	const taxCents = calculateTax(subtotalCents);
@@ -190,7 +190,7 @@ export async function insertOrder(
  * Updates the daily capacity for a fulfillment date.
  * Increments cookies_ordered by the given quantity.
  */
-export async function updateDailyCapacity(
+export async function _updateDailyCapacity(
 	db: ReturnType<typeof getDb>,
 	date: string,
 	quantityToAdd: number
@@ -216,7 +216,7 @@ export async function updateDailyCapacity(
  * Checks if an order already exists for the given Stripe session ID.
  * Used to handle idempotency (webhook retries).
  */
-export async function orderExistsForSession(
+export async function _orderExistsForSession(
 	db: ReturnType<typeof getDb>,
 	sessionId: string
 ): Promise<boolean> {
@@ -281,14 +281,14 @@ export const POST = async ({ request, platform }: RequestEvent) => {
 		}
 
 		// Check for duplicate (idempotency)
-		const alreadyProcessed = await orderExistsForSession(db, session.id);
+		const alreadyProcessed = await _orderExistsForSession(db, session.id);
 		if (alreadyProcessed) {
 			console.log(`Order for session ${session.id} already exists, skipping`);
 			return json({ received: true, duplicate: true });
 		}
 
 		// Parse metadata
-		const metadata = parseWebhookMetadata(session.metadata);
+		const metadata = _parseWebhookMetadata(session.metadata);
 		if (!metadata) {
 			console.error(`Invalid metadata for session ${session.id}`);
 			// Return 200 to prevent infinite retries - log for manual review
@@ -297,13 +297,13 @@ export const POST = async ({ request, platform }: RequestEvent) => {
 
 		try {
 			// Insert the order
-			const orderId = await insertOrder(db, session.id, metadata, session.amount_total || 0);
+			const orderId = await _insertOrder(db, session.id, metadata, session.amount_total || 0);
 			console.log(`Order ${orderId} created for session ${session.id}`);
 
 			// Update daily capacity
-			const items = parseOrderItems(metadata.items_json);
-			const totalQuantity = calculateTotalQuantity(items);
-			await updateDailyCapacity(db, metadata.fulfillment_date, totalQuantity);
+			const items = _parseOrderItems(metadata.items_json);
+			const totalQuantity = _calculateTotalQuantity(items);
+			await _updateDailyCapacity(db, metadata.fulfillment_date, totalQuantity);
 			console.log(`Updated capacity for ${metadata.fulfillment_date}: +${totalQuantity} cookies`);
 
 			return json({ received: true, orderId });

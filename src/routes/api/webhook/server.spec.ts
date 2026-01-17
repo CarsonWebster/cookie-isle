@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
-	parseWebhookMetadata,
-	parseOrderItems,
-	parseDeliveryAddress,
-	calculateSubtotal,
-	calculateTotalQuantity,
+	_parseWebhookMetadata as parseWebhookMetadata,
+	_parseOrderItems as parseOrderItems,
+	_parseDeliveryAddress as parseDeliveryAddress,
+	_calculateSubtotal as calculateSubtotal,
+	_calculateTotalQuantity as calculateTotalQuantity,
 	type WebhookMetadata
 } from './+server';
 

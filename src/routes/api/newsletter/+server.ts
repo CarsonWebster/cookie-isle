@@ -43,7 +43,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * @param email - The email to validate
  * @returns true if email format is valid
  */
-export function isValidEmail(email: string): boolean {
+export function _isValidEmail(email: string): boolean {
 	if (!email || typeof email !== 'string') {
 		return false;
 	}
@@ -58,7 +58,7 @@ export function isValidEmail(email: string): boolean {
  * Validates the newsletter signup request body.
  * Returns an array of error messages, or empty array if valid.
  */
-export function validateNewsletterRequest(body: unknown): string[] {
+export function _validateNewsletterRequest(body: unknown): string[] {
 	const errors: string[] = [];
 
 	if (!body || typeof body !== 'object' || Array.isArray(body)) {
@@ -72,7 +72,7 @@ export function validateNewsletterRequest(body: unknown): string[] {
 		errors.push('Email is required');
 	} else if (typeof req.email !== 'string') {
 		errors.push('Email must be a string');
-	} else if (!isValidEmail(req.email)) {
+	} else if (!_isValidEmail(req.email)) {
 		errors.push('Invalid email format');
 	}
 
@@ -89,7 +89,7 @@ export function validateNewsletterRequest(body: unknown): string[] {
  * - Trims whitespace
  * - Converts to lowercase
  */
-export function normalizeEmail(email: string): string {
+export function _normalizeEmail(email: string): string {
 	return email.trim().toLowerCase();
 }
 
@@ -118,7 +118,7 @@ export async function POST({ request, platform }: RequestEvent): Promise<Respons
 	}
 
 	// Validate request
-	const validationErrors = validateNewsletterRequest(body);
+	const validationErrors = _validateNewsletterRequest(body);
 	if (validationErrors.length > 0) {
 		return json(
 			{
@@ -131,7 +131,7 @@ export async function POST({ request, platform }: RequestEvent): Promise<Respons
 	}
 
 	const req = body as NewsletterRequest;
-	const email = normalizeEmail(req.email);
+	const email = _normalizeEmail(req.email);
 	const source = req.source || 'website';
 
 	// Check for database availability

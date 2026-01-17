@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
-	validateCheckoutRequest,
-	validateCartItemsAgainstDb,
-	buildStripeLineItems,
-	buildOrderMetadata,
+	_validateCheckoutRequest as validateCheckoutRequest,
+	_validateCartItemsAgainstDb as validateCartItemsAgainstDb,
+	_buildStripeLineItems as buildStripeLineItems,
+	_buildOrderMetadata as buildOrderMetadata,
 	OPTIONS,
 	type CheckoutRequest,
 	type CheckoutCartItem
