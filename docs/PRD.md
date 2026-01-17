@@ -1044,7 +1044,7 @@ Before marking any TODO as complete:
 | 6.10.9  | Create image upload component with drag-and-drop                                      | Completed |
 | 6.10.10 | Upload image to R2 via /api/upload                                                    | Completed |
 | 6.10.11 | Display uploaded image preview                                                        | Completed |
-| 6.10.12 | Allow selecting from previously uploaded images                                       | Deferred  |
+| 6.10.12 | Allow selecting from previously uploaded images                                       | Completed |
 | 6.10.13 | Add separate hero image upload                                                        | Completed |
 | 6.10.14 | Create `+page.server.ts` with form action to insert product                           | Completed |
 | 6.10.15 | Validate required fields                                                              | Completed |
@@ -1053,7 +1053,7 @@ Before marking any TODO as complete:
 | 6.10.18 | Write page test in `page.server.spec.ts` (12 tests)                                   | Completed |
 | 6.10.19 | **Commit:** `feat: create product create page with form and validation`               | Completed |
 
-> Note: Image upload UI added with ImageUpload component. Supports card and hero image uploads with drag-and-drop, preview, and R2 integration. Task 6.10.12 (image library/gallery) deferred as nice-to-have feature.
+> Note: Image upload UI added with ImageUpload component. Supports card and hero image uploads with drag-and-drop, preview, and R2 integration. Image Gallery feature added at `/admin/gallery` with image picker modal and crop preview functionality. Images table tracks all uploads with focal point coordinates for cropping.
 
 ### 6.11 Product edit page
 

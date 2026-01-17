@@ -76,29 +76,79 @@ This file contains useful findings for future agents working on this project.
 
 ## Key File Locations
 
-| File                                        | Purpose                                                  |
-| ------------------------------------------- | -------------------------------------------------------- |
-| `docs/PRD.md`                               | Complete migration spec with task tracking               |
-| `src/lib/config.ts`                         | Site configuration (migrated from hugo.toml)             |
-| `src/lib/stores/cart.svelte.ts`             | Cart state management with localStorage                  |
-| `src/lib/components/Header.svelte`          | Header with desktop/mobile nav, cart badge               |
-| `src/lib/components/Footer.svelte`          | Footer with brand, nav, contact, social                  |
-| `src/lib/components/Hero.svelte`            | Hero section with gradient, CTA button                   |
-| `src/lib/components/MenuCard.svelte`        | Product card with image, price, add to cart              |
-| `src/lib/components/CartToast.svelte`       | Toast notification for cart actions                      |
-| `src/lib/components/AddToCartButton.svelte` | Reusable add to cart button with feedback                |
-| `src/routes/(public)/+layout.svelte`        | Public pages layout (Header + main + Footer)             |
-| `src/routes/(public)/+page.svelte`          | Homepage with Hero and featured products                 |
-| `src/lib/server/db/schema.ts`               | Drizzle table definitions                                |
-| `src/lib/server/db/index.ts`                | Database helper functions (`getDb`, `createDb`)          |
-| `src/lib/server/stripe.ts`                  | Stripe client helper (`getStripe`, `createStripeClient`) |
-| `src/routes/api/checkout/+server.ts`        | Stripe checkout API endpoint (POST handler)              |
-| `src/routes/api/webhook/+server.ts`         | Stripe webhook handler (order creation)                  |
-| `src/routes/api/newsletter/+server.ts`      | Newsletter signup API endpoint                           |
-| `src/lib/server/auth.ts`                    | Admin auth helpers (session mgmt, password verify)       |
-| `drizzle.config.ts`                         | Drizzle Kit config (uses d1-http driver)                 |
-| `wrangler.jsonc`                            | Cloudflare bindings (D1 and R2 configured)               |
-| `AGENTS.md`                                 | Agent instructions and coding standards                  |
+| File                                         | Purpose                                                  |
+| -------------------------------------------- | -------------------------------------------------------- |
+| `docs/PRD.md`                                | Complete migration spec with task tracking               |
+| `src/lib/config.ts`                          | Site configuration (migrated from hugo.toml)             |
+| `src/lib/stores/cart.svelte.ts`              | Cart state management with localStorage                  |
+| `src/lib/components/Header.svelte`           | Header with desktop/mobile nav, cart badge               |
+| `src/lib/components/Footer.svelte`           | Footer with brand, nav, contact, social                  |
+| `src/lib/components/Hero.svelte`             | Hero section with gradient, CTA button                   |
+| `src/lib/components/MenuCard.svelte`         | Product card with image, price, add to cart              |
+| `src/lib/components/CartToast.svelte`        | Toast notification for cart actions                      |
+| `src/lib/components/AddToCartButton.svelte`  | Reusable add to cart button with feedback                |
+| `src/routes/(public)/+layout.svelte`         | Public pages layout (Header + main + Footer)             |
+| `src/routes/(public)/+page.svelte`           | Homepage with Hero and featured products                 |
+| `src/lib/server/db/schema.ts`                | Drizzle table definitions                                |
+| `src/lib/server/db/index.ts`                 | Database helper functions (`getDb`, `createDb`)          |
+| `src/lib/server/stripe.ts`                   | Stripe client helper (`getStripe`, `createStripeClient`) |
+| `src/routes/api/checkout/+server.ts`         | Stripe checkout API endpoint (POST handler)              |
+| `src/routes/api/webhook/+server.ts`          | Stripe webhook handler (order creation)                  |
+| `src/routes/api/newsletter/+server.ts`       | Newsletter signup API endpoint                           |
+| `src/lib/server/auth.ts`                     | Admin auth helpers (session mgmt, password verify)       |
+| `drizzle.config.ts`                          | Drizzle Kit config (uses d1-http driver)                 |
+| `wrangler.jsonc`                             | Cloudflare bindings (D1 and R2 configured)               |
+| `AGENTS.md`                                  | Agent instructions and coding standards                  |
+| `src/lib/components/ImageUpload.svelte`      | Image upload with gallery picker integration             |
+| `src/lib/components/ImagePickerModal.svelte` | Modal for selecting images from gallery                  |
+| `src/lib/components/ImageCropPreview.svelte` | Visual crop preview with focal point selector            |
+| `src/routes/admin/gallery/+page.svelte`      | Admin image gallery page                                 |
+| `src/routes/admin/api/images/+server.ts`     | API endpoint for image list and management               |
+| `src/routes/admin/api/upload/+server.ts`     | R2 image upload API (moved from /api/upload)             |
+
+## Image Gallery Feature
+
+The image gallery system provides centralized image management for the admin dashboard.
+
+### Database Schema
+
+The `images` table tracks all uploaded images:
+
+- `id`, `filename`, `originalName`, `url`, `mimeType`, `sizeBytes`
+- Focal point coordinates: `cardFocalX`, `cardFocalY`, `heroFocalX`, `heroFocalY` (0-100 percentages)
+- `createdAt` timestamp
+
+### Key Components
+
+1. **Image Gallery Page** (`/admin/gallery`)
+   - Grid view of all uploaded images
+   - Upload new images with drag-and-drop
+   - Delete images with confirmation (warns if in use by products)
+   - Detail modal with image info and usage tracking
+
+2. **Image Picker Modal** (`ImagePickerModal.svelte`)
+   - Opens from product edit/new pages
+   - Search/filter by filename
+   - Upload new images inline
+   - Select image and pass to parent
+
+3. **Crop Preview** (`ImageCropPreview.svelte`)
+   - Shows how image appears in card (1:1) and hero (16:9) formats
+   - Click to set focal point for each crop type
+   - Uses CSS `object-position` for visual preview (no actual cropping)
+
+### API Endpoints
+
+- `GET /admin/api/images` - Fetch all images with usage info
+- `DELETE /admin/api/images` - Delete image from R2 and DB
+- `PATCH /admin/api/images` - Update focal point coordinates
+- `POST /admin/api/upload` - Upload image to R2 and track in DB
+
+### Notes
+
+- Upload endpoint moved from `/api/upload` to `/admin/api/upload` to work with admin session cookie path
+- Max file size: 20MB (JPEG, PNG, WebP only)
+- Images are immutable (timestamp in filename) with 1-year cache headers
 
 ## Testing Notes
 
