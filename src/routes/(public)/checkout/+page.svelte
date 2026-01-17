@@ -1,12 +1,12 @@
 <script lang="ts">
 	/**
-	 * Checkout Page - Cart Display & Customer Form
+	 * Checkout Page - Cart Display, Customer Form & Slot Selection
 	 *
 	 * Displays the user's cart with quantity controls, remove buttons, and subtotal.
 	 * Shows empty state when cart is empty with link to browse menu.
-	 * Includes customer information form and fulfillment type selection.
+	 * Includes customer information form, fulfillment type selection, and slot picker.
 	 *
-	 * PRD Reference: 3.5, 3.6
+	 * PRD Reference: 3.5, 3.6, 3.7
 	 */
 
 	import { onMount } from 'svelte';
@@ -21,6 +21,18 @@
 		initializeCart,
 		getMaxQuantityPerItem
 	} from '$lib/stores/cart.svelte';
+	import { formatTimeDisplay } from './+page.server';
+	import type { FulfillmentSlotWithCapacity, SlotsByDate } from './+page.server';
+
+	// Page data from server load function
+	interface Props {
+		data: {
+			slots: FulfillmentSlotWithCapacity[];
+			slotsByDate: SlotsByDate[];
+		};
+	}
+
+	let { data }: Props = $props();
 
 	// Initialize cart from localStorage on client
 	onMount(() => {
@@ -70,6 +82,50 @@
 
 	// Show delivery fields only when delivery is selected
 	let showDeliveryFields = $derived(fulfillmentType === 'delivery');
+
+	// ============================================================================
+	// Slot Selection State (PRD 3.7)
+	// ============================================================================
+
+	// Selected slot ID
+	let selectedSlotId = $state<number | null>(null);
+
+	// Filter slots by fulfillment type
+	let filteredSlotsByDate = $derived(() => {
+		return data.slotsByDate
+			.map((dateGroup) => ({
+				...dateGroup,
+				slots: dateGroup.slots.filter((slot) => {
+					// 'both' type slots are available for both pickup and delivery
+					if (slot.slotType === 'both') return true;
+					// Otherwise filter by matching type
+					return slot.slotType === fulfillmentType;
+				})
+			}))
+			.filter((dateGroup) => dateGroup.slots.length > 0);
+	});
+
+	// Check if any slots are available for the selected fulfillment type
+	let hasAvailableSlots = $derived(filteredSlotsByDate().length > 0);
+
+	// Get the selected slot details
+	let selectedSlot = $derived(() => {
+		if (!selectedSlotId) return null;
+		return data.slots.find((slot) => slot.id === selectedSlotId) ?? null;
+	});
+
+	// Reset slot selection when fulfillment type changes
+	$effect(() => {
+		// When fulfillment type changes, check if current slot is still valid
+		const currentSlot = selectedSlot();
+		if (currentSlot) {
+			const isValidForType =
+				currentSlot.slotType === 'both' || currentSlot.slotType === fulfillmentType;
+			if (!isValidForType) {
+				selectedSlotId = null;
+			}
+		}
+	});
 
 	// ============================================================================
 	// Form Validation Functions
@@ -777,6 +833,156 @@
 							</div>
 						{/if}
 					</form>
+				</div>
+
+				<!-- Slot Selection (PRD 3.7) -->
+				<div class="mt-8 rounded-xl bg-white p-6 shadow-md">
+					<h2 class="text-xl font-semibold text-secondary">Select a Time</h2>
+					<p class="mt-1 text-sm text-text-light">
+						Choose when you'd like to {fulfillmentType === 'pickup' ? 'pick up' : 'receive'} your order.
+					</p>
+
+					{#if !hasAvailableSlots}
+						<!-- No slots available state -->
+						<div
+							class="mt-6 rounded-lg border border-tertiary-medium bg-tertiary/50 p-6 text-center"
+						>
+							<div
+								class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-tertiary-medium"
+							>
+								<svg
+									class="h-8 w-8 text-text-light"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+									/>
+								</svg>
+							</div>
+							<p class="mt-4 text-secondary">
+								No {fulfillmentType} slots are currently available.
+							</p>
+							<p class="mt-2 text-sm text-text-light">
+								Please check back later or try a different fulfillment option.
+							</p>
+						</div>
+					{:else}
+						<!-- Slot picker grouped by date -->
+						<div class="mt-6 space-y-6">
+							{#each filteredSlotsByDate() as dateGroup (dateGroup.date)}
+								<div>
+									<!-- Date heading -->
+									<h3 class="text-sm font-semibold text-secondary">{dateGroup.formattedDate}</h3>
+
+									<!-- Slots for this date -->
+									<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+										{#each dateGroup.slots as slot (slot.id)}
+											{@const isSelected = selectedSlotId === slot.id}
+											{@const isDisabled = slot.isSoldOut}
+											<label
+												class="relative flex cursor-pointer rounded-lg border-2 p-4 transition-all {isDisabled
+													? 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-60'
+													: isSelected
+														? 'border-primary bg-primary/5'
+														: 'border-tertiary-medium bg-white hover:border-primary/50'}"
+											>
+												<input
+													type="radio"
+													name="fulfillment-slot"
+													value={slot.id}
+													disabled={isDisabled}
+													checked={isSelected}
+													onchange={() => (selectedSlotId = slot.id)}
+													class="sr-only"
+												/>
+
+												<!-- Slot content -->
+												<div class="flex flex-1 items-center justify-between">
+													<div class="flex items-center gap-3">
+														<!-- Time icon -->
+														<div
+															class="flex h-10 w-10 items-center justify-center rounded-full {isSelected
+																? 'bg-primary text-white'
+																: 'bg-tertiary-light text-secondary'}"
+														>
+															<svg
+																class="h-5 w-5"
+																fill="none"
+																stroke="currentColor"
+																viewBox="0 0 24 24"
+																aria-hidden="true"
+															>
+																<path
+																	stroke-linecap="round"
+																	stroke-linejoin="round"
+																	stroke-width="2"
+																	d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+																/>
+															</svg>
+														</div>
+
+														<div>
+															<!-- Time range -->
+															<p class="font-medium text-secondary">
+																{formatTimeDisplay(slot.startTime)} - {formatTimeDisplay(
+																	slot.endTime
+																)}
+															</p>
+
+															<!-- Slot type badge (only show if different from selected fulfillment type) -->
+															{#if slot.slotType === 'both'}
+																<span
+																	class="mt-1 inline-flex items-center rounded-full bg-tertiary-light px-2 py-0.5 text-xs text-text-light"
+																>
+																	Pickup & Delivery
+																</span>
+															{/if}
+														</div>
+													</div>
+
+													<!-- Status indicators -->
+													<div class="text-right">
+														{#if isDisabled}
+															<span
+																class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800"
+															>
+																Sold Out
+															</span>
+														{:else if slot.remainingCapacity <= 20}
+															<span
+																class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800"
+															>
+																{slot.remainingCapacity} left
+															</span>
+														{:else if isSelected}
+															<svg
+																class="h-6 w-6 text-primary"
+																fill="currentColor"
+																viewBox="0 0 24 24"
+																aria-hidden="true"
+															>
+																<path
+																	fill-rule="evenodd"
+																	d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
+																	clip-rule="evenodd"
+																/>
+															</svg>
+														{/if}
+													</div>
+												</div>
+											</label>
+										{/each}
+									</div>
+								</div>
+							{/each}
+						</div>
+					{/if}
 				</div>
 
 				<!-- Cart Summary -->
