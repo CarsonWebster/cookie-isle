@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-17, Phase 5.2 Complete - R2 Image Serving)
+## Current Progress (as of 2026-01-17, Phase 5.3 Complete - Image Migration to R2)
 
 ### Phase 0 Status: COMPLETE
 
@@ -167,9 +167,10 @@ export const tableName = sqliteTable('table_name', {
 40. ~~Newsletter subscribers page (PRD 6.13)~~ DONE - `src/routes/admin/newsletter/` with 23 tests
 41. ~~R2 upload endpoint (PRD 5.1)~~ DONE - `src/routes/api/upload/+server.ts` with 45 tests
 42. ~~R2 image serving endpoint (PRD 5.2)~~ DONE - `src/routes/images/[...path]/+server.ts` with 25 tests
-43. **NEXT: Phase 5.3 (Image Migration) OR Phase 7 (Data Migration & Deployment)**
+43. ~~Image migration to R2 (PRD 5.3)~~ DONE - `scripts/migrate-images.sh` migrated 7 product images to R2
+44. **NEXT: Phase 7 (Data Migration & Deployment) - Deferred tasks before Phase 7+**
 
-> Note: Phase 5.2 is complete. Images can now be served from R2 via `/images/{filename}` with 1-year caching.
+> Note: Phase 5 is now COMPLETE. All product images are uploaded to R2, database records updated, and images are served via `/images/{filename}` endpoint with 1-year caching.
 
 ## Commands Reference
 
@@ -1146,10 +1147,42 @@ The `src/routes/images/[...path]/+server.ts` endpoint serves images from R2.
 - Error handling (404, 503, 400)
 - ETag and Content-Length headers
 
+### 5.3 Image Migration (COMPLETE)
+
+**Migration Script:** `scripts/migrate-images.sh`
+
+**Features:**
+
+- Bash script that uploads legacy product images to R2 using `wrangler r2 object put`
+- 7 images migrated from `_legacy/static/` to R2 bucket `cookie-isle-images`
+- Clean filename mapping (e.g., `Cholocatechipsingle.png` → `chocolate-chip-single.png`)
+- SQL script at `scripts/update-product-images.sql` updates product records
+
+**Image Mapping:**
+
+| Product        | Card Image (`image_url`)            | Hero Image (`hero_image_url`)         |
+| -------------- | ----------------------------------- | ------------------------------------- |
+| Chocolate Chip | `/images/chocolate-chip-single.png` | `/images/chocolate-chip-multiple.png` |
+| Brownie        | `/images/brownie.jpg`               | `/images/brownie.jpg`                 |
+| Salted Caramel | `/images/salted-caramel-single.png` | `/images/salted-caramel-multiple.png` |
+| Oatmeal Raisin | NULL                                | NULL                                  |
+
+**Usage:**
+
+```bash
+# Upload images (already done)
+./scripts/migrate-images.sh
+
+# Update local database
+npx wrangler d1 execute cookie-isle-db --local --file=scripts/update-product-images.sql
+
+# Update remote database
+npx wrangler d1 execute cookie-isle-db --remote --file=scripts/update-product-images.sql
+```
+
 **Next Steps:**
 
-- Phase 5.3: Migrate legacy images from `_legacy/static/` to R2
-- Update product records with new image URLs
+- Phase 7: Data Migration & Deployment
 - Consider using Cloudflare Images for automatic optimization (optional)
 
 ## Phase 3 Remaining Tasks

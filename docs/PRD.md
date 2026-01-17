@@ -815,7 +815,7 @@ Before marking any TODO as complete:
 
 ## Phase 5: Image Upload (R2)
 
-**Status:** In Progress (5.1 and 5.2 Complete)
+**Status:** Completed
 
 ### 5.1 R2 upload endpoint
 
@@ -851,16 +851,18 @@ Before marking any TODO as complete:
 
 ### 5.3 Migrate legacy images to R2
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                | Status      |
-| ----- | --------------------------------------------------- | ----------- |
-| 5.3.1 | Create migration script `scripts/migrate-images.ts` | Not Started |
-| 5.3.2 | Read all image files from `_legacy/static/`         | Not Started |
-| 5.3.3 | Upload each image to R2 bucket                      | Not Started |
-| 5.3.4 | Create mapping of old filename to new R2 URL        | Not Started |
-| 5.3.5 | Update products in D1 with new image URLs           | Not Started |
-| 5.3.6 | **Commit:** `feat: migrate legacy images to R2`     | Not Started |
+| ID    | Task                                                | Status    |
+| ----- | --------------------------------------------------- | --------- |
+| 5.3.1 | Create migration script `scripts/migrate-images.sh` | Completed |
+| 5.3.2 | Read all image files from `_legacy/static/`         | Completed |
+| 5.3.3 | Upload each image to R2 bucket                      | Completed |
+| 5.3.4 | Create mapping of old filename to new R2 URL        | Completed |
+| 5.3.5 | Update products in D1 with new image URLs           | Completed |
+| 5.3.6 | **Commit:** `feat: migrate legacy images to R2`     | Completed |
+
+> Note: Created bash script at `scripts/migrate-images.sh` that uploads 7 product images to R2 using wrangler CLI. Images are renamed with clean filenames (e.g., `chocolate-chip-single.png`). Product records updated via `scripts/update-product-images.sql` with new `/images/{filename}` URLs. All images are now served through the R2 endpoint at `/images/[...path]`.
 
 ---
 
