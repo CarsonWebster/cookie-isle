@@ -147,6 +147,23 @@ export const actions: Actions = {
 			return fail(400, { errors });
 		}
 
+		// Verify product exists
+		try {
+			const currentProduct = await db.select().from(products).where(eq(products.id, id)).limit(1);
+
+			if (currentProduct.length === 0) {
+				return fail(404, {
+					error: `Product with ID ${id} not found in database`,
+					debugInfo: { productId: id }
+				});
+			}
+		} catch (err) {
+			console.error('Error checking product existence:', err);
+			return fail(500, {
+				error: `Failed to verify product exists: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+
 		// Check if slug already exists (excluding current product)
 		try {
 			const existing = await db.select().from(products).where(eq(products.slug, slug!)).limit(1);
@@ -180,18 +197,34 @@ export const actions: Actions = {
 					tags,
 					featured,
 					active,
-					sortOrder
+					sortOrder,
+					updatedAt: new Date().toISOString()
 				})
 				.where(eq(products.id, id));
 		} catch (err) {
 			console.error('Error updating product:', err);
 			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+			// Get full error details
+			const errorStack = err instanceof Error ? err.stack : undefined;
+			const errorCause = err instanceof Error && 'cause' in err ? String(err.cause) : undefined;
+
 			return fail(500, {
 				error: `Failed to update product: ${errorMessage}`,
 				debugInfo: {
 					errorType: err instanceof Error ? err.constructor.name : typeof err,
+					errorStack: errorStack?.split('\n').slice(0, 3).join('\n'),
+					errorCause,
 					hasDB: !!db,
-					productId: id
+					productId: id,
+					valuesAttempted: {
+						title,
+						slug,
+						priceCents,
+						imageUrl,
+						heroImageUrl,
+						tagsType: typeof tags,
+						tagsValue: tags
+					}
 				}
 			});
 		}
