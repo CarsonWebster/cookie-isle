@@ -703,16 +703,16 @@ Before marking any TODO as complete:
 
 ## Phase 4: API Routes & Stripe
 
-**Status:** Not Started
+**Status:** In Progress
 
 ### 4.1 Stripe checkout endpoint
 
-**Status:** Not Started
+**Status:** In Progress
 
 | ID     | Task                                                                       | Status      |
 | ------ | -------------------------------------------------------------------------- | ----------- |
-| 4.1.1  | Install Stripe SDK: `bun add stripe`                                       | Not Started |
-| 4.1.2  | Create `src/lib/server/stripe.ts` with Stripe client initialization        | Not Started |
+| 4.1.1  | Install Stripe SDK: `bun add stripe`                                       | Completed   |
+| 4.1.2  | Create `src/lib/server/stripe.ts` with Stripe client initialization        | Completed   |
 | 4.1.3  | Create `src/routes/api/checkout/+server.ts` POST handler                   | Not Started |
 | 4.1.4  | Define request body type with Zod or manual validation                     | Not Started |
 | 4.1.5  | Validate cart items: check products exist in DB and are active             | Not Started |

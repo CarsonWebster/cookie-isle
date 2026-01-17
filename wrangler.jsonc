@@ -20,6 +20,11 @@
 		}
 	]
 
+	// Environment variables are loaded from:
+	// - .dev.vars file for local development
+	// - Cloudflare Pages > Settings > Environment Variables for production
+	// Required variables: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ADMIN_PASSWORD
+
 	// R2 Bucket binding - Enable R2 in Cloudflare Dashboard first, then add:
 	// "r2_buckets": [
 	// 	{

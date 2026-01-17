@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-17, Phase 3 Complete)
+## Current Progress (as of 2026-01-16, Phase 4 In Progress)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -75,24 +75,25 @@ This file contains useful findings for future agents working on this project.
 
 ## Key File Locations
 
-| File                                        | Purpose                                               |
-| ------------------------------------------- | ----------------------------------------------------- |
-| `docs/PRD.md`                               | Complete migration spec with task tracking            |
-| `src/lib/config.ts`                         | Site configuration (migrated from hugo.toml)          |
-| `src/lib/stores/cart.svelte.ts`             | Cart state management with localStorage               |
-| `src/lib/components/Header.svelte`          | Header with desktop/mobile nav, cart badge            |
-| `src/lib/components/Footer.svelte`          | Footer with brand, nav, contact, social               |
-| `src/lib/components/Hero.svelte`            | Hero section with gradient, CTA button                |
-| `src/lib/components/MenuCard.svelte`        | Product card with image, price, add to cart           |
-| `src/lib/components/CartToast.svelte`       | Toast notification for cart actions                   |
-| `src/lib/components/AddToCartButton.svelte` | Reusable add to cart button with feedback             |
-| `src/routes/(public)/+layout.svelte`        | Public pages layout (Header + main + Footer)          |
-| `src/routes/(public)/+page.svelte`          | Homepage with Hero and featured products              |
-| `src/lib/server/db/schema.ts`               | Drizzle table definitions                             |
-| `src/lib/server/db/index.ts`                | Database helper functions (`getDb`, `createDb`)       |
-| `drizzle.config.ts`                         | Drizzle Kit config (uses d1-http driver)              |
-| `wrangler.jsonc`                            | Cloudflare bindings (D1 configured, R2 commented out) |
-| `AGENTS.md`                                 | Agent instructions and coding standards               |
+| File                                        | Purpose                                                  |
+| ------------------------------------------- | -------------------------------------------------------- |
+| `docs/PRD.md`                               | Complete migration spec with task tracking               |
+| `src/lib/config.ts`                         | Site configuration (migrated from hugo.toml)             |
+| `src/lib/stores/cart.svelte.ts`             | Cart state management with localStorage                  |
+| `src/lib/components/Header.svelte`          | Header with desktop/mobile nav, cart badge               |
+| `src/lib/components/Footer.svelte`          | Footer with brand, nav, contact, social                  |
+| `src/lib/components/Hero.svelte`            | Hero section with gradient, CTA button                   |
+| `src/lib/components/MenuCard.svelte`        | Product card with image, price, add to cart              |
+| `src/lib/components/CartToast.svelte`       | Toast notification for cart actions                      |
+| `src/lib/components/AddToCartButton.svelte` | Reusable add to cart button with feedback                |
+| `src/routes/(public)/+layout.svelte`        | Public pages layout (Header + main + Footer)             |
+| `src/routes/(public)/+page.svelte`          | Homepage with Hero and featured products                 |
+| `src/lib/server/db/schema.ts`               | Drizzle table definitions                                |
+| `src/lib/server/db/index.ts`                | Database helper functions (`getDb`, `createDb`)          |
+| `src/lib/server/stripe.ts`                  | Stripe client helper (`getStripe`, `createStripeClient`) |
+| `drizzle.config.ts`                         | Drizzle Kit config (uses d1-http driver)                 |
+| `wrangler.jsonc`                            | Cloudflare bindings (D1 configured, R2 commented out)    |
+| `AGENTS.md`                                 | Agent instructions and coding standards                  |
 
 ## Testing Notes
 
@@ -145,7 +146,8 @@ export const tableName = sqliteTable('table_name', {
 24. ~~Checkout page - Slots selection (PRD 3.7)~~ DONE - Server load for available slots, slot picker UI (25 tests)
 25. ~~Checkout page - Extras (PRD 3.8)~~ DONE - Tip section, gift box, order summary with tax (165 total checkout tests)
 26. ~~Checkout page - Submit (PRD 3.9)~~ DONE - Form validation, loading states, submit button, max qty modal (237 total checkout tests)
-27. **NEXT: Stripe checkout endpoint (PRD 4.1)** - Install Stripe SDK, create checkout API endpoint
+27. ~~Stripe SDK + client init (PRD 4.1.1-4.1.2)~~ DONE - `stripe` package installed, `src/lib/server/stripe.ts` with 19 tests
+28. **NEXT: Stripe checkout API endpoint (PRD 4.1.3+)** - Create POST handler at `/api/checkout`
 
 ## Commands Reference
 
@@ -211,9 +213,10 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/lib/components/CartBadge.spec.ts`                | 26    | CartBadge component logic          |
 | `src/lib/components/CartToast.spec.ts`                | 35    | CartToast notification logic       |
 | `src/lib/components/AddToCartButton.spec.ts`          | 46    | AddToCartButton integration logic  |
-| `src/routes/(public)/checkout/page.spec.ts`           | 165   | Checkout page cart, form & extras  |
+| `src/routes/(public)/checkout/page.spec.ts`           | 237   | Checkout page cart, form & extras  |
 | `src/routes/(public)/checkout/page.server.spec.ts`    | 25    | Checkout slots load function       |
-| **Total**                                             | 581   |                                    |
+| `src/lib/server/stripe.spec.ts`                       | 19    | Stripe client module helpers       |
+| **Total**                                             | 672   |                                    |
 
 ## Site Config Notes
 
@@ -1464,40 +1467,95 @@ let isSubmitDisabled = $derived(isSubmitting || !isFormValid() || isMaxQuantityE
 - Button styling (6 tests)
 - Accessibility (5 tests)
 
-### Next Phase: Stripe Integration (Phase 4)
+## Stripe Module Notes (Phase 4.1 - STARTED)
 
-Phase 4 will implement the actual checkout API:
+The `src/lib/server/stripe.ts` module implements Stripe client initialization for Cloudflare Workers.
 
-1. Install Stripe SDK: `bun add stripe`
-2. Create `/api/checkout` POST endpoint
-3. Connect form submission to Stripe Checkout
-4. Create webhook handler for order completion
-5. Create checkout success page
+### Key Design Decisions
 
-The `handleSubmit` function currently logs order data to console with a placeholder message.
-It's ready to be connected to the `/api/checkout` endpoint in Phase 4.
+1. **Cloudflare Workers Compatibility:** Uses `Stripe.createFetchHttpClient()` for fetch-based HTTP client
+2. **Environment Variables:** Reads `STRIPE_SECRET_KEY` from platform.env (Cloudflare environment)
+3. **Helper Functions Pattern:** Follows same pattern as database helper (`getDb` -> `getStripe`)
+4. **Error Messages:** Provides helpful error messages pointing to `.dev.vars` and CF Pages env vars
 
-## Test Coverage Summary
+### Exported Functions
 
-| Test File                                             | Tests   | Purpose                            |
-| ----------------------------------------------------- | ------- | ---------------------------------- |
-| `src/demo.spec.ts`                                    | 1       | Demo test from sv create           |
-| `src/lib/config.spec.ts`                              | 35      | Site configuration and helpers     |
-| `src/lib/server/db/schema.spec.ts`                    | 23      | Schema table definitions and types |
-| `src/lib/server/db/db.spec.ts`                        | 10      | Database helper functions          |
-| `src/lib/components/Header.spec.ts`                   | 13      | Header component config logic      |
-| `src/lib/components/Footer.spec.ts`                   | 15      | Footer component config logic      |
-| `src/lib/components/Hero.spec.ts`                     | 19      | Hero component config logic        |
-| `src/lib/components/MenuCard.spec.ts`                 | 37      | MenuCard product type and config   |
-| `src/lib/components/ComingSoon.spec.ts`               | 46      | ComingSoon config, email, state    |
-| `src/routes/(public)/page.server.spec.ts`             | 7       | Homepage load function             |
-| `src/routes/(public)/page.svelte.spec.ts`             | 1       | Homepage component (browser test)  |
-| `src/routes/(public)/menu/page.server.spec.ts`        | 10      | Menu page load function            |
-| `src/routes/(public)/menu/[slug]/page.server.spec.ts` | 10      | Cookie detail page load function   |
-| `src/lib/stores/cart.spec.ts`                         | 57      | Cart store state and persistence   |
-| `src/lib/components/CartBadge.spec.ts`                | 26      | CartBadge component logic          |
-| `src/lib/components/CartToast.spec.ts`                | 35      | CartToast notification logic       |
-| `src/lib/components/AddToCartButton.spec.ts`          | 46      | AddToCartButton integration logic  |
-| `src/routes/(public)/checkout/page.spec.ts`           | 237     | Checkout page (cart, form, submit) |
-| `src/routes/(public)/checkout/page.server.spec.ts`    | 25      | Checkout slots load function       |
-| **Total**                                             | **653** |                                    |
+| Function                     | Purpose                                    |
+| ---------------------------- | ------------------------------------------ |
+| `createStripeClient(apiKey)` | Creates Stripe client with given API key   |
+| `getStripeClient(env)`       | Gets Stripe client from env object         |
+| `getStripe(platform)`        | Gets Stripe client from SvelteKit platform |
+| `verifyWebhookSignature()`   | Verifies Stripe webhook signatures         |
+
+### Usage in API Routes
+
+```typescript
+import { getStripe } from '$lib/server/stripe';
+import { json, error } from '@sveltejs/kit';
+
+export async function POST({ request, platform }) {
+	const stripe = getStripe(platform);
+
+	// Create checkout session
+	const session = await stripe.checkout.sessions.create({
+		line_items: [...],
+		mode: 'payment',
+		success_url: 'https://example.com/checkout/success?session_id={CHECKOUT_SESSION_ID}',
+		cancel_url: 'https://example.com/checkout'
+	});
+
+	return json({ url: session.url });
+}
+```
+
+### Environment Variables Required
+
+Create `.dev.vars` in project root (gitignored):
+
+```bash
+STRIPE_SECRET_KEY=sk_test_your_test_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+ADMIN_PASSWORD=your_local_admin_password
+```
+
+For production, set these in Cloudflare Pages > Settings > Environment Variables.
+
+### TypeScript Types Extended
+
+The `src/app.d.ts` was updated to include Stripe env vars in the Platform interface:
+
+```typescript
+interface ExtendedEnv extends Env {
+	STRIPE_SECRET_KEY?: string;
+	STRIPE_WEBHOOK_SECRET?: string;
+	ADMIN_PASSWORD?: string;
+}
+
+interface Platform {
+	env: ExtendedEnv;
+	// ...
+}
+```
+
+### Next Tasks (Phase 4.1.3+)
+
+1. Create `/api/checkout` POST endpoint with request validation
+2. Build Stripe line_items array from cart data
+3. Create checkout session with customer metadata
+4. Connect checkout form to API endpoint
+5. Create webhook handler for `checkout.session.completed`
+
+### Test Coverage
+
+19 tests in `src/lib/server/stripe.spec.ts`:
+
+- Client creation (2 tests)
+- getStripeClient error handling (4 tests)
+- getStripe error handling (4 tests)
+- verifyWebhookSignature (2 tests)
+- Error message quality (2 tests)
+- Module exports (5 tests)
+
+## Test Coverage Summary (Outdated - See Above)
+
+See the "Test Coverage Summary" table earlier in this document for the updated count (672 tests).
