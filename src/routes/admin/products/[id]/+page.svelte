@@ -15,10 +15,16 @@
 		return errors[field];
 	}
 
-	// Auto-generate slug from title
+	// Auto-generate slug from title - initialize from data.product
 	let title = $state(data.product.title);
 	let slug = $state(data.product.slug);
 	let autoSlug = $state(false); // Disabled by default for edit
+
+	// Sync state when data.product changes (e.g., after form submission)
+	$effect(() => {
+		title = data.product.title;
+		slug = data.product.slug;
+	});
 
 	// Generate slug from title
 	function generateSlug(text: string): string {
@@ -43,11 +49,11 @@
 		slug = (e.target as HTMLInputElement).value;
 	}
 
-	// Convert priceCents to dollars for display
-	const priceInDollars = (data.product.priceCents / 100).toFixed(2);
+	// Convert priceCents to dollars for display - derived from data.product
+	const priceInDollars = $derived((data.product.priceCents / 100).toFixed(2));
 
-	// Convert tags array to comma-separated string
-	const tagsString = data.product.tags ? data.product.tags.join(', ') : '';
+	// Convert tags array to comma-separated string - derived from data.product
+	const tagsString = $derived(data.product.tags ? data.product.tags.join(', ') : '');
 </script>
 
 <svelte:head>

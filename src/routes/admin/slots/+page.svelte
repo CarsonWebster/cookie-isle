@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { PageData } from './$types';
+	import type { ActionData, PageData } from './$types';
 
-	let { data, form }: { data: PageData; form: any } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	// Form state for creating new slot
 	let date = $state('');
@@ -83,9 +83,9 @@
 		return used >= max * 0.8;
 	}
 
-	// Reset form after successful submission
+	// Reset form after successful creation
 	$effect(() => {
-		if (form?.success) {
+		if (form?.success === 'created') {
 			date = '';
 			startTime = '';
 			endTime = '';
@@ -119,7 +119,11 @@
 	{#if form?.success}
 		<div class="rounded-lg bg-green-50 p-4">
 			<p class="text-sm font-medium text-green-800">
-				Slot {form.success === 'created' ? 'created' : 'updated'} successfully!
+				Slot {form.success === 'created'
+					? 'created'
+					: form.success === 'deleted'
+						? 'deleted'
+						: 'updated'} successfully!
 			</p>
 		</div>
 	{/if}

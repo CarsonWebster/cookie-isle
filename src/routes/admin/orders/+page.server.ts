@@ -1,7 +1,7 @@
 import { getDb } from '$lib/server/db';
 import { orders } from '$lib/server/db/schema';
 import { formatPrice } from '$lib/config';
-import { desc, eq, and, gte, sql } from 'drizzle-orm';
+import { desc, eq, and } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 import type { OrderItem } from '$lib/server/db/schema';
 

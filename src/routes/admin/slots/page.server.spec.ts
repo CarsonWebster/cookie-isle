@@ -129,7 +129,7 @@ describe('Admin Slots Page - Create Slot Action', () => {
 			platform: { env: { DB: {} } } as any
 		} as any);
 
-		expect(result).toEqual({ success: true });
+		expect(result).toEqual({ success: 'created' });
 		expect(mockInsert).toHaveBeenCalled();
 	});
 
@@ -304,7 +304,7 @@ describe('Admin Slots Page - Toggle Active Action', () => {
 			platform: { env: { DB: {} } } as any
 		} as any);
 
-		expect(result).toEqual({ success: true });
+		expect(result).toEqual({ success: 'updated' });
 		expect(mockSet).toHaveBeenCalledWith({ active: false });
 	});
 
@@ -325,7 +325,7 @@ describe('Admin Slots Page - Toggle Active Action', () => {
 			platform: { env: { DB: {} } } as any
 		} as any);
 
-		expect(result).toEqual({ success: true });
+		expect(result).toEqual({ success: 'updated' });
 		expect(mockSet).toHaveBeenCalledWith({ active: true });
 	});
 
@@ -394,7 +394,7 @@ describe('Admin Slots Page - Delete Slot Action', () => {
 			platform: { env: { DB: {} } } as any
 		} as any);
 
-		expect(result).toEqual({ success: true });
+		expect(result).toEqual({ success: 'deleted' });
 		expect(mockDelete).toHaveBeenCalled();
 	});
 

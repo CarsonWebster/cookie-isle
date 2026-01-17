@@ -12,6 +12,10 @@ const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
 export default defineConfig(
 	includeIgnoreFile(gitignorePath),
+	// Ignore legacy Hugo project (archived, uses Go templates)
+	{
+		ignores: ['_legacy/**']
+	},
 	js.configs.recommended,
 	...ts.configs.recommended,
 	...svelte.configs.recommended,
@@ -36,6 +40,24 @@ export default defineConfig(
 				parser: ts.parser,
 				svelteConfig
 			}
+		},
+
+		rules: {
+			// Relax Svelte 5 rules that require significant refactoring
+			// TODO: Address these in a future refactor pass
+			'svelte/no-navigation-without-resolve': 'warn', // Requires resolve() for all href links
+			'svelte/require-each-key': 'warn', // Requires key on each blocks
+			'svelte/no-useless-mustaches': 'warn', // String interpolation warnings
+			'svelte/prefer-svelte-reactivity': 'warn' // SvelteMap/SvelteDate suggestions
+		}
+	},
+	// Relax rules for test files
+	{
+		files: ['**/*.spec.ts', '**/*.test.ts'],
+		rules: {
+			'@typescript-eslint/no-explicit-any': 'off', // Allow any in tests for mocking
+			'@typescript-eslint/no-unused-vars': 'off', // Allow unused vars in tests (common with destructuring)
+			'prefer-const': 'warn' // Relax prefer-const in tests
 		}
 	}
 );

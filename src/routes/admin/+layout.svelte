@@ -29,7 +29,7 @@
 
 	// Close mobile menu when route changes
 	$effect(() => {
-		$page.url.pathname;
+		void $page.url.pathname;
 		mobileMenuOpen = false;
 	});
 

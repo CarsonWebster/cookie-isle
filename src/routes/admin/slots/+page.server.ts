@@ -94,7 +94,7 @@ export const actions = {
 			active: true
 		});
 
-		return { success: true };
+		return { success: 'created' as const };
 	},
 
 	toggleActive: async ({ request, platform }) => {
@@ -121,7 +121,7 @@ export const actions = {
 			.set({ active: !active })
 			.where(eq(fulfillmentSlots.id, slotIdNum));
 
-		return { success: true };
+		return { success: 'updated' as const };
 	},
 
 	deleteSlot: async ({ request, platform }) => {
@@ -144,6 +144,6 @@ export const actions = {
 
 		await db.delete(fulfillmentSlots).where(eq(fulfillmentSlots.id, slotIdNum));
 
-		return { success: true };
+		return { success: 'deleted' as const };
 	}
 } satisfies Actions;

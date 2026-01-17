@@ -7,6 +7,7 @@
 **IMPORTANT:** Read `docs/PRD.md` for the complete migration plan, task list with status tracking, database schema, and all implementation details. The PRD contains atomic, commit-sized TODOs organized into 8 phases.
 
 ### Tech Stack
+
 - **Runtime:** Bun
 - **Framework:** SvelteKit with Svelte 5 (runes)
 - **Styling:** Tailwind CSS v4
@@ -16,6 +17,7 @@
 - **Testing:** Vitest with Playwright browser testing
 
 ### Key Directories
+
 - `src/routes/` - SvelteKit file-based routing
 - `src/lib/components/` - Reusable Svelte 5 components
 - `src/lib/server/` - Server-only code (db, auth, stripe)
@@ -70,6 +72,7 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT 1"
 ## Code Style Guidelines
 
 ### Formatting (Prettier)
+
 - **Tabs** for indentation (not spaces)
 - **Single quotes** for strings
 - **No trailing commas**
@@ -77,6 +80,7 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT 1"
 - Tailwind classes are auto-sorted via `prettier-plugin-tailwindcss`
 
 ### TypeScript
+
 - **Strict mode enabled** - no implicit any, strict null checks
 - **No `any` types** - use proper typing or `unknown`
 - **No `@ts-ignore`** - fix the actual type issue
@@ -84,27 +88,29 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT 1"
 - Platform types come from `worker-configuration.d.ts` (auto-generated)
 
 ### Svelte 5 Conventions
+
 - **Use runes** - `$state`, `$derived`, `$effect`, `$props`, `$bindable`
 - **Avoid legacy syntax** - no `$:` reactive statements, no `export let`
 - Props pattern:
   ```svelte
   <script lang="ts">
-    interface Props {
-      title: string;
-      count?: number;
-    }
-    let { title, count = 0 }: Props = $props();
+  	interface Props {
+  		title: string;
+  		count?: number;
+  	}
+  	let { title, count = 0 }: Props = $props();
   </script>
   ```
 - State pattern:
   ```svelte
   <script lang="ts">
-    let count = $state(0);
-    let doubled = $derived(count * 2);
+  	let count = $state(0);
+  	let doubled = $derived(count * 2);
   </script>
   ```
 
 ### Naming Conventions
+
 - **Files:** kebab-case (`menu-card.svelte`, `cart-store.ts`)
 - **Components:** PascalCase in code (`MenuCard`, `CartBadge`)
 - **Variables/functions:** camelCase (`cartTotal`, `addToCart`)
@@ -113,6 +119,7 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT 1"
 - **TypeScript interfaces:** PascalCase (`OrderItem`, `DeliveryAddress`)
 
 ### Import Order
+
 1. Svelte/SvelteKit imports
 2. External library imports
 3. `$lib/` imports
@@ -128,6 +135,7 @@ import type { PageData } from './$types';
 ```
 
 ### Error Handling
+
 - Use SvelteKit's `error()` helper for HTTP errors
 - Validate inputs at API boundaries
 - Return typed error responses from API routes
@@ -137,11 +145,11 @@ import type { PageData } from './$types';
 import { error, json } from '@sveltejs/kit';
 
 export async function POST({ request, platform }) {
-  if (!platform?.env.DB) {
-    throw error(500, 'Database not configured');
-  }
-  // ... handle request
-  return json({ success: true });
+	if (!platform?.env.DB) {
+		throw error(500, 'Database not configured');
+	}
+	// ... handle request
+	return json({ success: true });
 }
 ```
 
@@ -150,33 +158,37 @@ export async function POST({ request, platform }) {
 ## Testing Conventions
 
 ### Test File Naming
+
 - **Server/unit tests:** `*.spec.ts` or `*.test.ts`
 - **Component tests:** `*.svelte.spec.ts` or `*.svelte.test.ts`
 
 ### Test Structure
+
 ```typescript
 import { describe, it, expect } from 'vitest';
 
 describe('feature name', () => {
-  it('should do something specific', () => {
-    expect(result).toBe(expected);
-  });
+	it('should do something specific', () => {
+		expect(result).toBe(expected);
+	});
 });
 ```
 
 ### Component Testing
+
 ```typescript
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import Component from './Component.svelte';
 
 it('renders correctly', async () => {
-  render(Component, { props: { title: 'Test' } });
-  await expect.element(page.getByRole('heading')).toBeInTheDocument();
+	render(Component, { props: { title: 'Test' } });
+	await expect.element(page.getByRole('heading')).toBeInTheDocument();
 });
 ```
 
 ### Test Requirements
+
 - Tests MUST have at least one assertion (`expect`)
 - Run `bun run check` before committing - must pass
 - Run `bun run test` before committing - must pass
@@ -194,12 +206,12 @@ it('renders correctly', async () => {
 
 ## Quick Reference
 
-| Task | Command |
-|------|---------|
-| Start dev server | `bun run dev` |
-| Type check | `bun run check` |
-| Run all tests | `bun run test` |
-| Run single test | `bunx vitest run path/to/test.ts` |
-| Format code | `bun run format` |
-| Lint code | `bun run lint` |
-| Generate DB types | `bun run types` |
+| Task              | Command                           |
+| ----------------- | --------------------------------- |
+| Start dev server  | `bun run dev`                     |
+| Type check        | `bun run check`                   |
+| Run all tests     | `bun run test`                    |
+| Run single test   | `bunx vitest run path/to/test.ts` |
+| Format code       | `bun run format`                  |
+| Lint code         | `bun run lint`                    |
+| Generate DB types | `bun run types`                   |

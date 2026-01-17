@@ -4,7 +4,7 @@ import type Stripe from 'stripe';
 import { getDb } from '$lib/server/db';
 import { orders, dailyCapacity, type OrderItem, type DeliveryAddress } from '$lib/server/db/schema';
 import { verifyWebhookSignature } from '$lib/server/stripe';
-import { config, calculateTax } from '$lib/config';
+import { calculateTax } from '$lib/config';
 
 // ============================================================================
 // Types
@@ -156,12 +156,6 @@ export async function insertOrder(
 
 	// Calculate tax (if enabled)
 	const taxCents = calculateTax(subtotalCents);
-
-	// Calculate expected total
-	let expectedTotal = subtotalCents + tipCents + taxCents;
-	if (includeGiftBox && config.giftBox.enabled) {
-		expectedTotal += config.giftBox.priceCents;
-	}
 
 	// Use Stripe's amount_total as the source of truth for totalCents
 	// (Stripe handles automatic tax if configured)

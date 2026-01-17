@@ -5,39 +5,39 @@
 /* Cookie Isle Theme Colors - SoCal Coastal Island Vibe */
 @theme {
 	/* Primary colors - Ocean teal for buttons, links, accents */
-	--color-primary: #4CA2C2;
+	--color-primary: #4ca2c2;
 	--color-primary-hover: #173448;
 
 	/* Secondary colors - Warm brown for headings and emphasis */
-	--color-secondary: #5C4033;
-	--color-secondary-dark: #3D2B1F;
+	--color-secondary: #5c4033;
+	--color-secondary-dark: #3d2b1f;
 
 	/* Tertiary colors - Sandy beach and sky tones for backgrounds */
-	--color-tertiary: #FBF8F3;
-	--color-tertiary-light: #FDFCFA;
-	--color-tertiary-medium: #E8E4DC;
+	--color-tertiary: #fbf8f3;
+	--color-tertiary-light: #fdfcfa;
+	--color-tertiary-medium: #e8e4dc;
 
 	/* Accent color - Golden sun/cookie warmth */
-	--color-accent: #E9B44C;
+	--color-accent: #e9b44c;
 
 	/* Text colors */
-	--color-text-light: #5D6B6A;
+	--color-text-light: #5d6b6a;
 
 	/* Surface colors */
-	--color-card-bg: #FFFFFF;
+	--color-card-bg: #ffffff;
 
 	/* Header colors */
-	--color-header-bg: #FBF8F3;
-	--color-header-text: #5C4033;
+	--color-header-bg: #fbf8f3;
+	--color-header-text: #5c4033;
 
 	/* Footer colors */
 	--color-footer-bg: #264653;
-	--color-footer-text: #FBF8F3;
-	--color-footer-heading: #E9B44C;
+	--color-footer-text: #fbf8f3;
+	--color-footer-heading: #e9b44c;
 
 	/* Button colors */
-	--color-btn-bg: #4CA2C2;
-	--color-btn-text: #FDFCFA;
+	--color-btn-bg: #4ca2c2;
+	--color-btn-text: #fdfcfa;
 	--color-btn-hover-bg: #264653;
-	--color-btn-nav-bg: #E9B44C;
+	--color-btn-nav-bg: #e9b44c;
 }

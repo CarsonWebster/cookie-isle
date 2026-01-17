@@ -1,4 +1,4 @@
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { getDb } from '$lib/server/db';
 import { orders } from '$lib/server/db/schema';
 import { formatPrice } from '$lib/config';

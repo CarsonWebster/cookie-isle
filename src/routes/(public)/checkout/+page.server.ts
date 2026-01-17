@@ -53,8 +53,7 @@ export const load: PageServerLoad = async ({ platform }) => {
 		.from(fulfillmentSlots)
 		.where(and(eq(fulfillmentSlots.active, true), gte(fulfillmentSlots.date, today)));
 
-	// Get unique dates from slots
-	const uniqueDates = [...new Set(availableSlots.map((slot) => slot.date))];
+	// Get unique dates from slots (used implicitly by capacityByDate lookup)
 
 	// Query daily capacity for these dates
 	// Since dailyCapacity uses date as primary key, we query for all dates
