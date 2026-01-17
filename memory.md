@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16, Phase 4 In Progress)
+## Current Progress (as of 2026-01-16, Phase 4.1 Mostly Complete)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -91,6 +91,7 @@ This file contains useful findings for future agents working on this project.
 | `src/lib/server/db/schema.ts`               | Drizzle table definitions                                |
 | `src/lib/server/db/index.ts`                | Database helper functions (`getDb`, `createDb`)          |
 | `src/lib/server/stripe.ts`                  | Stripe client helper (`getStripe`, `createStripeClient`) |
+| `src/routes/api/checkout/+server.ts`        | Stripe checkout API endpoint (POST handler)              |
 | `drizzle.config.ts`                         | Drizzle Kit config (uses d1-http driver)                 |
 | `wrangler.jsonc`                            | Cloudflare bindings (D1 configured, R2 commented out)    |
 | `AGENTS.md`                                 | Agent instructions and coding standards                  |
@@ -147,7 +148,8 @@ export const tableName = sqliteTable('table_name', {
 25. ~~Checkout page - Extras (PRD 3.8)~~ DONE - Tip section, gift box, order summary with tax (165 total checkout tests)
 26. ~~Checkout page - Submit (PRD 3.9)~~ DONE - Form validation, loading states, submit button, max qty modal (237 total checkout tests)
 27. ~~Stripe SDK + client init (PRD 4.1.1-4.1.2)~~ DONE - `stripe` package installed, `src/lib/server/stripe.ts` with 19 tests
-28. **NEXT: Stripe checkout API endpoint (PRD 4.1.3+)** - Create POST handler at `/api/checkout`
+28. ~~Stripe checkout API endpoint (PRD 4.1.3-4.1.13, 4.1.15)~~ DONE - `src/routes/api/checkout/+server.ts` with 63 tests
+29. **NEXT: Connect checkout form to API (PRD 4.2)** - Update checkout page to POST to `/api/checkout`
 
 ## Commands Reference
 
@@ -1537,14 +1539,6 @@ interface Platform {
 }
 ```
 
-### Next Tasks (Phase 4.1.3+)
-
-1. Create `/api/checkout` POST endpoint with request validation
-2. Build Stripe line_items array from cart data
-3. Create checkout session with customer metadata
-4. Connect checkout form to API endpoint
-5. Create webhook handler for `checkout.session.completed`
-
 ### Test Coverage
 
 19 tests in `src/lib/server/stripe.spec.ts`:
@@ -1556,6 +1550,142 @@ interface Platform {
 - Error message quality (2 tests)
 - Module exports (5 tests)
 
-## Test Coverage Summary (Outdated - See Above)
+## Checkout API Endpoint Notes (Phase 4.1 - MOSTLY COMPLETE)
 
-See the "Test Coverage Summary" table earlier in this document for the updated count (672 tests).
+The `src/routes/api/checkout/+server.ts` module implements the Stripe checkout session creation endpoint.
+
+### Key Features
+
+1. **Request Validation:** Manual validation of all request fields without external dependencies (Zod)
+2. **Database Validation:** Verifies products exist, are active, and prices match to prevent manipulation
+3. **Stripe Line Items:** Builds line items from cart items, optional tip, and optional gift box
+4. **Order Metadata:** Stores customer info, fulfillment details, and items JSON in Stripe session metadata
+5. **Error Handling:** Returns detailed validation errors with 400 status
+
+### Exported Types
+
+```typescript
+interface CheckoutCartItem {
+	productId: number;
+	slug: string;
+	title: string;
+	priceCents: number;
+	stripePriceId: string;
+	quantity: number;
+}
+
+interface CheckoutCustomer {
+	firstName: string;
+	lastName: string;
+	email: string;
+	phone: string;
+}
+
+interface CheckoutFulfillment {
+	type: 'pickup' | 'delivery';
+	slotId: number;
+	date: string; // YYYY-MM-DD
+	startTime: string; // HH:MM
+	endTime: string; // HH:MM
+	address?: CheckoutDeliveryAddress;
+}
+
+interface CheckoutRequest {
+	items: CheckoutCartItem[];
+	customer: CheckoutCustomer;
+	fulfillment: CheckoutFulfillment;
+	tipCents: number;
+	includeGiftBox: boolean;
+	giftMessage?: string;
+}
+```
+
+### Exported Validation Functions
+
+| Function                        | Purpose                                  |
+| ------------------------------- | ---------------------------------------- |
+| `validateCheckoutRequest(body)` | Validates request body structure         |
+| `validateCartItemsAgainstDb()`  | Validates items against database         |
+| `buildStripeLineItems()`        | Builds Stripe line items array           |
+| `buildOrderMetadata()`          | Builds order metadata for Stripe session |
+
+### Usage in Checkout Form
+
+```typescript
+// Submit checkout form
+const response = await fetch('/api/checkout', {
+	method: 'POST',
+	headers: { 'Content-Type': 'application/json' },
+	body: JSON.stringify({
+		items: cartItems,
+		customer: { firstName, lastName, email, phone },
+		fulfillment: {
+			type: fulfillmentType,
+			slotId: selectedSlotId,
+			date: selectedSlot.date,
+			startTime: selectedSlot.startTime,
+			endTime: selectedSlot.endTime,
+			address: fulfillmentType === 'delivery' ? deliveryAddress : undefined
+		},
+		tipCents,
+		includeGiftBox,
+		giftMessage
+	})
+});
+
+const data = await response.json();
+if (data.url) {
+	window.location.href = data.url; // Redirect to Stripe
+}
+```
+
+### Test Coverage
+
+63 tests in `src/routes/api/checkout/server.spec.ts`:
+
+- Request body validation (4 tests)
+- Items validation (12 tests)
+- Max order quantity validation (2 tests)
+- Customer validation (6 tests)
+- Fulfillment validation (6 tests)
+- Delivery address validation (8 tests)
+- Tip validation (3 tests)
+- Gift box validation (3 tests)
+- Database validation (6 tests)
+- Stripe line items building (5 tests)
+- Order metadata building (6 tests)
+- Type checks (2 tests)
+
+### Next Tasks (Phase 4.2+)
+
+1. **NEXT: Connect checkout form to API (PRD 4.2)** - Update checkout page to POST to `/api/checkout`
+2. Create webhook handler for `checkout.session.completed` (PRD 4.3)
+3. Create checkout success page (PRD 4.4)
+4. Create newsletter signup API (PRD 4.5)
+
+## Test Coverage Summary (Updated)
+
+| Test File                                             | Tests | Purpose                            |
+| ----------------------------------------------------- | ----- | ---------------------------------- |
+| `src/demo.spec.ts`                                    | 1     | Demo test from sv create           |
+| `src/lib/config.spec.ts`                              | 35    | Site configuration and helpers     |
+| `src/lib/server/db/schema.spec.ts`                    | 23    | Schema table definitions and types |
+| `src/lib/server/db/db.spec.ts`                        | 10    | Database helper functions          |
+| `src/lib/components/Header.spec.ts`                   | 13    | Header component config logic      |
+| `src/lib/components/Footer.spec.ts`                   | 15    | Footer component config logic      |
+| `src/lib/components/Hero.spec.ts`                     | 19    | Hero component config logic        |
+| `src/lib/components/MenuCard.spec.ts`                 | 37    | MenuCard product type and config   |
+| `src/lib/components/ComingSoon.spec.ts`               | 46    | ComingSoon config, email, state    |
+| `src/routes/(public)/page.server.spec.ts`             | 7     | Homepage load function             |
+| `src/routes/(public)/page.svelte.spec.ts`             | 1     | Homepage component (browser test)  |
+| `src/routes/(public)/menu/page.server.spec.ts`        | 10    | Menu page load function            |
+| `src/routes/(public)/menu/[slug]/page.server.spec.ts` | 10    | Cookie detail page load function   |
+| `src/lib/stores/cart.spec.ts`                         | 57    | Cart store state and persistence   |
+| `src/lib/components/CartBadge.spec.ts`                | 26    | CartBadge component logic          |
+| `src/lib/components/CartToast.spec.ts`                | 35    | CartToast notification logic       |
+| `src/lib/components/AddToCartButton.spec.ts`          | 46    | AddToCartButton integration logic  |
+| `src/routes/(public)/checkout/page.spec.ts`           | 237   | Checkout page cart, form & extras  |
+| `src/routes/(public)/checkout/page.server.spec.ts`    | 25    | Checkout slots load function       |
+| `src/lib/server/stripe.spec.ts`                       | 19    | Stripe client module helpers       |
+| `src/routes/api/checkout/server.spec.ts`              | 63    | Checkout API validation & building |
+| **Total**                                             | 735   |                                    |
