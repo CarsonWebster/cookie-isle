@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-17, Phase 6.10 Complete)
+## Current Progress (as of 2026-01-17, Phase 6.11 Complete)
 
 ### Phase 0 Status: COMPLETE
 
@@ -162,7 +162,8 @@ export const tableName = sqliteTable('table_name', {
 35. ~~Order detail page (PRD 6.8)~~ DONE - `src/routes/admin/orders/[id]/` with 31 tests
 36. ~~Products list page (PRD 6.9)~~ DONE - `src/routes/admin/products/` with 21 tests
 37. ~~Product create page (PRD 6.10)~~ DONE - `src/routes/admin/products/new/` with 12 tests
-38. **NEXT: Phase 6.11 - Product Edit Page** - Edit existing products with delete functionality
+38. ~~Product edit page (PRD 6.11)~~ DONE - `src/routes/admin/products/[id]/` with 21 tests
+39. **NEXT: Phase 6.12 - Fulfillment Slots Page** - Manage delivery/pickup slots and daily capacity
 
 ## Commands Reference
 
@@ -245,7 +246,8 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/admin/orders/[id]/page.server.spec.ts`         | 31    | Order detail page with status update |
 | `src/routes/admin/products/page.server.spec.ts`            | 21    | Admin products list with toggles     |
 | `src/routes/admin/products/new/page.server.spec.ts`        | 12    | Product create form validation       |
-| **Total**                                                  | 1109  |                                      |
+| `src/routes/admin/products/[id]/page.server.spec.ts`       | 21    | Product edit form with delete        |
+| **Total**                                                  | 1130  |                                      |
 
 ## Site Config Notes
 
@@ -3110,6 +3112,87 @@ export const actions: Actions = {
 - **Slug Uniqueness:** Duplicate slug detection
 - **Successful Creation:** Full form data, minimal fields, tag parsing
 - **Error Handling:** Database unavailable, insert failures
+
+## Product Edit Page Notes (Phase 6.11 - COMPLETE)
+
+The `src/routes/admin/products/[id]/` page implements product editing with update and delete actions.
+
+### Key Features
+
+1. **Server Load Function:**
+   - Loads product by ID from route params
+   - Throws 404 error if product not found or ID is invalid
+   - Throws 500 error if database unavailable
+   - Returns product data for form pre-population
+
+2. **Pre-populated Form:**
+   - All fields pre-filled with existing product data
+   - Price converted from cents to dollars for display (e.g., 350 → $3.50)
+   - Tags converted from array to comma-separated string
+   - Checkboxes (featured, active) set based on product values
+   - Disabled auto-slug mode by default for editing (only enabled when user changes title)
+
+3. **Update Action:**
+   - Validates all fields (same as create page)
+   - Checks slug uniqueness, but **excludes current product** from check
+   - Allows keeping same slug when updating other fields
+   - Parses tags and converts price to cents
+   - Uses Drizzle's `update().set().where()` pattern
+   - Redirects to `/admin/products` on success
+
+4. **Delete Action:**
+   - Separate form action for product deletion
+   - Shows confirmation modal before deleting
+   - Modal includes warning about action being irreversible
+   - Notes that existing orders won't be affected
+   - Uses Drizzle's `delete().where()` pattern
+   - Redirects to `/admin/products` on success
+
+5. **Delete Confirmation Modal:**
+   - Backdrop with opacity overlay
+   - Warning icon in red
+   - Clear messaging with product title
+   - Two buttons: "Delete" (red) and "Cancel" (gray)
+   - Clicking backdrop or Cancel closes modal
+
+### Implementation Differences from Create Page
+
+**Create Page:**
+
+- Auto-slug enabled by default
+- No initial values
+- Single default action for insert
+- Slug uniqueness check (no exclusions)
+
+**Edit Page:**
+
+- Auto-slug disabled by default
+- Pre-filled with existing data
+- Named actions: `?/update` and `?/delete`
+- Slug uniqueness check excludes current product
+- Delete button with confirmation modal
+
+### Slug Uniqueness Logic
+
+```typescript
+// Check if slug already exists (excluding current product)
+const existing = await db.select().from(products).where(eq(products.slug, slug!)).limit(1);
+
+if (existing.length > 0 && existing[0].id !== id) {
+	return fail(400, {
+		errors: { slug: 'This slug is already in use. Please choose a different one.' }
+	});
+}
+```
+
+### Test Coverage
+
+21 tests in `page.server.spec.ts` covering:
+
+- **Load Function:** Successful load, 404 for invalid/missing ID, DB errors
+- **Update Action:** All validation cases from create page, slug uniqueness with exclusion, successful updates
+- **Delete Action:** Successful deletion, 404 for invalid ID, DB errors
+- **Error Handling:** DB unavailable for all actions, DB errors during slug check/update/delete
 
 ### Deferred Items
 

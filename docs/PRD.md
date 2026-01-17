@@ -1051,22 +1051,22 @@ Before marking any TODO as complete:
 
 ### 6.11 Product edit page
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID      | Task                                                              | Status      |
-| ------- | ----------------------------------------------------------------- | ----------- |
-| 6.11.1  | Create `src/routes/admin/products/[id]/+page.server.ts`           | Not Started |
-| 6.11.2  | Load product by ID, return 404 if not found                       | Not Started |
-| 6.11.3  | Create `src/routes/admin/products/[id]/+page.svelte`              | Not Started |
-| 6.11.4  | Reuse product form component from create page                     | Not Started |
-| 6.11.5  | Pre-populate form with existing product data                      | Not Started |
-| 6.11.6  | Show current images with option to replace                        | Not Started |
-| 6.11.7  | Create form action to update product                              | Not Started |
-| 6.11.8  | Add "Delete Product" button with confirmation modal               | Not Started |
-| 6.11.9  | Create form action to delete product                              | Not Started |
-| 6.11.10 | Redirect to /admin/products on success                            | Not Started |
-| 6.11.11 | Write page test in `tests/integration/admin-product-edit.test.ts` | Not Started |
-| 6.11.12 | **Commit:** `feat: create product edit page with delete`          | Not Started |
+| ID      | Task                                                                    | Status      |
+| ------- | ----------------------------------------------------------------------- | ----------- |
+| 6.11.1  | Create `src/routes/admin/products/[id]/+page.server.ts`                 | Completed   |
+| 6.11.2  | Load product by ID, return 404 if not found                             | Completed   |
+| 6.11.3  | Create `src/routes/admin/products/[id]/+page.svelte`                    | Completed   |
+| 6.11.4  | Reuse product form component from create page                           | Completed   |
+| 6.11.5  | Pre-populate form with existing product data                            | Completed   |
+| 6.11.6  | Show current images with option to replace                              | Deferred    |
+| 6.11.7  | Create form action to update product                                    | Completed   |
+| 6.11.8  | Add "Delete Product" button with confirmation modal                     | Completed   |
+| 6.11.9  | Create form action to delete product                                    | Completed   |
+| 6.11.10 | Redirect to /admin/products on success                                  | Completed   |
+| 6.11.11 | Write page test in `src/routes/admin/products/[id]/page.server.spec.ts` | Completed   |
+| 6.11.12 | **Commit:** `feat: create product edit page with delete`                | Not Started |
 
 ### 6.12 Fulfillment slots page
 
