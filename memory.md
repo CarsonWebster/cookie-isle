@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16, Phase 4.3 Complete)
+## Current Progress (as of 2026-01-16, Phase 4.4 Complete)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -152,7 +152,8 @@ export const tableName = sqliteTable('table_name', {
 28. ~~Stripe checkout API endpoint (PRD 4.1.3-4.1.13, 4.1.15)~~ DONE - `src/routes/api/checkout/+server.ts` with 63 tests
 29. ~~Connect checkout form to API (PRD 4.2)~~ DONE - `handleSubmit` in checkout page POSTs to `/api/checkout` and redirects to Stripe
 30. ~~Stripe webhook handler (PRD 4.3)~~ DONE - `src/routes/api/webhook/+server.ts` with 44 tests
-31. **NEXT: Checkout success page (PRD 4.4)** - Create success page to display order confirmation
+31. ~~Checkout success page (PRD 4.4)~~ DONE - `src/routes/(public)/checkout/success/` with 27 tests
+32. **NEXT: Newsletter signup endpoint (PRD 4.5)** - Create `/api/newsletter` POST endpoint
 
 ## Commands Reference
 
@@ -199,31 +200,32 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 
 ## Test Coverage Summary
 
-| Test File                                             | Tests | Purpose                            |
-| ----------------------------------------------------- | ----- | ---------------------------------- |
-| `src/demo.spec.ts`                                    | 1     | Demo test from sv create           |
-| `src/lib/config.spec.ts`                              | 35    | Site configuration and helpers     |
-| `src/lib/server/db/schema.spec.ts`                    | 23    | Schema table definitions and types |
-| `src/lib/server/db/db.spec.ts`                        | 10    | Database helper functions          |
-| `src/lib/components/Header.spec.ts`                   | 13    | Header component config logic      |
-| `src/lib/components/Footer.spec.ts`                   | 15    | Footer component config logic      |
-| `src/lib/components/Hero.spec.ts`                     | 19    | Hero component config logic        |
-| `src/lib/components/MenuCard.spec.ts`                 | 37    | MenuCard product type and config   |
-| `src/lib/components/ComingSoon.spec.ts`               | 46    | ComingSoon config, email, state    |
-| `src/routes/(public)/page.server.spec.ts`             | 7     | Homepage load function             |
-| `src/routes/(public)/page.svelte.spec.ts`             | 1     | Homepage component (browser test)  |
-| `src/routes/(public)/menu/page.server.spec.ts`        | 10    | Menu page load function            |
-| `src/routes/(public)/menu/[slug]/page.server.spec.ts` | 10    | Cookie detail page load function   |
-| `src/lib/stores/cart.spec.ts`                         | 57    | Cart store state and persistence   |
-| `src/lib/components/CartBadge.spec.ts`                | 26    | CartBadge component logic          |
-| `src/lib/components/CartToast.spec.ts`                | 35    | CartToast notification logic       |
-| `src/lib/components/AddToCartButton.spec.ts`          | 46    | AddToCartButton integration logic  |
-| `src/routes/(public)/checkout/page.spec.ts`           | 237   | Checkout page cart, form & extras  |
-| `src/routes/(public)/checkout/page.server.spec.ts`    | 25    | Checkout slots load function       |
-| `src/lib/server/stripe.spec.ts`                       | 19    | Stripe client module helpers       |
-| `src/routes/api/checkout/server.spec.ts`              | 63    | Checkout API validation & helpers  |
-| `src/routes/api/webhook/server.spec.ts`               | 44    | Webhook parsing and validation     |
-| **Total**                                             | 778   |                                    |
+| Test File                                                  | Tests | Purpose                              |
+| ---------------------------------------------------------- | ----- | ------------------------------------ |
+| `src/demo.spec.ts`                                         | 1     | Demo test from sv create             |
+| `src/lib/config.spec.ts`                                   | 35    | Site configuration and helpers       |
+| `src/lib/server/db/schema.spec.ts`                         | 23    | Schema table definitions and types   |
+| `src/lib/server/db/db.spec.ts`                             | 10    | Database helper functions            |
+| `src/lib/components/Header.spec.ts`                        | 13    | Header component config logic        |
+| `src/lib/components/Footer.spec.ts`                        | 15    | Footer component config logic        |
+| `src/lib/components/Hero.spec.ts`                          | 19    | Hero component config logic          |
+| `src/lib/components/MenuCard.spec.ts`                      | 37    | MenuCard product type and config     |
+| `src/lib/components/ComingSoon.spec.ts`                    | 46    | ComingSoon config, email, state      |
+| `src/routes/(public)/page.server.spec.ts`                  | 7     | Homepage load function               |
+| `src/routes/(public)/page.svelte.spec.ts`                  | 1     | Homepage component (browser test)    |
+| `src/routes/(public)/menu/page.server.spec.ts`             | 10    | Menu page load function              |
+| `src/routes/(public)/menu/[slug]/page.server.spec.ts`      | 10    | Cookie detail page load function     |
+| `src/lib/stores/cart.spec.ts`                              | 57    | Cart store state and persistence     |
+| `src/lib/components/CartBadge.spec.ts`                     | 26    | CartBadge component logic            |
+| `src/lib/components/CartToast.spec.ts`                     | 35    | CartToast notification logic         |
+| `src/lib/components/AddToCartButton.spec.ts`               | 46    | AddToCartButton integration logic    |
+| `src/routes/(public)/checkout/page.spec.ts`                | 237   | Checkout page cart, form & extras    |
+| `src/routes/(public)/checkout/page.server.spec.ts`         | 25    | Checkout slots load function         |
+| `src/lib/server/stripe.spec.ts`                            | 19    | Stripe client module helpers         |
+| `src/routes/api/checkout/server.spec.ts`                   | 63    | Checkout API validation & helpers    |
+| `src/routes/api/webhook/server.spec.ts`                    | 44    | Webhook parsing and validation       |
+| `src/routes/(public)/checkout/success/page.server.spec.ts` | 27    | Checkout success page load & helpers |
+| **Total**                                                  | 806   |                                      |
 
 ## Site Config Notes
 
@@ -1918,3 +1920,91 @@ stripe listen --forward-to localhost:5173/api/webhook
 # Note the webhook signing secret printed by the CLI
 # Update .dev.vars with this temporary secret for testing
 ```
+
+## Checkout Success Page Notes (Phase 4.4 - COMPLETE)
+
+The `src/routes/(public)/checkout/success/` route displays order confirmation after successful Stripe checkout.
+
+### Key Features
+
+1. **Server Load Function (`+page.server.ts`):**
+   - Gets `session_id` from URL query params
+   - Verifies Stripe session is paid (throws 404 if not)
+   - Falls back to DB check if Stripe API is unreachable
+   - Loads order from D1 by `stripe_session_id`
+   - Returns 404 if order not found
+   - Re-throws HttpError (from error()) for proper status codes
+
+2. **Page Component (`+page.svelte`):**
+   - Success icon (green checkmark in circle)
+   - "Order Confirmed!" heading with email confirmation message
+   - Order details card with:
+     - Order number and status badge
+     - Fulfillment details (date, time, type, address/location)
+     - Customer information (name, email, phone)
+     - Order summary (items with quantities and prices)
+     - Gift box indicator with message (if applicable)
+     - Order totals (subtotal, tip, gift box, tax, total)
+   - "Back to Home" and "Order More Cookies" action buttons
+   - Help text with contact email
+
+3. **Cart Clearing:**
+   - Calls `clearCart()` and `clearStorage()` on mount
+   - Ensures cart is empty after successful order
+
+### Exported Helper Functions
+
+| Function                     | Purpose                                          |
+| ---------------------------- | ------------------------------------------------ |
+| `formatFulfillmentDate(str)` | Formats "YYYY-MM-DD" to "Weekday, Month D, YYYY" |
+| `formatFulfillmentTime(str)` | Formats "HH:MM-HH:MM" to "H:MM AM - H:MM PM"     |
+| `formatFulfillmentType(str)` | Capitalizes "pickup" to "Pickup"                 |
+
+### OrderData Interface
+
+```typescript
+interface OrderData {
+	id: number;
+	stripeSessionId: string | null;
+	status: string | null;
+	customerName: string | null;
+	customerEmail: string | null;
+	customerPhone: string | null;
+	fulfillmentType: string | null;
+	fulfillmentDate: string | null;
+	fulfillmentTime: string | null;
+	deliveryAddress: DeliveryAddress | null;
+	items: OrderItem[];
+	subtotalCents: number | null;
+	tipCents: number | null;
+	giftBox: boolean | null;
+	giftMessage: string | null;
+	taxCents: number | null;
+	totalCents: number | null;
+	createdAt: string | null;
+}
+```
+
+### Test Coverage
+
+27 tests in `src/routes/(public)/checkout/success/page.server.spec.ts`:
+
+- Missing session_id handling (1 test)
+- Platform unavailability (2 tests)
+- Order found scenarios (4 tests)
+- Order not found (1 test)
+- Stripe session verification (3 tests)
+- Database query structure (1 test)
+- formatFulfillmentDate (4 tests)
+- formatFulfillmentTime (7 tests)
+- formatFulfillmentType (4 tests)
+
+### URL Structure
+
+After Stripe checkout completion, users are redirected to:
+
+```
+/checkout/success?session_id={CHECKOUT_SESSION_ID}
+```
+
+The `{CHECKOUT_SESSION_ID}` is replaced by Stripe with the actual session ID.

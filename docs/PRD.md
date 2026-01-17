@@ -763,24 +763,24 @@ Before marking any TODO as complete:
 
 ### 4.4 Checkout success page
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                            | Status      |
-| ------ | --------------------------------------------------------------- | ----------- |
-| 4.4.1  | Create `src/routes/(public)/checkout/success/+page.server.ts`   | Not Started |
-| 4.4.2  | Get session_id from URL query params                            | Not Started |
-| 4.4.3  | Retrieve session from Stripe to verify it's valid               | Not Started |
-| 4.4.4  | Load order from D1 by stripe_session_id                         | Not Started |
-| 4.4.5  | Return 404 if order not found                                   | Not Started |
-| 4.4.6  | Create `src/routes/(public)/checkout/success/+page.svelte`      | Not Started |
-| 4.4.7  | Display success icon and "Order Submitted!" heading             | Not Started |
-| 4.4.8  | Display order summary: items, quantities, total                 | Not Started |
-| 4.4.9  | Display fulfillment details: date, time, type                   | Not Started |
-| 4.4.10 | Display customer info confirmation                              | Not Started |
-| 4.4.11 | Clear cart from localStorage on page load                       | Not Started |
-| 4.4.12 | Add "Back to Home" button                                       | Not Started |
-| 4.4.13 | Write page test in `tests/integration/checkout-success.test.ts` | Not Started |
-| 4.4.14 | **Commit:** `feat: create checkout success page`                | Not Started |
+| ID     | Task                                                                                     | Status      |
+| ------ | ---------------------------------------------------------------------------------------- | ----------- |
+| 4.4.1  | Create `src/routes/(public)/checkout/success/+page.server.ts`                            | Completed   |
+| 4.4.2  | Get session_id from URL query params                                                     | Completed   |
+| 4.4.3  | Retrieve session from Stripe to verify it's valid                                        | Completed   |
+| 4.4.4  | Load order from D1 by stripe_session_id                                                  | Completed   |
+| 4.4.5  | Return 404 if order not found                                                            | Completed   |
+| 4.4.6  | Create `src/routes/(public)/checkout/success/+page.svelte`                               | Completed   |
+| 4.4.7  | Display success icon and "Order Confirmed!" heading                                      | Completed   |
+| 4.4.8  | Display order summary: items, quantities, total                                          | Completed   |
+| 4.4.9  | Display fulfillment details: date, time, type                                            | Completed   |
+| 4.4.10 | Display customer info confirmation                                                       | Completed   |
+| 4.4.11 | Clear cart from localStorage on page load                                                | Completed   |
+| 4.4.12 | Add "Back to Home" button                                                                | Completed   |
+| 4.4.13 | Write page test in `src/routes/(public)/checkout/success/page.server.spec.ts` (27 tests) | Completed   |
+| 4.4.14 | **Commit:** `feat: create checkout success page`                                         | Not Started |
 
 ### 4.5 Newsletter signup endpoint
 
