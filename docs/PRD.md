@@ -338,7 +338,7 @@ Before marking any TODO as complete:
 
 ## Phase 1: Core Layout & Components
 
-**Status:** In Progress
+**Status:** Completed
 
 ### 1.1 Site configuration
 
@@ -403,17 +403,17 @@ Before marking any TODO as complete:
 
 ### 1.5 Public layout group
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                 | Status      |
-| ----- | ---------------------------------------------------- | ----------- |
-| 1.5.1 | Create `src/routes/(public)/+layout.svelte`          | Not Started |
-| 1.5.2 | Import and render Header component                   | Not Started |
-| 1.5.3 | Add `<main>` element with slot for page content      | Not Started |
-| 1.5.4 | Import and render Footer component                   | Not Started |
-| 1.5.5 | Add min-height to main for proper footer positioning | Not Started |
-| 1.5.6 | Verify layout with placeholder page content          | Not Started |
-| 1.5.7 | **Commit:** `feat: create public pages layout group` | Not Started |
+| ID    | Task                                                 | Status    |
+| ----- | ---------------------------------------------------- | --------- |
+| 1.5.1 | Create `src/routes/(public)/+layout.svelte`          | Completed |
+| 1.5.2 | Import and render Header component                   | Completed |
+| 1.5.3 | Add `<main>` element with slot for page content      | Completed |
+| 1.5.4 | Import and render Footer component                   | Completed |
+| 1.5.5 | Add min-height to main for proper footer positioning | Completed |
+| 1.5.6 | Verify layout with placeholder page content          | Completed |
+| 1.5.7 | **Commit:** `feat: create public pages layout group` | Completed |
 
 ---
 

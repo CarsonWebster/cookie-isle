@@ -23,7 +23,7 @@ This file contains useful findings for future agents working on this project.
   - Implementation: `src/lib/server/db/index.ts` with `getDb()` and `createDb()` functions
   - Tests: `src/lib/server/db/db.spec.ts` (10 tests) - Tests cover error handling and successful DB creation
 
-### Phase 1 Status: IN PROGRESS
+### Phase 1 Status: COMPLETE
 
 - 1.1: Site Configuration COMPLETE
   - Implementation: `src/lib/config.ts` - Typed SiteConfig with all settings from hugo.toml
@@ -41,20 +41,27 @@ This file contains useful findings for future agents working on this project.
 - 1.4: Footer Component COMPLETE
   - Implementation: `src/lib/components/Footer.svelte` - Brand, nav, contact, social, copyright
   - Tests: `src/lib/components/Footer.spec.ts` (15 tests) - Config integration tests
-- 1.5: Not Started (Public layout)
+- 1.5: Public Layout Group COMPLETE
+  - Implementation: `src/routes/(public)/+layout.svelte` - Wraps pages with Header and Footer
+  - Uses Svelte 5 `$props()` for children slot
+  - Main element has `flex-1` class for proper footer positioning
+  - Homepage moved to `src/routes/(public)/+page.svelte` with placeholder content
 
 ## Key File Locations
 
-| File                               | Purpose                                               |
-| ---------------------------------- | ----------------------------------------------------- |
-| `docs/PRD.md`                      | Complete migration spec with task tracking            |
-| `src/lib/config.ts`                | Site configuration (migrated from hugo.toml)          |
-| `src/lib/components/Header.svelte` | Header with desktop/mobile nav, cart badge            |
-| `src/lib/server/db/schema.ts`      | Drizzle table definitions                             |
-| `src/lib/server/db/index.ts`       | Database helper functions (`getDb`, `createDb`)       |
-| `drizzle.config.ts`                | Drizzle Kit config (uses d1-http driver)              |
-| `wrangler.jsonc`                   | Cloudflare bindings (D1 configured, R2 commented out) |
-| `AGENTS.md`                        | Agent instructions and coding standards               |
+| File                                 | Purpose                                               |
+| ------------------------------------ | ----------------------------------------------------- |
+| `docs/PRD.md`                        | Complete migration spec with task tracking            |
+| `src/lib/config.ts`                  | Site configuration (migrated from hugo.toml)          |
+| `src/lib/components/Header.svelte`   | Header with desktop/mobile nav, cart badge            |
+| `src/lib/components/Footer.svelte`   | Footer with brand, nav, contact, social               |
+| `src/routes/(public)/+layout.svelte` | Public pages layout (Header + main + Footer)          |
+| `src/routes/(public)/+page.svelte`   | Homepage (placeholder, will add Hero in Phase 2)      |
+| `src/lib/server/db/schema.ts`        | Drizzle table definitions                             |
+| `src/lib/server/db/index.ts`         | Database helper functions (`getDb`, `createDb`)       |
+| `drizzle.config.ts`                  | Drizzle Kit config (uses d1-http driver)              |
+| `wrangler.jsonc`                     | Cloudflare bindings (D1 configured, R2 commented out) |
+| `AGENTS.md`                          | Agent instructions and coding standards               |
 
 ## Testing Notes
 
@@ -89,7 +96,8 @@ export const tableName = sqliteTable('table_name', {
 7. ~~Root layout (PRD 1.2)~~ DONE - `src/routes/+layout.svelte` with meta tags, favicon, flex container
 8. ~~Header component (PRD 1.3)~~ DONE - `src/lib/components/Header.svelte` with 13 tests
 9. ~~Footer component (PRD 1.4)~~ DONE - `src/lib/components/Footer.svelte` with 15 tests
-10. **NEXT: Public layout group (PRD 1.5)** - `src/routes/(public)/+layout.svelte` with Header and Footer
+10. ~~Public layout group (PRD 1.5)~~ DONE - `src/routes/(public)/+layout.svelte` with Header and Footer
+11. **NEXT: Hero component (PRD 2.1)** - `src/lib/components/Hero.svelte` with gradient, CTA button
 
 ## Commands Reference
 
@@ -223,3 +231,50 @@ The `src/lib/components/Footer.svelte` component implements:
 - `text-footer-heading` - Golden accent for headings (#E9B44C)
 - `text-footer-text/80` - 80% opacity for secondary text
 - `border-footer-text/20` - 20% opacity for divider line
+
+## Public Layout Group Notes
+
+The `src/routes/(public)/+layout.svelte` component:
+
+1. **Route Group:** Uses SvelteKit's `(public)` route group - parentheses mean it doesn't appear in URL
+2. **Layout Composition:** Combines Header + main + Footer for all public pages
+3. **Svelte 5 Pattern:** Uses `$props()` to get `children` for slot rendering
+4. **Flex Layout:** Main uses `flex-1` to fill available space (works with root layout's `flex flex-col min-h-screen`)
+5. **No Tests Needed:** Simple composition component - Header and Footer already have tests
+
+### Public Layout Implementation
+
+```svelte
+<script lang="ts">
+	import Header from '$lib/components/Header.svelte';
+	import Footer from '$lib/components/Footer.svelte';
+
+	let { children } = $props();
+</script>
+
+<Header />
+
+<main class="flex-1">
+	{@render children()}
+</main>
+
+<Footer />
+```
+
+### Adding New Public Pages
+
+All pages under `src/routes/(public)/` automatically get Header and Footer:
+
+```
+src/routes/(public)/
+├── +layout.svelte    # Header + main + Footer wrapper
+├── +page.svelte      # Homepage (/)
+├── menu/
+│   ├── +page.svelte  # Menu page (/menu)
+│   └── [slug]/
+│       └── +page.svelte  # Product detail (/menu/chocolate-chip)
+├── about/
+│   └── +page.svelte  # About page (/about)
+└── checkout/
+    └── +page.svelte  # Checkout (/checkout)
+```
