@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16, Phase 6.1 Complete)
+## Current Progress (as of 2026-01-16, Phase 6.2 Complete)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -231,7 +231,8 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/(public)/checkout/success/page.server.spec.ts` | 27    | Checkout success page load & helpers |
 | `src/routes/api/newsletter/server.spec.ts`                 | 54    | Newsletter API validation & helpers  |
 | `src/lib/server/auth.spec.ts`                              | 66    | Admin authentication helpers         |
-| **Total**                                                  | 926   |                                      |
+| `src/routes/admin/login/page.server.spec.ts`               | 27    | Admin login page load & actions      |
+| **Total**                                                  | 953   |                                      |
 
 ## Site Config Notes
 
@@ -2234,10 +2235,98 @@ export const actions = {
 4. **No plaintext storage:** Only session ID stored in DB, not the password
 5. **Error messages:** Generic errors don't leak security info
 
-### Next Tasks (Phase 6.2+)
+### Next Tasks (Phase 6.3+)
 
-1. Create admin login page (PRD 6.2)
+1. ~~Create admin login page (PRD 6.2)~~ DONE
 2. Create admin auth guard (PRD 6.3)
 3. Create admin layout with sidebar (PRD 6.4)
 4. Create admin logout (PRD 6.5)
 5. Create admin dashboard (PRD 6.6)
+
+## Admin Login Page Notes (Phase 6.2 - COMPLETE)
+
+The `src/routes/admin/login/` route implements admin authentication.
+
+### Key Features
+
+1. **Server Load Function (`+page.server.ts`):**
+   - Checks for existing valid session cookie on page load
+   - Redirects to `/admin` if already logged in
+   - Uses `isRedirect()` helper to re-throw redirects from try-catch blocks
+
+2. **Form Action:**
+   - Validates password is present and non-empty
+   - Verifies password against `ADMIN_PASSWORD` env var using constant-time comparison
+   - Creates session in D1 `admin_sessions` table
+   - Sets `admin_session` cookie with secure settings (httpOnly, secure, sameSite=lax, path=/admin)
+   - Redirects to `/admin` on success
+
+3. **Page Component (`+page.svelte`):**
+   - Centered card layout with logo and title
+   - Password input with validation styling
+   - Loading spinner during submission
+   - Error message display for invalid password/server errors
+   - Disabled state during submission
+   - "Back to site" link
+
+### Cookie Settings
+
+```typescript
+cookies.set('admin_session', sessionId, {
+	path: '/admin', // Only sent to admin routes
+	httpOnly: true, // Not accessible via JavaScript
+	secure: true, // HTTPS only
+	sameSite: 'lax', // CSRF protection
+	expires: expiresAt // 7 days from creation
+});
+```
+
+### Error Handling
+
+| Status | Error Message                   | Condition                           |
+| ------ | ------------------------------- | ----------------------------------- |
+| 400    | "Password is required"          | Missing or empty password           |
+| 401    | "Invalid password"              | Incorrect password                  |
+| 500    | "Failed to create session..."   | Database error                      |
+| 503    | "Server configuration error..." | Missing platform/env/ADMIN_PASSWORD |
+| 503    | "Database unavailable..."       | Missing DB binding                  |
+
+### SvelteKit Redirect Pattern
+
+SvelteKit 2.0+ uses throw-based redirects. In try-catch blocks, use `isRedirect()` to re-throw:
+
+```typescript
+import { redirect, isRedirect } from '@sveltejs/kit';
+
+try {
+	// ... some code that might throw ...
+	redirect(303, '/admin');
+} catch (e) {
+	if (isRedirect(e)) {
+		throw e; // Re-throw redirects
+	}
+	// Handle actual errors
+}
+```
+
+### Test Coverage
+
+27 tests in `src/routes/admin/login/page.server.spec.ts`:
+
+- Load function without session (3 tests)
+- Load function with valid/invalid session (3 tests)
+- Password validation (4 tests)
+- Platform/env checks (4 tests)
+- Password verification (2 tests)
+- Successful login flow (2 tests)
+- Session creation failure (1 test)
+- Cookie settings (3 tests)
+- Type exports (2 tests)
+- Edge cases (3 tests)
+
+### Test Coverage Summary (Updated)
+
+| Test File                                    | Tests | Purpose                       |
+| -------------------------------------------- | ----- | ----------------------------- |
+| `src/routes/admin/login/page.server.spec.ts` | 27    | Admin login page load/actions |
+| **Total**                                    | 953   |                               |

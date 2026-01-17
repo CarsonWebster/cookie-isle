@@ -883,21 +883,21 @@ Before marking any TODO as complete:
 
 ### 6.2 Admin login page
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                                     | Status      |
-| ------ | ------------------------------------------------------------------------ | ----------- |
-| 6.2.1  | Create `src/routes/admin/login/+page.svelte`                             | Not Started |
-| 6.2.2  | Add password input field                                                 | Not Started |
-| 6.2.3  | Add "Login" submit button                                                | Not Started |
-| 6.2.4  | Create `src/routes/admin/login/+page.server.ts` with form action         | Not Started |
-| 6.2.5  | On submit: verify password, create session, set cookie                   | Not Started |
-| 6.2.6  | Set cookie: `admin_session`, httpOnly, secure, sameSite=lax, path=/admin | Not Started |
-| 6.2.7  | Redirect to /admin on success                                            | Not Started |
-| 6.2.8  | Show error message on invalid password                                   | Not Started |
-| 6.2.9  | Style with centered card layout                                          | Not Started |
-| 6.2.10 | Write page test in `tests/integration/admin-login.test.ts`               | Not Started |
-| 6.2.11 | **Commit:** `feat: create admin login page`                              | Not Started |
+| ID     | Task                                                                     | Status    |
+| ------ | ------------------------------------------------------------------------ | --------- |
+| 6.2.1  | Create `src/routes/admin/login/+page.svelte`                             | Completed |
+| 6.2.2  | Add password input field                                                 | Completed |
+| 6.2.3  | Add "Login" submit button                                                | Completed |
+| 6.2.4  | Create `src/routes/admin/login/+page.server.ts` with form action         | Completed |
+| 6.2.5  | On submit: verify password, create session, set cookie                   | Completed |
+| 6.2.6  | Set cookie: `admin_session`, httpOnly, secure, sameSite=lax, path=/admin | Completed |
+| 6.2.7  | Redirect to /admin on success                                            | Completed |
+| 6.2.8  | Show error message on invalid password                                   | Completed |
+| 6.2.9  | Style with centered card layout                                          | Completed |
+| 6.2.10 | Write page test in `src/routes/admin/login/page.server.spec.ts`          | Completed |
+| 6.2.11 | **Commit:** `feat: create admin login page`                              | Completed |
 
 ### 6.3 Admin auth guard
 
