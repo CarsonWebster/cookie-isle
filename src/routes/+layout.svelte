@@ -3,6 +3,7 @@
 	import { config } from '$lib/config';
 	import favicon from '$lib/assets/favicon.svg';
 	import ComingSoon from '$lib/components/ComingSoon.svelte';
+	import CartToast from '$lib/components/CartToast.svelte';
 
 	let { children } = $props();
 
@@ -49,3 +50,6 @@
 		{@render children()}
 	</div>
 {/if}
+
+<!-- Global cart toast notification -->
+<CartToast />

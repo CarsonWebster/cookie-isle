@@ -576,20 +576,20 @@ Before marking any TODO as complete:
 
 ### 3.3 Cart toast notification
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                          | Status      |
-| ------ | ------------------------------------------------------------- | ----------- |
-| 3.3.1  | Create `src/lib/components/CartToast.svelte`                  | Not Started |
-| 3.3.2  | Create toast state with `$state` for visibility and message   | Not Started |
-| 3.3.3  | Export `showToast(productName)` function                      | Not Started |
-| 3.3.4  | Auto-hide toast after 3 seconds                               | Not Started |
-| 3.3.5  | Add slide-in animation from right                             | Not Started |
-| 3.3.6  | Include "View Cart" link to /checkout                         | Not Started |
-| 3.3.7  | Style with Tailwind: fixed position, dark background          | Not Started |
-| 3.3.8  | Add CartToast to root layout                                  | Not Started |
-| 3.3.9  | Write component test in `tests/unit/CartToast.test.svelte.ts` | Not Started |
-| 3.3.10 | **Commit:** `feat: create CartToast notification component`   | Not Started |
+| ID     | Task                                                           | Status    |
+| ------ | -------------------------------------------------------------- | --------- |
+| 3.3.1  | Create `src/lib/components/CartToast.svelte`                   | Completed |
+| 3.3.2  | Create toast state with `$state` for visibility and message    | Completed |
+| 3.3.3  | Export `showToast(productName)` function                       | Completed |
+| 3.3.4  | Auto-hide toast after 3 seconds                                | Completed |
+| 3.3.5  | Add slide-in animation from right                              | Completed |
+| 3.3.6  | Include "View Cart" link to /checkout                          | Completed |
+| 3.3.7  | Style with Tailwind: fixed position, dark background           | Completed |
+| 3.3.8  | Add CartToast to root layout                                   | Completed |
+| 3.3.9  | Write component test in `src/lib/components/CartToast.spec.ts` | Completed |
+| 3.3.10 | **Commit:** `feat: create CartToast notification component`    | Completed |
 
 ### 3.4 Add to cart functionality
 
