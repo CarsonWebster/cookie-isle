@@ -2421,13 +2421,14 @@ All routes under `/admin/` except `/admin/login`:
 - Multiple admin routes protection (18 tests)
 - Type exports (2 tests)
 
-### Test Coverage Summary (Updated - Phase 6.4 Complete)
+### Test Coverage Summary (Updated - Phase 6.6 Complete)
 
 | Test File                                    | Tests | Purpose                       |
 | -------------------------------------------- | ----- | ----------------------------- |
 | `src/routes/admin/login/page.server.spec.ts` | 27    | Admin login page load/actions |
 | `src/routes/admin/layout.server.spec.ts`     | 48    | Admin auth guard              |
-| **Total**                                    | 1001  |                               |
+| `src/routes/admin/page.server.spec.ts`       | 20    | Admin dashboard load function |
+| **Total**                                    | 1021  |                               |
 
 ## Admin Layout Notes (Phase 6.4 & 6.5 - COMPLETE)
 
@@ -2529,9 +2530,112 @@ A simple placeholder page was created with:
 3. **Form actions:** Native form POST for logout (no JavaScript required)
 4. **Layout composition:** Children slot for rendering nested routes
 
-### What's Not Included (Future Work)
+## Admin Dashboard Notes (Phase 6.6 - COMPLETE)
 
-- Real dashboard statistics (PRD 6.6)
+The `src/routes/admin/+page.svelte` and `+page.server.ts` implement the admin dashboard with real data.
+
+### Key Features
+
+1. **Server Load Function (`+page.server.ts`):**
+   - Queries today's orders count and revenue (paid + fulfilled only)
+   - Queries pending orders count
+   - Queries total products count
+   - Loads 5 most recent orders with full details
+   - All queries run in parallel via `Promise.all()`
+   - Graceful fallback: returns zeros if platform/DB unavailable
+   - Error handling: catches DB errors and returns empty data
+
+2. **Dashboard Page (`+page.svelte`):**
+   - 4 stat cards displaying live data:
+     - Today's Orders (count)
+     - Pending Orders (count)
+     - Today's Revenue (formatted as $X.XX)
+     - Total Products (count)
+   - Recent Orders table with:
+     - Order #, Customer Name, Total, Status badge, Date
+     - Status badges with colors (pending=yellow, paid=blue, fulfilled=green, cancelled=red)
+     - Formatted dates (e.g., "Jan 16, 3:30 PM")
+     - Empty state when no orders
+   - Quick action links (4 cards):
+     - View All Orders (/admin/orders)
+     - Manage Products (/admin/products)
+     - Fulfillment Slots (/admin/slots)
+     - Newsletter (/admin/newsletter)
+
+### Exported Helper Functions
+
+| Function                      | Purpose                               |
+| ----------------------------- | ------------------------------------- |
+| `getTodayDate(now?)`          | Get today's date in YYYY-MM-DD format |
+| `queryTodayStats(db)`         | Query today's orders and revenue      |
+| `queryPendingOrdersCount(db)` | Count orders with status='pending'    |
+| `queryTotalProductsCount(db)` | Count all products                    |
+| `queryRecentOrders(db)`       | Get 5 most recent orders, formatted   |
+| `getStatusBadgeClass(status)` | Get Tailwind classes for status badge |
+| `formatStatus(status)`        | Capitalize status string              |
+| `formatDate(dateStr)`         | Format ISO date to readable format    |
+
+### Exported Types
+
+```typescript
+interface DashboardStats {
+	todayOrdersCount: number;
+	todayRevenueCents: number;
+	todayRevenueFormatted: string;
+	pendingOrdersCount: number;
+	totalProductsCount: number;
+}
+
+interface RecentOrder {
+	id: number;
+	customerName: string | null;
+	totalCents: number | null;
+	totalFormatted: string;
+	status: string | null;
+	createdAt: string | null;
+}
+
+interface DashboardData {
+	stats: DashboardStats;
+	recentOrders: RecentOrder[];
+}
+```
+
+### Test Coverage
+
+20 tests in `src/routes/admin/page.server.spec.ts`:
+
+- getTodayDate function (3 tests)
+- queryTodayStats (3 tests)
+- queryPendingOrdersCount (2 tests)
+- queryTotalProductsCount (2 tests)
+- queryRecentOrders (3 tests)
+- load function (5 tests)
+- Type exports (3 tests)
+
+### Database Queries
+
+Today's orders query (counts only paid/fulfilled):
+
+```sql
+SELECT * FROM orders
+WHERE date(created_at) = '2026-01-16'
+  AND status IN ('paid', 'fulfilled')
+```
+
+Recent orders query:
+
+```sql
+SELECT id, customer_name, total_cents, status, created_at
+FROM orders
+ORDER BY created_at DESC
+LIMIT 5
+```
+
+### What's Not Included (Deferred)
+
+- "Cookies Needed Today" breakdown by product (PRD 6.6.3)
+- This week's revenue query (PRD 6.6.5)
 - Orders list/detail pages (PRD 6.7-6.8)
 - Products CRUD pages (PRD 6.9-6.11)
 - Fulfillment slots management (PRD 6.12)

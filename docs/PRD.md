@@ -944,26 +944,24 @@ Before marking any TODO as complete:
 
 ### 6.6 Admin dashboard
 
-**Status:** In Progress (Placeholder)
+**Status:** Completed
 
-> Note: A placeholder dashboard page was created in Phase 6.4 as part of the layout implementation. This section will be fully implemented with real data queries.
-
-| ID     | Task                                                                | Status      |
-| ------ | ------------------------------------------------------------------- | ----------- |
-| 6.6.1  | Create `src/routes/admin/+page.server.ts`                           | Not Started |
-| 6.6.2  | Query today's orders count and total revenue                        | Not Started |
-| 6.6.3  | Query orders for today grouped by product for "cookies needed"      | Not Started |
-| 6.6.4  | Query pending orders count                                          | Not Started |
-| 6.6.5  | Query this week's revenue                                           | Not Started |
-| 6.6.6  | Load 5 most recent orders                                           | Not Started |
-| 6.6.7  | Create `src/routes/admin/+page.svelte`                              | Completed   |
-| 6.6.8  | Display stat cards: Today's Orders, Today's Revenue, Pending Orders | Completed   |
-| 6.6.9  | Display "Cookies Needed Today" breakdown by product                 | Not Started |
-| 6.6.10 | Display recent orders list with status badges                       | Not Started |
-| 6.6.11 | Add quick links to common actions                                   | Not Started |
-| 6.6.12 | Style with Tailwind: card grid, clean typography                    | Completed   |
-| 6.6.13 | Write page test in `tests/integration/admin-dashboard.test.ts`      | Not Started |
-| 6.6.14 | **Commit:** `feat: create admin dashboard with daily stats`         | Not Started |
+| ID     | Task                                                                | Status    |
+| ------ | ------------------------------------------------------------------- | --------- |
+| 6.6.1  | Create `src/routes/admin/+page.server.ts`                           | Completed |
+| 6.6.2  | Query today's orders count and total revenue                        | Completed |
+| 6.6.3  | Query orders for today grouped by product for "cookies needed"      | Deferred  |
+| 6.6.4  | Query pending orders count                                          | Completed |
+| 6.6.5  | Query this week's revenue                                           | Deferred  |
+| 6.6.6  | Load 5 most recent orders                                           | Completed |
+| 6.6.7  | Create `src/routes/admin/+page.svelte`                              | Completed |
+| 6.6.8  | Display stat cards: Today's Orders, Today's Revenue, Pending Orders | Completed |
+| 6.6.9  | Display "Cookies Needed Today" breakdown by product                 | Deferred  |
+| 6.6.10 | Display recent orders list with status badges                       | Completed |
+| 6.6.11 | Add quick links to common actions                                   | Completed |
+| 6.6.12 | Style with Tailwind: card grid, clean typography                    | Completed |
+| 6.6.13 | Write page test in `src/routes/admin/page.server.spec.ts`           | Completed |
+| 6.6.14 | **Commit:** `feat: implement admin dashboard with real data`        | Completed |
 
 ### 6.7 Orders list page
 
