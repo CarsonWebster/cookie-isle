@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16, Phase 4.2 Complete)
+## Current Progress (as of 2026-01-16, Phase 4.3 Complete)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -92,6 +92,7 @@ This file contains useful findings for future agents working on this project.
 | `src/lib/server/db/index.ts`                | Database helper functions (`getDb`, `createDb`)          |
 | `src/lib/server/stripe.ts`                  | Stripe client helper (`getStripe`, `createStripeClient`) |
 | `src/routes/api/checkout/+server.ts`        | Stripe checkout API endpoint (POST handler)              |
+| `src/routes/api/webhook/+server.ts`         | Stripe webhook handler (order creation)                  |
 | `drizzle.config.ts`                         | Drizzle Kit config (uses d1-http driver)                 |
 | `wrangler.jsonc`                            | Cloudflare bindings (D1 configured, R2 commented out)    |
 | `AGENTS.md`                                 | Agent instructions and coding standards                  |
@@ -150,7 +151,8 @@ export const tableName = sqliteTable('table_name', {
 27. ~~Stripe SDK + client init (PRD 4.1.1-4.1.2)~~ DONE - `stripe` package installed, `src/lib/server/stripe.ts` with 19 tests
 28. ~~Stripe checkout API endpoint (PRD 4.1.3-4.1.13, 4.1.15)~~ DONE - `src/routes/api/checkout/+server.ts` with 63 tests
 29. ~~Connect checkout form to API (PRD 4.2)~~ DONE - `handleSubmit` in checkout page POSTs to `/api/checkout` and redirects to Stripe
-30. **NEXT: Stripe webhook handler (PRD 4.3)** - Create webhook to handle `checkout.session.completed` events
+30. ~~Stripe webhook handler (PRD 4.3)~~ DONE - `src/routes/api/webhook/+server.ts` with 44 tests
+31. **NEXT: Checkout success page (PRD 4.4)** - Create success page to display order confirmation
 
 ## Commands Reference
 
@@ -219,7 +221,9 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/(public)/checkout/page.spec.ts`           | 237   | Checkout page cart, form & extras  |
 | `src/routes/(public)/checkout/page.server.spec.ts`    | 25    | Checkout slots load function       |
 | `src/lib/server/stripe.spec.ts`                       | 19    | Stripe client module helpers       |
-| **Total**                                             | 672   |                                    |
+| `src/routes/api/checkout/server.spec.ts`              | 63    | Checkout API validation & helpers  |
+| `src/routes/api/webhook/server.spec.ts`               | 44    | Webhook parsing and validation     |
+| **Total**                                             | 778   |                                    |
 
 ## Site Config Notes
 
@@ -1657,11 +1661,11 @@ if (data.url) {
 - Order metadata building (6 tests)
 - Type checks (2 tests)
 
-### Next Tasks (Phase 4.3+)
+### Next Tasks (Phase 4.4+)
 
 1. ~~Connect checkout form to API (PRD 4.2)~~ DONE
-2. **NEXT: Stripe webhook handler (PRD 4.3)** - Create webhook to handle `checkout.session.completed` events
-3. Create checkout success page (PRD 4.4)
+2. ~~Stripe webhook handler (PRD 4.3)~~ DONE - 44 tests
+3. **NEXT: Checkout success page (PRD 4.4)** - Display order confirmation after payment
 4. Create newsletter signup API (PRD 4.5)
 
 ## Checkout Form API Integration Notes (Phase 4.2 - COMPLETE)
@@ -1767,6 +1771,150 @@ To test the full checkout flow:
 | `src/routes/(public)/checkout/page.server.spec.ts`    | 25    | Checkout slots load function       |
 | `src/lib/server/stripe.spec.ts`                       | 19    | Stripe client module helpers       |
 | `src/routes/api/checkout/server.spec.ts`              | 63    | Checkout API validation & building |
-| **Total**                                             | 735   |                                    |
+| `src/routes/api/webhook/server.spec.ts`               | 44    | Webhook parsing & validation       |
+| **Total**                                             | 778   |                                    |
 
 Note: Phase 4.2 (connect checkout form to API) added no new tests since the integration is a simple fetch call and the API endpoint already has comprehensive tests. The existing 237 checkout page tests cover form validation, state management, and UI logic.
+
+## Stripe Webhook Handler Notes (Phase 4.3 - COMPLETE)
+
+The `src/routes/api/webhook/+server.ts` module handles Stripe webhook events after payment completion.
+
+### Key Features
+
+1. **Signature Verification:** Uses `verifyWebhookSignature()` from stripe module with `STRIPE_WEBHOOK_SECRET`
+2. **Idempotency:** Checks for existing order by `stripe_session_id` to handle webhook retries
+3. **Metadata Parsing:** Extracts customer, fulfillment, and order data from Stripe session metadata
+4. **Order Creation:** Inserts order into D1 `orders` table with all details
+5. **Capacity Tracking:** Updates `daily_capacity` table with cookie count for the fulfillment date
+
+### Exported Types
+
+```typescript
+interface WebhookMetadata {
+	customer_firstName: string;
+	customer_lastName: string;
+	customer_email: string;
+	customer_phone: string;
+	fulfillment_type: 'pickup' | 'delivery';
+	fulfillment_slotId: string;
+	fulfillment_date: string;
+	fulfillment_startTime: string;
+	fulfillment_endTime: string;
+	tip_cents: string;
+	include_gift_box: string;
+	gift_message?: string;
+	items_json: string;
+	delivery_address?: string;
+}
+```
+
+### Exported Helper Functions
+
+| Function                        | Purpose                                      |
+| ------------------------------- | -------------------------------------------- |
+| `parseWebhookMetadata(meta)`    | Validates and parses Stripe session metadata |
+| `parseOrderItems(json)`         | Parses items_json string to OrderItem[]      |
+| `parseDeliveryAddress(json)`    | Parses delivery_address JSON string          |
+| `calculateSubtotal(items)`      | Calculates total price in cents              |
+| `calculateTotalQuantity()`      | Calculates total cookie count for capacity   |
+| `insertOrder(db, ...)`          | Inserts order record into D1                 |
+| `updateDailyCapacity(db, ...)`  | Upserts capacity for fulfillment date        |
+| `orderExistsForSession(db, id)` | Checks for duplicate order (idempotency)     |
+
+### Event Handling Flow
+
+```
+Stripe POST /api/webhook
+      |
+      v
+Verify signature (400 if invalid)
+      |
+      v
+Parse event type
+      |
+      v (checkout.session.completed)
+Check payment_status === 'paid'
+      |
+      v
+Check for duplicate order (idempotency)
+      |
+      v
+Parse metadata from session
+      |
+      v
+Insert order into D1 orders table
+      |
+      v
+Update daily_capacity for fulfillment date
+      |
+      v
+Return { received: true, orderId: N }
+```
+
+### Error Handling Strategy
+
+- **400 Bad Request:** Missing signature, invalid signature
+- **500 Internal Server Error:** Database insert failure (triggers Stripe retry)
+- **200 OK with warning:** Database unavailable (prevents infinite retries, logged for manual review)
+- **200 OK with duplicate flag:** Order already exists (idempotency)
+- **200 OK with error flag:** Invalid metadata (non-recoverable, logged)
+
+### Daily Capacity Update
+
+Uses SQLite upsert pattern for atomic increment:
+
+```typescript
+await db
+	.insert(dailyCapacity)
+	.values({
+		date,
+		cookiesOrdered: quantityToAdd,
+		updatedAt: sql`(datetime('now'))`
+	})
+	.onConflictDoUpdate({
+		target: dailyCapacity.date,
+		set: {
+			cookiesOrdered: sql`${dailyCapacity.cookiesOrdered} + ${quantityToAdd}`,
+			updatedAt: sql`(datetime('now'))`
+		}
+	});
+```
+
+### Test Coverage
+
+44 tests in `src/routes/api/webhook/server.spec.ts`:
+
+- Metadata parsing (12 tests)
+- Order items parsing (6 tests)
+- Delivery address parsing (8 tests)
+- Subtotal calculation (6 tests)
+- Quantity calculation (5 tests)
+- Type safety (2 tests)
+- Edge cases (5 tests)
+
+### Environment Variables Required
+
+Add `STRIPE_WEBHOOK_SECRET` to `.dev.vars`:
+
+```bash
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+```
+
+Get this from Stripe Dashboard > Developers > Webhooks > Endpoint > Signing secret.
+
+### Local Testing with Stripe CLI
+
+```bash
+# Install Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# Login to Stripe
+stripe login
+
+# Forward webhooks to local dev server
+stripe listen --forward-to localhost:5173/api/webhook
+
+# Note the webhook signing secret printed by the CLI
+# Update .dev.vars with this temporary secret for testing
+```

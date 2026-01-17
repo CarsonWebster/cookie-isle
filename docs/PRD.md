@@ -743,22 +743,22 @@ Before marking any TODO as complete:
 
 ### 4.3 Stripe webhook endpoint
 
-**Status:** Not Started
+**Status:** Completed
 
 | ID     | Task                                                                                | Status      |
 | ------ | ----------------------------------------------------------------------------------- | ----------- |
-| 4.3.1  | Create `src/routes/api/webhook/+server.ts` POST handler                             | Not Started |
-| 4.3.2  | Get raw body from request for signature verification                                | Not Started |
-| 4.3.3  | Verify Stripe webhook signature using STRIPE_WEBHOOK_SECRET                         | Not Started |
-| 4.3.4  | Return 400 if signature verification fails                                          | Not Started |
-| 4.3.5  | Handle `checkout.session.completed` event type                                      | Not Started |
-| 4.3.6  | Extract order data from session metadata                                            | Not Started |
-| 4.3.7  | Parse line items from session                                                       | Not Started |
-| 4.3.8  | Insert order record into D1 `orders` table                                          | Not Started |
-| 4.3.9  | Update `dailyCapacity` table: increment cookies_ordered for date                    | Not Started |
-| 4.3.10 | Return 200 OK on successful processing                                              | Not Started |
-| 4.3.11 | Log errors but still return 200 to prevent Stripe retries on non-recoverable errors | Not Started |
-| 4.3.12 | Write unit tests for webhook processing in `tests/unit/webhook.test.ts`             | Not Started |
+| 4.3.1  | Create `src/routes/api/webhook/+server.ts` POST handler                             | Completed   |
+| 4.3.2  | Get raw body from request for signature verification                                | Completed   |
+| 4.3.3  | Verify Stripe webhook signature using STRIPE_WEBHOOK_SECRET                         | Completed   |
+| 4.3.4  | Return 400 if signature verification fails                                          | Completed   |
+| 4.3.5  | Handle `checkout.session.completed` event type                                      | Completed   |
+| 4.3.6  | Extract order data from session metadata                                            | Completed   |
+| 4.3.7  | Parse line items from session                                                       | Completed   |
+| 4.3.8  | Insert order record into D1 `orders` table                                          | Completed   |
+| 4.3.9  | Update `dailyCapacity` table: increment cookies_ordered for date                    | Completed   |
+| 4.3.10 | Return 200 OK on successful processing                                              | Completed   |
+| 4.3.11 | Log errors but still return 200 to prevent Stripe retries on non-recoverable errors | Completed   |
+| 4.3.12 | Write unit tests for webhook processing in `src/routes/api/webhook/server.spec.ts`  | Completed   |
 | 4.3.13 | **Commit:** `feat: create Stripe webhook handler`                                   | Not Started |
 
 ### 4.4 Checkout success page
