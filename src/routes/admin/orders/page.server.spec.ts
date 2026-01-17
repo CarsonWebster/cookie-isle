@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
-	getTodayDate,
-	formatItemsSummary,
-	formatDateTime,
-	queryOrders,
+	_getTodayDate as getTodayDate,
+	_formatItemsSummary as formatItemsSummary,
+	_formatDateTime as formatDateTime,
+	_queryOrders as queryOrders,
 	load,
 	type AdminOrder,
 	type OrdersPageData

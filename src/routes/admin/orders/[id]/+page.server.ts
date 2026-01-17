@@ -2,6 +2,7 @@ import { error, fail } from '@sveltejs/kit';
 import { getDb } from '$lib/server/db';
 import { orders } from '$lib/server/db/schema';
 import { formatPrice } from '$lib/config';
+import { formatDateTime, formatFulfillmentDate } from '$lib/format';
 import { eq } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import type { OrderItem, DeliveryAddress } from '$lib/server/db/schema';
@@ -38,89 +39,10 @@ export interface OrderDetail {
 }
 
 /**
- * Format ISO datetime string to readable format
- * Example: "Jan 16, 2026 at 3:30 PM"
- */
-export function formatDateTime(isoString: string | null): string {
-	if (!isoString) return 'N/A';
-
-	try {
-		const date = new Date(isoString);
-		// Check if date is valid
-		if (isNaN(date.getTime())) {
-			return 'Invalid Date';
-		}
-		return date.toLocaleDateString('en-US', {
-			month: 'short',
-			day: 'numeric',
-			year: 'numeric',
-			hour: 'numeric',
-			minute: '2-digit'
-		});
-	} catch {
-		return 'Invalid Date';
-	}
-}
-
-/**
- * Format date string (YYYY-MM-DD) to readable format
- * Example: "Friday, Jan 16, 2026"
- */
-export function formatFulfillmentDate(dateString: string | null): string {
-	if (!dateString) return 'N/A';
-
-	try {
-		const date = new Date(dateString + 'T00:00:00');
-		// Check if date is valid
-		if (isNaN(date.getTime())) {
-			return dateString;
-		}
-		return date.toLocaleDateString('en-US', {
-			weekday: 'long',
-			month: 'short',
-			day: 'numeric',
-			year: 'numeric'
-		});
-	} catch {
-		return dateString;
-	}
-}
-
-/**
- * Format time string (HH:MM) to readable format
- * Example: "3:30 PM"
- */
-export function formatTime(timeString: string | null): string {
-	if (!timeString) return '';
-
-	try {
-		const parts = timeString.split(':');
-		if (parts.length !== 2) {
-			return timeString;
-		}
-
-		const hours = parseInt(parts[0], 10);
-		const minutes = parseInt(parts[1], 10);
-
-		// Check if valid time values
-		if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-			return timeString;
-		}
-
-		const date = new Date(2000, 0, 1, hours, minutes);
-		return date.toLocaleTimeString('en-US', {
-			hour: 'numeric',
-			minute: '2-digit'
-		});
-	} catch {
-		return timeString;
-	}
-}
-
-/**
  * Query order by ID from database
+ * Prefixed with _ to allow export from +page.server.ts for testing
  */
-export async function queryOrderById(
+export async function _queryOrderById(
 	db: ReturnType<typeof getDb>,
 	id: number
 ): Promise<OrderDetail | null> {
@@ -161,8 +83,9 @@ export async function queryOrderById(
 
 /**
  * Update order status to fulfilled
+ * Prefixed with _ to allow export from +page.server.ts for testing
  */
-export async function updateOrderStatus(
+export async function _updateOrderStatus(
 	db: ReturnType<typeof getDb>,
 	id: number,
 	status: string
@@ -190,7 +113,7 @@ export const load: PageServerLoad = async ({ platform, params }) => {
 
 	try {
 		const db = getDb(platform);
-		const order = await queryOrderById(db, orderId);
+		const order = await _queryOrderById(db, orderId);
 
 		if (!order) {
 			throw error(404, 'Order not found');
@@ -225,7 +148,7 @@ export const actions: Actions = {
 
 		try {
 			const db = getDb(platform);
-			const success = await updateOrderStatus(db, orderId, 'fulfilled');
+			const success = await _updateOrderStatus(db, orderId, 'fulfilled');
 
 			if (!success) {
 				return fail(500, { error: 'Failed to update order status' });

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
-	queryProducts,
-	toggleProductActive,
+	_queryProducts as queryProducts,
+	_toggleProductActive as toggleProductActive,
 	load,
 	actions,
 	type AdminProduct,

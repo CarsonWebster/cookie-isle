@@ -1,11 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
-	formatDateTime,
-	formatFulfillmentDate,
-	formatTime,
-	queryOrderById,
-	updateOrderStatus
+	_queryOrderById as queryOrderById,
+	_updateOrderStatus as updateOrderStatus
 } from './+page.server';
+import { formatDateTime, formatFulfillmentDate, formatTime } from '$lib/format';
 import type { OrderItem, DeliveryAddress } from '$lib/server/db/schema';
 
 // Mock the db module
@@ -37,22 +35,17 @@ describe('Order Detail Page - Helper Functions', () => {
 	describe('formatFulfillmentDate', () => {
 		it('should format YYYY-MM-DD to readable format with weekday', () => {
 			const result = formatFulfillmentDate('2026-01-16');
-			expect(result).toMatch(/Jan 16, 2026/);
+			expect(result).toMatch(/January 16, 2026/);
 			expect(result).toMatch(/day/i); // Has weekday
 		});
 
-		it('should return "N/A" for null input', () => {
-			expect(formatFulfillmentDate(null)).toBe('N/A');
-		});
-
-		it('should return original string for invalid date format', () => {
-			const input = 'not-a-date';
-			expect(formatFulfillmentDate(input)).toBe(input);
+		it('should return empty string for null input', () => {
+			expect(formatFulfillmentDate(null)).toBe('');
 		});
 
 		it('should handle dates at different years', () => {
 			const result = formatFulfillmentDate('2025-12-25');
-			expect(result).toMatch(/Dec 25, 2025/);
+			expect(result).toMatch(/December 25, 2025/);
 		});
 	});
 
@@ -132,7 +125,7 @@ describe('Order Detail Page - Database Functions', () => {
 			expect(result?.taxFormatted).toBe('$0.54');
 			expect(result?.totalFormatted).toBe('$8.54');
 			expect(result?.createdAtFormatted).toMatch(/Jan 16, 2026/);
-			expect(result?.fulfillmentDateFormatted).toMatch(/Jan 17, 2026/);
+			expect(result?.fulfillmentDateFormatted).toMatch(/January 17, 2026/);
 		});
 
 		it('should return null if order not found', async () => {

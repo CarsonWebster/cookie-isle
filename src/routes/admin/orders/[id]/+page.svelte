@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { formatPrice } from '$lib/config';
-	import { formatTime } from './+page.server';
+	import { formatTime } from '$lib/format';
 	import type { PageData, ActionData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();

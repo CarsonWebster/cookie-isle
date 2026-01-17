@@ -17,31 +17,10 @@ export interface NewsletterPageData {
 }
 
 /**
- * Format ISO date string to readable format
- * Example: "2026-01-16T10:30:00.000Z" -> "Jan 16, 2026, 10:30 AM"
- */
-export function formatSubscribedDate(dateStr: string | null): string {
-	if (!dateStr) return 'Unknown';
-
-	try {
-		const date = new Date(dateStr);
-		return date.toLocaleDateString('en-US', {
-			month: 'short',
-			day: 'numeric',
-			year: 'numeric',
-			hour: 'numeric',
-			minute: '2-digit',
-			hour12: true
-		});
-	} catch {
-		return 'Invalid Date';
-	}
-}
-
-/**
  * Generate CSV content from subscribers array
+ * Prefixed with _ to allow export from +page.server.ts for testing
  */
-export function generateCSV(subscribers: NewsletterSubscriber[]): string {
+export function _generateCSV(subscribers: NewsletterSubscriber[]): string {
 	// CSV header
 	const header = 'Email,Source,Subscribed Date\n';
 
@@ -124,7 +103,7 @@ export const actions: Actions = {
 				.orderBy(desc(newsletter.subscribedAt));
 
 			// Generate CSV
-			const csv = generateCSV(subscribers);
+			const csv = _generateCSV(subscribers);
 
 			// Return CSV response with proper headers
 			return new Response(csv, {

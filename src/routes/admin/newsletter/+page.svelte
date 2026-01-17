@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { formatSubscribedDate } from './+page.server';
+	import { formatSubscribedDate } from '$lib/format';
 
 	let { data } = $props();
 

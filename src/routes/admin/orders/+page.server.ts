@@ -24,16 +24,18 @@ export interface AdminOrder {
 
 /**
  * Get today's date in YYYY-MM-DD format
+ * Prefixed with _ to allow export from +page.server.ts for testing
  */
-export function getTodayDate(now: Date = new Date()): string {
+export function _getTodayDate(now: Date = new Date()): string {
 	return now.toISOString().split('T')[0];
 }
 
 /**
  * Format order items into a short summary string
  * Example: "2x Chocolate Chip, 1x Brownie" or "3 items"
+ * Prefixed with _ to allow export from +page.server.ts for testing
  */
-export function formatItemsSummary(items: OrderItem[]): string {
+export function _formatItemsSummary(items: OrderItem[]): string {
 	if (!items || items.length === 0) {
 		return 'No items';
 	}
@@ -51,8 +53,9 @@ export function formatItemsSummary(items: OrderItem[]): string {
 /**
  * Format ISO datetime string to readable format
  * Example: "Jan 16, 3:30 PM"
+ * Prefixed with _ to allow export from +page.server.ts for testing
  */
-export function formatDateTime(isoString: string | null): string {
+export function _formatDateTime(isoString: string | null): string {
 	if (!isoString) return 'N/A';
 
 	try {
@@ -74,8 +77,9 @@ export function formatDateTime(isoString: string | null): string {
 
 /**
  * Query orders from database with optional filters
+ * Prefixed with _ to allow export from +page.server.ts for testing
  */
-export async function queryOrders(
+export async function _queryOrders(
 	db: ReturnType<typeof getDb>,
 	dateFilter?: string,
 	statusFilter?: string
@@ -105,14 +109,14 @@ export async function queryOrders(
 		id: order.id,
 		customerName: order.customerName,
 		customerEmail: order.customerEmail,
-		itemsSummary: formatItemsSummary(order.items),
+		itemsSummary: _formatItemsSummary(order.items),
 		totalCents: order.totalCents,
 		totalFormatted: formatPrice(order.totalCents || 0),
 		status: order.status,
 		fulfillmentDate: order.fulfillmentDate,
 		fulfillmentType: order.fulfillmentType,
 		createdAt: order.createdAt,
-		createdAtFormatted: formatDateTime(order.createdAt)
+		createdAtFormatted: _formatDateTime(order.createdAt)
 	}));
 }
 
@@ -136,7 +140,7 @@ export const load: PageServerLoad = async ({ platform, url }): Promise<OrdersPag
 			dateFilter,
 			statusFilter,
 			availableDates: [],
-			todayDate: getTodayDate()
+			todayDate: _getTodayDate()
 		};
 	}
 
@@ -144,7 +148,7 @@ export const load: PageServerLoad = async ({ platform, url }): Promise<OrdersPag
 		const db = getDb(platform);
 
 		// Query orders
-		const ordersList = await queryOrders(db, dateFilter, statusFilter);
+		const ordersList = await _queryOrders(db, dateFilter, statusFilter);
 
 		// Get distinct fulfillment dates for date filter dropdown
 		const datesResult = await db
@@ -163,7 +167,7 @@ export const load: PageServerLoad = async ({ platform, url }): Promise<OrdersPag
 			dateFilter,
 			statusFilter,
 			availableDates,
-			todayDate: getTodayDate()
+			todayDate: _getTodayDate()
 		};
 	} catch (error) {
 		console.error('Failed to load orders:', error);
@@ -172,7 +176,7 @@ export const load: PageServerLoad = async ({ platform, url }): Promise<OrdersPag
 			dateFilter,
 			statusFilter,
 			availableDates: [],
-			todayDate: getTodayDate()
+			todayDate: _getTodayDate()
 		};
 	}
 };

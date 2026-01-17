@@ -24,8 +24,9 @@ export interface AdminProduct {
 
 /**
  * Query all products from database ordered by sort_order
+ * Prefixed with _ to allow export from +page.server.ts for testing
  */
-export async function queryProducts(db: ReturnType<typeof getDb>): Promise<AdminProduct[]> {
+export async function _queryProducts(db: ReturnType<typeof getDb>): Promise<AdminProduct[]> {
 	const result = await db
 		.select()
 		.from(products)
@@ -50,8 +51,9 @@ export async function queryProducts(db: ReturnType<typeof getDb>): Promise<Admin
 
 /**
  * Toggle product active status
+ * Prefixed with _ to allow export from +page.server.ts for testing
  */
-export async function toggleProductActive(
+export async function _toggleProductActive(
 	db: ReturnType<typeof getDb>,
 	productId: number,
 	active: boolean
@@ -78,7 +80,7 @@ export const load: PageServerLoad = async ({ platform }): Promise<ProductsPageDa
 
 	try {
 		const db = getDb(platform);
-		const productsList = await queryProducts(db);
+		const productsList = await _queryProducts(db);
 
 		return {
 			products: productsList
@@ -110,7 +112,7 @@ export const actions: Actions = {
 			}
 
 			const db = getDb(platform);
-			const success = await toggleProductActive(db, productId, active);
+			const success = await _toggleProductActive(db, productId, active);
 
 			if (!success) {
 				return fail(500, { error: 'Failed to update product status' });

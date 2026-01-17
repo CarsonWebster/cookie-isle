@@ -1,11 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-	load,
-	actions,
-	formatSubscribedDate,
-	generateCSV,
-	type NewsletterSubscriber
-} from './+page.server';
+import { load, actions, _generateCSV, type NewsletterSubscriber } from './+page.server';
+import { formatSubscribedDate } from '$lib/format';
 import type { D1Database } from '@cloudflare/workers-types';
 
 // Mock getDb
@@ -38,7 +33,7 @@ describe('Newsletter Page Server', () => {
 		});
 	});
 
-	describe('generateCSV', () => {
+	describe('_generateCSV', () => {
 		it('should generate CSV with header and rows', () => {
 			const subscribers: NewsletterSubscriber[] = [
 				{
@@ -55,7 +50,7 @@ describe('Newsletter Page Server', () => {
 				}
 			];
 
-			const csv = generateCSV(subscribers);
+			const csv = _generateCSV(subscribers);
 
 			expect(csv).toContain('Email,Source,Subscribed Date');
 			expect(csv).toContain('"test@example.com","website","2026-01-16T10:00:00.000Z"');
@@ -63,7 +58,7 @@ describe('Newsletter Page Server', () => {
 		});
 
 		it('should handle empty subscribers array', () => {
-			const csv = generateCSV([]);
+			const csv = _generateCSV([]);
 			expect(csv).toBe('Email,Source,Subscribed Date\n');
 		});
 
@@ -77,7 +72,7 @@ describe('Newsletter Page Server', () => {
 				}
 			];
 
-			const csv = generateCSV(subscribers);
+			const csv = _generateCSV(subscribers);
 			expect(csv).toContain('test""quoted""@example.com');
 		});
 
@@ -91,7 +86,7 @@ describe('Newsletter Page Server', () => {
 				}
 			];
 
-			const csv = generateCSV(subscribers);
+			const csv = _generateCSV(subscribers);
 			expect(csv).toContain('"test@example.com","website",');
 		});
 
@@ -105,7 +100,7 @@ describe('Newsletter Page Server', () => {
 				}
 			];
 
-			const csv = generateCSV(subscribers);
+			const csv = _generateCSV(subscribers);
 			expect(csv).toContain('"test@example.com","website",""');
 		});
 	});
