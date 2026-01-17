@@ -338,34 +338,34 @@ Before marking any TODO as complete:
 
 ## Phase 1: Core Layout & Components
 
-**Status:** Not Started
+**Status:** In Progress
 
 ### 1.1 Site configuration
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                                                 | Status      |
-| ----- | ------------------------------------------------------------------------------------ | ----------- |
-| 1.1.1 | Create `src/lib/config.ts` with typed site configuration object                      | Not Started |
-| 1.1.2 | Migrate settings from `_legacy/hugo.toml`: site title, tagline, description          | Not Started |
-| 1.1.3 | Add contact info: email, phone, instagram, facebook URLs                             | Not Started |
-| 1.1.4 | Add checkout settings: maxOrderQuantity (50), taxRate (0.0775), tipPercentages, etc. | Not Started |
-| 1.1.5 | Add delivery settings: allowedDeliveryZips, pickupEnabled, deliveryEnabled           | Not Started |
-| 1.1.6 | Add feature flags: comingSoonMode, newsletterEnabled, giftBoxEnabled                 | Not Started |
-| 1.1.7 | Write unit tests for config validation in `tests/unit/config.test.ts`                | Not Started |
-| 1.1.8 | **Commit:** `feat: add site configuration module`                                    | Not Started |
+| ID    | Task                                                                                 | Status    |
+| ----- | ------------------------------------------------------------------------------------ | --------- |
+| 1.1.1 | Create `src/lib/config.ts` with typed site configuration object                      | Completed |
+| 1.1.2 | Migrate settings from `_legacy/hugo.toml`: site title, tagline, description          | Completed |
+| 1.1.3 | Add contact info: email, phone, instagram, facebook URLs                             | Completed |
+| 1.1.4 | Add checkout settings: maxOrderQuantity (50), taxRate (0.0775), tipPercentages, etc. | Completed |
+| 1.1.5 | Add delivery settings: allowedDeliveryZips, pickupEnabled, deliveryEnabled           | Completed |
+| 1.1.6 | Add feature flags: comingSoonMode, newsletterEnabled, giftBoxEnabled                 | Completed |
+| 1.1.7 | Write unit tests for config validation in `src/lib/config.spec.ts`                   | Completed |
+| 1.1.8 | **Commit:** `feat: add site configuration module`                                    | Completed |
 
 ### 1.2 Root layout
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                                  | Status      |
-| ----- | --------------------------------------------------------------------- | ----------- |
-| 1.2.1 | Update `src/routes/+layout.svelte` with HTML structure (main wrapper) | Not Started |
-| 1.2.2 | Add `<svelte:head>` with meta tags (title, description, og:image)     | Not Started |
-| 1.2.3 | Add favicon links from `static/favicon/`                              | Not Started |
-| 1.2.4 | Verify layout renders with `bun run dev`                              | Not Started |
-| 1.2.5 | **Commit:** `feat: create root layout with meta tags`                 | Not Started |
+| ID    | Task                                                                  | Status    |
+| ----- | --------------------------------------------------------------------- | --------- |
+| 1.2.1 | Update `src/routes/+layout.svelte` with HTML structure (main wrapper) | Completed |
+| 1.2.2 | Add `<svelte:head>` with meta tags (title, description, og:image)     | Completed |
+| 1.2.3 | Add favicon links from `src/lib/assets/favicon.svg`                   | Completed |
+| 1.2.4 | Verify layout renders with `bun run dev`                              | Completed |
+| 1.2.5 | **Commit:** `feat: create root layout with meta tags`                 | Completed |
 
 ### 1.3 Header component
 

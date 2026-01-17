@@ -23,11 +23,25 @@ This file contains useful findings for future agents working on this project.
   - Implementation: `src/lib/server/db/index.ts` with `getDb()` and `createDb()` functions
   - Tests: `src/lib/server/db/db.spec.ts` (10 tests) - Tests cover error handling and successful DB creation
 
+### Phase 1 Status: IN PROGRESS
+
+- 1.1: Site Configuration COMPLETE
+  - Implementation: `src/lib/config.ts` - Typed SiteConfig with all settings from hugo.toml
+  - Tests: `src/lib/config.spec.ts` (35 tests) - Comprehensive validation of all config sections
+  - Helper functions: `formatMaxOrderMessage()`, `isZipAllowedForDelivery()`, `getSortedMenu()`, `formatPrice()`, `calculateTax()`, `calculateTip()`
+- 1.2: Root Layout COMPLETE
+  - Implementation: `src/routes/+layout.svelte` - HTML structure with flex column, min-h-screen, bg-tertiary
+  - Meta tags: title, description, og:image, twitter cards, theme-color from config
+  - Favicon: SVG favicon from `src/lib/assets/favicon.svg`
+  - Uses `$lib/config` for dynamic values (title, description, baseUrl, colors)
+- 1.3-1.5: Not Started (Header, Footer, Public layout)
+
 ## Key File Locations
 
 | File                          | Purpose                                               |
 | ----------------------------- | ----------------------------------------------------- |
 | `docs/PRD.md`                 | Complete migration spec with task tracking            |
+| `src/lib/config.ts`           | Site configuration (migrated from hugo.toml)          |
 | `src/lib/server/db/schema.ts` | Drizzle table definitions                             |
 | `src/lib/server/db/index.ts`  | Database helper functions (`getDb`, `createDb`)       |
 | `drizzle.config.ts`           | Drizzle Kit config (uses d1-http driver)              |
@@ -63,12 +77,11 @@ export const tableName = sqliteTable('table_name', {
 3. ~~Write schema type tests (PRD 0.7.10)~~ DONE - 23 tests in `src/lib/server/db/schema.spec.ts`
 4. ~~Write database helper tests (PRD 0.8.4)~~ DONE - 10 tests in `src/lib/server/db/db.spec.ts`
 5. Push migrations to D1 (PRD 0.7.9) - Requires CF credentials in env vars (blocked on CF setup)
-6. **START Phase 1: Core Layout & Components**
-   - 1.1 Site configuration (`src/lib/config.ts`) - migrate settings from `_legacy/hugo.toml`
-   - 1.2 Root layout - HTML structure and meta tags
-   - 1.3 Header component - with mobile nav
-   - 1.4 Footer component
-   - 1.5 Public layout group
+6. ~~Site configuration (PRD 1.1)~~ DONE - `src/lib/config.ts` with 35 tests
+7. ~~Root layout (PRD 1.2)~~ DONE - `src/routes/+layout.svelte` with meta tags, favicon, flex container
+8. **NEXT: Header component (PRD 1.3)** - with mobile nav, cart badge, social icons
+9. Footer component (PRD 1.4) - brand section, contact, social icons
+10. Public layout group (PRD 1.5) - `src/routes/(public)/+layout.svelte`
 
 ## Commands Reference
 
@@ -96,12 +109,44 @@ bun run db:push      # Push schema to D1
 11. **Mocking drizzle-orm/d1:** When testing database helpers, mock the `drizzle-orm/d1` module with `vi.mock()`. See `db.spec.ts` for the pattern.
 12. **D1Database mocking:** Create mock D1Database with `prepare`, `dump`, `batch`, `exec` methods. Cast as `unknown as D1Database` to satisfy TypeScript.
 13. **Phase 0 complete:** All coding tasks in Phase 0 are done. Only blocked tasks are CF deployment (0.6.3 R2, 0.7.9 push to D1) which require manual CF Dashboard setup.
+14. **Favicon location:** The favicon is at `src/lib/assets/favicon.svg`, not in `static/favicon/`. It's imported as a Svelte asset.
+15. **Tailwind theme colors:** Custom colors are defined in `src/routes/layout.css` under `@theme`. Use them as `bg-tertiary`, `text-primary`, etc.
+16. **Root layout pattern:** Uses Svelte 5 runes (`$props`) and imports config from `$lib/config`. Wraps content in `<div class="min-h-screen flex flex-col bg-tertiary">`.
 
 ## Test Coverage Summary
 
 | Test File                          | Tests | Purpose                            |
 | ---------------------------------- | ----- | ---------------------------------- |
 | `src/demo.spec.ts`                 | 1     | Demo test from sv create           |
+| `src/lib/config.spec.ts`           | 35    | Site configuration and helpers     |
 | `src/lib/server/db/schema.spec.ts` | 23    | Schema table definitions and types |
 | `src/lib/server/db/db.spec.ts`     | 10    | Database helper functions          |
-| **Total**                          | 34    |                                    |
+| **Total**                          | 69    |                                    |
+
+## Site Config Notes
+
+The `src/lib/config.ts` module provides:
+
+1. **Typed Interfaces:** `SiteConfig`, `ContactConfig`, `SocialConfig`, `HeroConfig`, `ColorsConfig`, etc.
+2. **Configuration Object:** `config` - single source of truth for all site settings
+3. **Helper Functions:**
+   - `formatMaxOrderMessage(threshold?, email?)` - Format order limit message with placeholders
+   - `isZipAllowedForDelivery(zip)` - Check if ZIP is in allowed delivery area
+   - `getSortedMenu()` - Get navigation menu sorted by weight
+   - `formatPrice(cents)` - Convert cents to "$X.XX" format
+   - `calculateTax(subtotalCents)` - Compute tax (returns 0 if disabled)
+   - `calculateTip(subtotalCents, percentage)` - Compute tip amount
+
+Usage example:
+
+```typescript
+import { config, formatPrice, isZipAllowedForDelivery } from '$lib/config';
+
+// Access config values
+const title = config.title; // "The Cookie Isle"
+const taxRate = config.order.salesTaxRate; // 0.0775
+
+// Use helpers
+const price = formatPrice(350); // "$3.50"
+const canDeliver = isZipAllowedForDelivery('92118'); // true
+```
