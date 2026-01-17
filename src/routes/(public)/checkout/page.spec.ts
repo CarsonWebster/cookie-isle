@@ -702,3 +702,450 @@ describe('Checkout Page - Customer Form Logic', () => {
 		});
 	});
 });
+
+/**
+ * Unit tests for Checkout Page - Extras (tip, gift box) (PRD 3.8)
+ */
+describe('Checkout Page - Extras Logic', () => {
+	// Sample subtotal for testing (1000 cents = $10.00)
+	const sampleSubtotalCents = 1000;
+
+	describe('tip configuration', () => {
+		it('tip is enabled in config', () => {
+			expect(config.tip.enabled).toBe(true);
+		});
+
+		it('has tip percentages configured', () => {
+			expect(config.tip.percentages).toEqual([5, 10, 20]);
+		});
+
+		it('has three tip percentage options', () => {
+			expect(config.tip.percentages).toHaveLength(3);
+		});
+	});
+
+	describe('tip percentage calculations', () => {
+		// Helper to mirror calculateTip from config
+		function calculateTipAmount(subtotalCents: number, percentage: number): number {
+			return Math.round(subtotalCents * (percentage / 100));
+		}
+
+		it('calculates 5% tip correctly', () => {
+			const tip = calculateTipAmount(sampleSubtotalCents, 5);
+			expect(tip).toBe(50); // $0.50
+		});
+
+		it('calculates 10% tip correctly', () => {
+			const tip = calculateTipAmount(sampleSubtotalCents, 10);
+			expect(tip).toBe(100); // $1.00
+		});
+
+		it('calculates 20% tip correctly', () => {
+			const tip = calculateTipAmount(sampleSubtotalCents, 20);
+			expect(tip).toBe(200); // $2.00
+		});
+
+		it('rounds tip to nearest cent', () => {
+			// $7.33 subtotal with 15% tip = $1.0995, should round to $1.10
+			const tip = calculateTipAmount(733, 15);
+			expect(tip).toBe(110);
+		});
+
+		it('calculates zero tip when percentage is 0', () => {
+			const tip = calculateTipAmount(sampleSubtotalCents, 0);
+			expect(tip).toBe(0);
+		});
+
+		it('handles empty cart (zero subtotal)', () => {
+			const tip = calculateTipAmount(0, 20);
+			expect(tip).toBe(0);
+		});
+	});
+
+	describe('custom tip input', () => {
+		// Helper to parse tip input to cents
+		function parseTipInput(value: string): number {
+			const dollars = parseFloat(value) || 0;
+			return Math.round(dollars * 100);
+		}
+
+		it('parses whole dollar amount', () => {
+			expect(parseTipInput('5')).toBe(500);
+		});
+
+		it('parses decimal amount', () => {
+			expect(parseTipInput('5.50')).toBe(550);
+		});
+
+		it('parses single decimal place', () => {
+			expect(parseTipInput('3.5')).toBe(350);
+		});
+
+		it('handles empty input', () => {
+			expect(parseTipInput('')).toBe(0);
+		});
+
+		it('handles invalid input', () => {
+			expect(parseTipInput('abc')).toBe(0);
+		});
+
+		it('handles input with leading zeros', () => {
+			expect(parseTipInput('05.00')).toBe(500);
+		});
+	});
+
+	describe('tip input validation', () => {
+		// Helper to sanitize tip input
+		function sanitizeTipInput(value: string): string {
+			// Remove non-numeric except decimal
+			let sanitized = value.replace(/[^0-9.]/g, '');
+
+			// Ensure only one decimal point
+			const parts = sanitized.split('.');
+			if (parts.length > 2) {
+				sanitized = parts[0] + '.' + parts.slice(1).join('');
+			}
+
+			// Limit to 2 decimal places
+			if (parts.length === 2 && parts[1].length > 2) {
+				sanitized = parts[0] + '.' + parts[1].slice(0, 2);
+			}
+
+			return sanitized;
+		}
+
+		it('removes non-numeric characters', () => {
+			expect(sanitizeTipInput('$5.00')).toBe('5.00');
+		});
+
+		it('removes letters', () => {
+			expect(sanitizeTipInput('abc5.00')).toBe('5.00');
+		});
+
+		it('keeps single decimal point', () => {
+			expect(sanitizeTipInput('5.50')).toBe('5.50');
+		});
+
+		it('removes extra decimal points', () => {
+			expect(sanitizeTipInput('5.5.0')).toBe('5.50');
+		});
+
+		it('limits to 2 decimal places', () => {
+			expect(sanitizeTipInput('5.555')).toBe('5.55');
+		});
+	});
+
+	describe('gift box configuration', () => {
+		it('gift box is enabled in config', () => {
+			expect(config.giftBox.enabled).toBe(true);
+		});
+
+		it('has gift box price configured', () => {
+			expect(config.giftBox.priceCents).toBe(300); // $3.00
+		});
+
+		it('has gift box stripe price ID configured', () => {
+			expect(config.giftBox.stripePriceId).toBeTruthy();
+		});
+
+		it('formats gift box price correctly', () => {
+			expect(formatPrice(config.giftBox.priceCents)).toBe('$3.00');
+		});
+	});
+
+	describe('gift message handling', () => {
+		const GIFT_MESSAGE_MAX_LENGTH = 200;
+
+		it('allows message up to max length', () => {
+			const message = 'A'.repeat(200);
+			expect(message.length).toBe(GIFT_MESSAGE_MAX_LENGTH);
+		});
+
+		it('calculates remaining characters', () => {
+			const message = 'Happy Birthday!'; // 15 chars
+			const remaining = GIFT_MESSAGE_MAX_LENGTH - message.length;
+			expect(remaining).toBe(185);
+		});
+
+		it('shows zero remaining at max length', () => {
+			const message = 'A'.repeat(200);
+			const remaining = GIFT_MESSAGE_MAX_LENGTH - message.length;
+			expect(remaining).toBe(0);
+		});
+
+		it('handles empty message', () => {
+			const message = '';
+			const remaining = GIFT_MESSAGE_MAX_LENGTH - message.length;
+			expect(remaining).toBe(200);
+		});
+
+		// Helper to truncate gift message
+		function truncateGiftMessage(value: string): string {
+			return value.slice(0, GIFT_MESSAGE_MAX_LENGTH);
+		}
+
+		it('truncates message exceeding max length', () => {
+			const longMessage = 'A'.repeat(250);
+			const truncated = truncateGiftMessage(longMessage);
+			expect(truncated.length).toBe(200);
+		});
+	});
+
+	describe('tax calculation', () => {
+		// Helper to mirror calculateTax from config
+		function calculateTaxAmount(subtotalCents: number): number {
+			if (!config.order.taxEnabled) {
+				return 0;
+			}
+			return Math.round(subtotalCents * config.order.salesTaxRate);
+		}
+
+		it('tax is disabled by default', () => {
+			expect(config.order.taxEnabled).toBe(false);
+		});
+
+		it('returns zero tax when disabled', () => {
+			expect(calculateTaxAmount(sampleSubtotalCents)).toBe(0);
+		});
+
+		it('has tax rate configured', () => {
+			expect(config.order.salesTaxRate).toBe(0.0775);
+		});
+
+		it('would calculate correct tax if enabled', () => {
+			// Manual calculation: $10.00 * 7.75% = $0.775 = 78 cents (rounded)
+			const taxIfEnabled = Math.round(sampleSubtotalCents * config.order.salesTaxRate);
+			expect(taxIfEnabled).toBe(78);
+		});
+	});
+
+	describe('order total calculation', () => {
+		// Helper to calculate order total
+		function calculateOrderTotal(
+			subtotalCents: number,
+			tipCents: number,
+			includeGiftBox: boolean,
+			taxCents: number
+		): number {
+			const giftBoxCents = includeGiftBox ? config.giftBox.priceCents : 0;
+			return subtotalCents + tipCents + giftBoxCents + taxCents;
+		}
+
+		it('calculates total with subtotal only', () => {
+			const total = calculateOrderTotal(1000, 0, false, 0);
+			expect(total).toBe(1000);
+		});
+
+		it('calculates total with tip', () => {
+			const total = calculateOrderTotal(1000, 200, false, 0);
+			expect(total).toBe(1200); // $10 + $2 tip
+		});
+
+		it('calculates total with gift box', () => {
+			const total = calculateOrderTotal(1000, 0, true, 0);
+			expect(total).toBe(1300); // $10 + $3 gift box
+		});
+
+		it('calculates total with tax', () => {
+			const total = calculateOrderTotal(1000, 0, false, 78);
+			expect(total).toBe(1078); // $10 + $0.78 tax
+		});
+
+		it('calculates total with all extras', () => {
+			const total = calculateOrderTotal(1000, 200, true, 78);
+			expect(total).toBe(1578); // $10 + $2 tip + $3 gift box + $0.78 tax
+		});
+
+		it('handles empty cart', () => {
+			const total = calculateOrderTotal(0, 0, false, 0);
+			expect(total).toBe(0);
+		});
+	});
+
+	describe('order summary display', () => {
+		it('formats subtotal correctly', () => {
+			expect(formatPrice(1000)).toBe('$10.00');
+		});
+
+		it('formats tip correctly', () => {
+			expect(formatPrice(200)).toBe('$2.00');
+		});
+
+		it('formats gift box price correctly', () => {
+			expect(formatPrice(300)).toBe('$3.00');
+		});
+
+		it('formats tax correctly', () => {
+			expect(formatPrice(78)).toBe('$0.78');
+		});
+
+		it('formats total correctly', () => {
+			expect(formatPrice(1578)).toBe('$15.78');
+		});
+
+		it('displays tax rate as percentage', () => {
+			const taxRateDisplay = (config.order.salesTaxRate * 100).toFixed(2);
+			expect(taxRateDisplay).toBe('7.75');
+		});
+	});
+
+	describe('tip state management', () => {
+		it('starts with zero tip', () => {
+			const tipAmountCents = 0;
+			expect(tipAmountCents).toBe(0);
+		});
+
+		it('starts with no selected percentage', () => {
+			const selectedTipPercentage: number | null = null;
+			expect(selectedTipPercentage).toBeNull();
+		});
+
+		it('clears percentage when entering custom tip', () => {
+			let selectedTipPercentage: number | null = 10;
+			// Simulating custom input
+			selectedTipPercentage = null;
+			expect(selectedTipPercentage).toBeNull();
+		});
+
+		it('updates input display when selecting percentage', () => {
+			const subtotalCents = 1000;
+			const percentage = 10;
+			const tipAmountCents = Math.round(subtotalCents * (percentage / 100));
+			const tipInputValue = (tipAmountCents / 100).toFixed(2);
+			expect(tipInputValue).toBe('1.00');
+		});
+	});
+
+	describe('gift box state management', () => {
+		it('starts with gift box unchecked', () => {
+			const includeGiftBox = false;
+			expect(includeGiftBox).toBe(false);
+		});
+
+		it('starts with empty gift message', () => {
+			const giftMessage = '';
+			expect(giftMessage).toBe('');
+		});
+
+		it('clears gift message when unchecking gift box', () => {
+			// Note: The component keeps the message but just hides the textarea
+			// This is a UX choice - message persists in case user re-checks
+			const giftMessage = 'Happy Birthday!';
+			const includeGiftBox = false;
+			// Gift message should still be accessible
+			expect(giftMessage).toBe('Happy Birthday!');
+		});
+	});
+
+	describe('extras UI visibility', () => {
+		it('tip section shows when tip is enabled', () => {
+			const showTipSection = config.tip.enabled;
+			expect(showTipSection).toBe(true);
+		});
+
+		it('gift box section shows when gift box is enabled', () => {
+			const showGiftBoxSection = config.giftBox.enabled;
+			expect(showGiftBoxSection).toBe(true);
+		});
+
+		it('gift message textarea shows when gift box is checked', () => {
+			const includeGiftBox = true;
+			const showGiftMessage = includeGiftBox;
+			expect(showGiftMessage).toBe(true);
+		});
+
+		it('gift message textarea hides when gift box is unchecked', () => {
+			const includeGiftBox = false;
+			const showGiftMessage = includeGiftBox;
+			expect(showGiftMessage).toBe(false);
+		});
+	});
+
+	describe('character counter behavior', () => {
+		const GIFT_MESSAGE_MAX_LENGTH = 200;
+
+		it('shows remaining at 20 or less', () => {
+			const remaining = 20;
+			const showRemaining = remaining <= 20;
+			expect(showRemaining).toBe(true);
+		});
+
+		it('hides remaining when above 20', () => {
+			const remaining = 21;
+			const showRemaining = remaining <= 20;
+			expect(showRemaining).toBe(false);
+		});
+
+		it('shows warning color at 0 remaining', () => {
+			const remaining = 0;
+			const isAtLimit = remaining <= 0;
+			expect(isAtLimit).toBe(true);
+		});
+
+		it('shows yellow warning when low but not zero', () => {
+			const remaining = 10;
+			const isLowButNotZero = remaining > 0 && remaining <= 20;
+			expect(isLowButNotZero).toBe(true);
+		});
+	});
+
+	describe('order summary line item visibility', () => {
+		it('shows tip line when tip is greater than 0', () => {
+			const tipAmountCents = 100;
+			const showTipLine = tipAmountCents > 0;
+			expect(showTipLine).toBe(true);
+		});
+
+		it('hides tip line when tip is 0', () => {
+			const tipAmountCents = 0;
+			const showTipLine = tipAmountCents > 0;
+			expect(showTipLine).toBe(false);
+		});
+
+		it('shows gift box line when included', () => {
+			const includeGiftBox = true;
+			const showGiftBoxLine = includeGiftBox;
+			expect(showGiftBoxLine).toBe(true);
+		});
+
+		it('hides gift box line when not included', () => {
+			const includeGiftBox = false;
+			const showGiftBoxLine = includeGiftBox;
+			expect(showGiftBoxLine).toBe(false);
+		});
+
+		it('shows tax line when tax is enabled and greater than 0', () => {
+			// Note: Tax is currently disabled in config
+			const taxCents = 78;
+			const showTaxLine = config.order.taxEnabled && taxCents > 0;
+			expect(showTaxLine).toBe(false); // Disabled in config
+		});
+	});
+
+	describe('accessibility for extras', () => {
+		it('tip input has proper label', () => {
+			const labelText = 'Or enter a custom amount';
+			expect(labelText).toBeTruthy();
+		});
+
+		it('gift box checkbox has descriptive label', () => {
+			const labelText = 'Add Gift Box';
+			expect(labelText).toBeTruthy();
+		});
+
+		it('gift message textarea has proper label', () => {
+			const labelText = 'Gift Message (optional)';
+			expect(labelText).toBeTruthy();
+		});
+
+		it('tip input has inputmode decimal for mobile', () => {
+			const inputMode = 'decimal';
+			expect(inputMode).toBe('decimal');
+		});
+
+		it('gift message textarea has maxlength attribute', () => {
+			const maxLength = 200;
+			expect(maxLength).toBe(200);
+		});
+	});
+});

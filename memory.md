@@ -142,7 +142,9 @@ export const tableName = sqliteTable('table_name', {
 21. ~~Add to cart functionality (PRD 3.4)~~ DONE - `src/lib/components/AddToCartButton.svelte` with 46 tests
 22. ~~Checkout page - Cart display (PRD 3.5)~~ DONE - `src/routes/(public)/checkout/+page.svelte` with cart items list (47 tests)
 23. ~~Checkout page - Customer form (PRD 3.6)~~ DONE - Customer info form with validation, fulfillment type toggle (95 total tests)
-24. **NEXT: Checkout page - Slots selection (PRD 3.7)** - Server load for available slots, slot picker UI
+24. ~~Checkout page - Slots selection (PRD 3.7)~~ DONE - Server load for available slots, slot picker UI (25 tests)
+25. ~~Checkout page - Extras (PRD 3.8)~~ DONE - Tip section, gift box, order summary with tax (165 total checkout tests)
+26. **NEXT: Checkout page - Submit (PRD 3.9)** - Form validation, loading states, submit button
 
 ## Commands Reference
 
@@ -208,9 +210,9 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/lib/components/CartBadge.spec.ts`                | 26    | CartBadge component logic          |
 | `src/lib/components/CartToast.spec.ts`                | 35    | CartToast notification logic       |
 | `src/lib/components/AddToCartButton.spec.ts`          | 46    | AddToCartButton integration logic  |
-| `src/routes/(public)/checkout/page.spec.ts`           | 95    | Checkout page cart & form logic    |
+| `src/routes/(public)/checkout/page.spec.ts`           | 165   | Checkout page cart, form & extras  |
 | `src/routes/(public)/checkout/page.server.spec.ts`    | 25    | Checkout slots load function       |
-| **Total**                                             | 511   |                                    |
+| **Total**                                             | 581   |                                    |
 
 ## Site Config Notes
 
@@ -1039,8 +1041,8 @@ Files still to create for Phase 3:
 5. ~~`src/routes/(public)/checkout/+page.svelte`~~ - DONE (47 tests) - Cart display with items list, quantity controls, subtotal
 6. ~~Customer form (PRD 3.6)~~ - DONE (95 total tests) - Form fields, validation, fulfillment type toggle
 7. ~~Slots selection (PRD 3.7)~~ - DONE (25 tests) - Server load for slots, slot picker UI with filtering
-8. **NEXT: Extras section (PRD 3.8)** - Tip, gift box, order summary
-9. Submit functionality (PRD 3.9) - Form validation, loading states
+8. ~~Extras section (PRD 3.8)~~ - DONE (165 total tests) - Tip, gift box, order summary
+9. **NEXT: Submit functionality (PRD 3.9)** - Form validation, loading states
 
 ## Checkout Page Notes (Phase 3.5 - COMPLETE)
 
@@ -1303,10 +1305,98 @@ $effect(() => {
 - Return type validation (3 tests)
 - Multiple capacity records handling (2 tests)
 
-### Next Step: Extras section (PRD 3.8)
+## Extras Section Notes (Phase 3.8 - COMPLETE)
+
+The checkout page now includes tip selection and gift box options.
+
+### Key Features
+
+1. **Tip Section:**
+   - Preset percentage buttons (5%, 10%, 20%) from config
+   - "No Tip" button to clear tip
+   - Custom dollar input with decimal handling
+   - Real-time tip amount display
+   - Selecting percentage updates input display
+   - Entering custom amount clears percentage selection
+
+2. **Gift Box Section:**
+   - Checkbox to add gift box ($3.00 from config)
+   - Gift message textarea appears when checked
+   - Character counter (max 200 characters)
+   - Warning color when remaining <= 20 characters
+   - Red warning at exactly 0 remaining
+
+3. **Order Summary:**
+   - Shows subtotal, tip (if any), gift box (if selected), tax (if enabled), total
+   - All values update in real-time with `$derived()`
+   - Tax line only shows if `config.order.taxEnabled` is true
+   - Uses `calculateTax()` and `calculateTip()` from config helpers
+
+### State Management
+
+```typescript
+// Tip state
+let tipAmountCents = $state(0);
+let selectedTipPercentage = $state<number | null>(null);
+let tipInputValue = $state(''); // For the custom dollar input
+
+// Gift box state
+let includeGiftBox = $state(false);
+let giftMessage = $state('');
+const GIFT_MESSAGE_MAX_LENGTH = 200;
+
+// Derived totals
+let giftBoxCents = $derived(includeGiftBox ? config.giftBox.priceCents : 0);
+let taxCents = $derived(calculateTax(subtotalCents));
+let orderTotalCents = $derived(subtotalCents + tipAmountCents + giftBoxCents + taxCents);
+let orderTotalFormatted = $derived(formatPrice(orderTotalCents));
+```
+
+### Helper Functions Added to Checkout Page
+
+| Function                   | Purpose                                 |
+| -------------------------- | --------------------------------------- |
+| `selectTipPercentage()`    | Select preset percentage, calculate tip |
+| `handleTipInput()`         | Parse and sanitize custom tip input     |
+| `clearTip()`               | Reset tip to zero                       |
+| `handleGiftMessageInput()` | Enforce character limit on gift message |
+
+### Test Coverage
+
+70 new tests added to `src/routes/(public)/checkout/page.spec.ts` (165 total):
+
+- Tip configuration (3 tests)
+- Tip percentage calculations (6 tests)
+- Custom tip input parsing (6 tests)
+- Tip input validation (5 tests)
+- Gift box configuration (4 tests)
+- Gift message handling (5 tests)
+- Tax calculation (5 tests)
+- Order total calculation (6 tests)
+- Order summary display (6 tests)
+- Tip state management (4 tests)
+- Gift box state management (3 tests)
+- Extras UI visibility (4 tests)
+- Character counter behavior (4 tests)
+- Order summary line visibility (5 tests)
+- Accessibility for extras (5 tests)
+
+### Config Values Used
+
+- `config.tip.enabled` - Whether to show tip section
+- `config.tip.percentages` - Array of preset percentages [5, 10, 20]
+- `config.giftBox.enabled` - Whether to show gift box section
+- `config.giftBox.priceCents` - Gift box price (300 = $3.00)
+- `config.order.taxEnabled` - Whether to calculate tax
+- `config.order.salesTaxRate` - Tax rate (0.0775 = 7.75%)
+
+### Next Step: Submit functionality (PRD 3.9)
 
 The checkout page will be extended to include:
 
-- Tip selection (dollar input + percentage presets)
-- Gift box option with message textarea
-- Order summary with subtotal, tip, gift box, tax, total
+- "Place Order" submit button
+- Full form validation on submit
+- Slot selection validation
+- Loading state during submission
+- Form disable during submission
+- Max quantity exceeded handling

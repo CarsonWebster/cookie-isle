@@ -667,21 +667,21 @@ Before marking any TODO as complete:
 
 ### 3.8 Checkout page - Extras (tip, gift box)
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                             | Status      |
-| ------ | ---------------------------------------------------------------- | ----------- |
-| 3.8.1  | Add tip section with dollar input field                          | Not Started |
-| 3.8.2  | Add tip percentage preset buttons (5%, 10%, 20%)                 | Not Started |
-| 3.8.3  | Calculate tip amount from percentage of subtotal                 | Not Started |
-| 3.8.4  | Add gift box checkbox with price display                         | Not Started |
-| 3.8.5  | Show gift message textarea when gift box is checked              | Not Started |
-| 3.8.6  | Add character counter for gift message (max 200)                 | Not Started |
-| 3.8.7  | Update cart summary to show: subtotal, tip, gift box, tax, total | Not Started |
-| 3.8.8  | Calculate tax based on config rate                               | Not Started |
-| 3.8.9  | Update total in real-time as options change                      | Not Started |
-| 3.8.10 | Write tests in `tests/unit/checkout-extras.test.ts`              | Not Started |
-| 3.8.11 | **Commit:** `feat: add tip and gift box options`                 | Not Started |
+| ID     | Task                                                             | Status    |
+| ------ | ---------------------------------------------------------------- | --------- |
+| 3.8.1  | Add tip section with dollar input field                          | Completed |
+| 3.8.2  | Add tip percentage preset buttons (5%, 10%, 20%)                 | Completed |
+| 3.8.3  | Calculate tip amount from percentage of subtotal                 | Completed |
+| 3.8.4  | Add gift box checkbox with price display                         | Completed |
+| 3.8.5  | Show gift message textarea when gift box is checked              | Completed |
+| 3.8.6  | Add character counter for gift message (max 200)                 | Completed |
+| 3.8.7  | Update cart summary to show: subtotal, tip, gift box, tax, total | Completed |
+| 3.8.8  | Calculate tax based on config rate                               | Completed |
+| 3.8.9  | Update total in real-time as options change                      | Completed |
+| 3.8.10 | Write tests in `src/routes/(public)/checkout/page.spec.ts`       | Completed |
+| 3.8.11 | **Commit:** `feat: add tip and gift box options`                 | Completed |
 
 ### 3.9 Checkout page - Submit
 

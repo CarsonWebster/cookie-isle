@@ -1,16 +1,23 @@
 <script lang="ts">
 	/**
-	 * Checkout Page - Cart Display, Customer Form & Slot Selection
+	 * Checkout Page - Cart Display, Customer Form, Slot Selection & Extras
 	 *
 	 * Displays the user's cart with quantity controls, remove buttons, and subtotal.
 	 * Shows empty state when cart is empty with link to browse menu.
-	 * Includes customer information form, fulfillment type selection, and slot picker.
+	 * Includes customer information form, fulfillment type selection, slot picker,
+	 * tip selection, gift box option, and order summary with tax calculation.
 	 *
-	 * PRD Reference: 3.5, 3.6, 3.7
+	 * PRD Reference: 3.5, 3.6, 3.7, 3.8
 	 */
 
 	import { onMount } from 'svelte';
-	import { config, formatPrice, isZipAllowedForDelivery } from '$lib/config';
+	import {
+		config,
+		formatPrice,
+		isZipAllowedForDelivery,
+		calculateTax,
+		calculateTip
+	} from '$lib/config';
 	import {
 		getItems,
 		getCartTotal,
@@ -42,7 +49,32 @@
 	// Reactive derived values
 	let cartEmpty = $derived(isCartEmpty());
 	let cartItems = $derived(getItems());
+	let subtotalCents = $derived(getCartTotal());
 	let subtotal = $derived(getCartTotalFormatted());
+
+	// ============================================================================
+	// Extras State (PRD 3.8)
+	// ============================================================================
+
+	// Tip state
+	let tipAmountCents = $state(0);
+	let selectedTipPercentage = $state<number | null>(null);
+	let tipInputValue = $state(''); // For the custom dollar input
+
+	// Gift box state
+	let includeGiftBox = $state(false);
+	let giftMessage = $state('');
+	const GIFT_MESSAGE_MAX_LENGTH = 200;
+
+	// Derived gift message length
+	let giftMessageLength = $derived(giftMessage.length);
+	let giftMessageRemaining = $derived(GIFT_MESSAGE_MAX_LENGTH - giftMessage.length);
+
+	// Calculate totals
+	let giftBoxCents = $derived(includeGiftBox ? config.giftBox.priceCents : 0);
+	let taxCents = $derived(calculateTax(subtotalCents));
+	let orderTotalCents = $derived(subtotalCents + tipAmountCents + giftBoxCents + taxCents);
+	let orderTotalFormatted = $derived(formatPrice(orderTotalCents));
 
 	// ============================================================================
 	// Customer Form State (PRD 3.6)
@@ -263,6 +295,74 @@
 	// Handle remove item
 	function handleRemove(productId: number) {
 		removeFromCart(productId);
+	}
+
+	// ============================================================================
+	// Tip Helper Functions (PRD 3.8)
+	// ============================================================================
+
+	/**
+	 * Handles selecting a preset tip percentage
+	 */
+	function selectTipPercentage(percentage: number) {
+		selectedTipPercentage = percentage;
+		tipAmountCents = calculateTip(subtotalCents, percentage);
+		// Update the input display to show calculated amount
+		tipInputValue = (tipAmountCents / 100).toFixed(2);
+	}
+
+	/**
+	 * Handles custom tip input
+	 */
+	function handleTipInput(event: Event) {
+		const input = event.target as HTMLInputElement;
+		let value = input.value;
+
+		// Remove any non-numeric characters except decimal point
+		value = value.replace(/[^0-9.]/g, '');
+
+		// Ensure only one decimal point
+		const parts = value.split('.');
+		if (parts.length > 2) {
+			value = parts[0] + '.' + parts.slice(1).join('');
+		}
+
+		// Limit to 2 decimal places
+		if (parts.length === 2 && parts[1].length > 2) {
+			value = parts[0] + '.' + parts[1].slice(0, 2);
+		}
+
+		tipInputValue = value;
+
+		// Clear percentage selection when entering custom amount
+		selectedTipPercentage = null;
+
+		// Convert to cents
+		const dollars = parseFloat(value) || 0;
+		tipAmountCents = Math.round(dollars * 100);
+	}
+
+	/**
+	 * Clears the tip
+	 */
+	function clearTip() {
+		tipAmountCents = 0;
+		selectedTipPercentage = null;
+		tipInputValue = '';
+	}
+
+	/**
+	 * Handles gift message input with character limit
+	 */
+	function handleGiftMessageInput(event: Event) {
+		const textarea = event.target as HTMLTextAreaElement;
+		// Enforce max length
+		if (textarea.value.length <= GIFT_MESSAGE_MAX_LENGTH) {
+			giftMessage = textarea.value;
+		} else {
+			giftMessage = textarea.value.slice(0, GIFT_MESSAGE_MAX_LENGTH);
+			textarea.value = giftMessage;
+		}
 	}
 </script>
 
@@ -638,10 +738,10 @@
 
 						<!-- Fulfillment Type Toggle -->
 						{#if pickupEnabled || deliveryEnabled}
-							<div>
-								<label class="block text-sm font-medium text-secondary">
+							<fieldset>
+								<legend class="block text-sm font-medium text-secondary">
 									How would you like to receive your order? <span class="text-red-500">*</span>
-								</label>
+								</legend>
 								<div class="mt-2 flex gap-2">
 									{#if pickupEnabled}
 										<button
@@ -711,7 +811,7 @@
 										We deliver to: {config.fulfillment.deliveryArea}
 									</p>
 								{/if}
-							</div>
+							</fieldset>
 						{/if}
 
 						<!-- Delivery Address Fields (conditional) -->
@@ -985,16 +1085,183 @@
 					{/if}
 				</div>
 
-				<!-- Cart Summary -->
+				<!-- Extras Section - Tip (PRD 3.8) -->
+				{#if config.tip.enabled}
+					<div class="mt-8 rounded-xl bg-white p-6 shadow-md">
+						<h2 class="text-xl font-semibold text-secondary">Add a Tip</h2>
+						<p class="mt-1 text-sm text-text-light">
+							Show your appreciation for our bakers with a tip.
+						</p>
+
+						<!-- Tip Percentage Buttons -->
+						<div class="mt-4 flex flex-wrap gap-2">
+							{#each config.tip.percentages as percentage}
+								<button
+									type="button"
+									onclick={() => selectTipPercentage(percentage)}
+									class="rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all {selectedTipPercentage ===
+									percentage
+										? 'border-primary bg-primary/10 text-primary'
+										: 'border-tertiary-medium bg-white text-text-light hover:border-primary/50'}"
+								>
+									{percentage}%
+								</button>
+							{/each}
+							<button
+								type="button"
+								onclick={clearTip}
+								class="rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all {tipAmountCents ===
+									0 && selectedTipPercentage === null
+									? 'border-primary bg-primary/10 text-primary'
+									: 'border-tertiary-medium bg-white text-text-light hover:border-primary/50'}"
+							>
+								No Tip
+							</button>
+						</div>
+
+						<!-- Custom Tip Input -->
+						<div class="mt-4">
+							<label for="tipAmount" class="block text-sm font-medium text-secondary">
+								Or enter a custom amount
+							</label>
+							<div class="relative mt-1">
+								<span
+									class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-light"
+								>
+									$
+								</span>
+								<input
+									type="text"
+									id="tipAmount"
+									name="tipAmount"
+									value={tipInputValue}
+									oninput={handleTipInput}
+									placeholder="0.00"
+									inputmode="decimal"
+									class="block w-full rounded-lg border border-tertiary-medium py-2.5 pr-4 pl-7 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+								/>
+							</div>
+						</div>
+
+						{#if tipAmountCents > 0}
+							<p class="mt-3 text-sm text-text-light">
+								Tip amount: <span class="font-medium text-primary"
+									>{formatPrice(tipAmountCents)}</span
+								>
+							</p>
+						{/if}
+					</div>
+				{/if}
+
+				<!-- Extras Section - Gift Box (PRD 3.8) -->
+				{#if config.giftBox.enabled}
+					<div class="mt-8 rounded-xl bg-white p-6 shadow-md">
+						<h2 class="text-xl font-semibold text-secondary">Gift Options</h2>
+						<p class="mt-1 text-sm text-text-light">
+							Make your order extra special with our gift packaging.
+						</p>
+
+						<!-- Gift Box Checkbox -->
+						<div class="mt-4">
+							<label class="flex cursor-pointer items-start gap-3">
+								<input
+									type="checkbox"
+									bind:checked={includeGiftBox}
+									class="mt-0.5 h-5 w-5 rounded border-tertiary-medium text-primary focus:ring-2 focus:ring-primary/20"
+								/>
+								<div class="flex-1">
+									<span class="font-medium text-secondary">
+										Add Gift Box
+										<span class="ml-2 text-primary">+{formatPrice(config.giftBox.priceCents)}</span>
+									</span>
+									<p class="mt-0.5 text-sm text-text-light">
+										Beautiful presentation box perfect for gifting.
+									</p>
+								</div>
+							</label>
+						</div>
+
+						<!-- Gift Message (shown when gift box is checked) -->
+						{#if includeGiftBox}
+							<div class="mt-4 rounded-lg border border-tertiary-medium bg-tertiary/50 p-4">
+								<label for="giftMessage" class="block text-sm font-medium text-secondary">
+									Gift Message (optional)
+								</label>
+								<textarea
+									id="giftMessage"
+									name="giftMessage"
+									rows="3"
+									value={giftMessage}
+									oninput={handleGiftMessageInput}
+									maxlength={GIFT_MESSAGE_MAX_LENGTH}
+									placeholder="Write a personal message for the recipient..."
+									class="mt-2 block w-full resize-none rounded-lg border border-tertiary-medium px-4 py-2.5 text-secondary shadow-sm transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+								></textarea>
+								<div class="mt-2 flex items-center justify-between text-xs">
+									<span class="text-text-light">
+										{giftMessageLength} / {GIFT_MESSAGE_MAX_LENGTH} characters
+									</span>
+									{#if giftMessageRemaining <= 20}
+										<span
+											class="font-medium {giftMessageRemaining <= 0
+												? 'text-red-500'
+												: 'text-yellow-600'}"
+										>
+											{giftMessageRemaining} remaining
+										</span>
+									{/if}
+								</div>
+							</div>
+						{/if}
+					</div>
+				{/if}
+
+				<!-- Order Summary (PRD 3.8) -->
 				<div class="mt-8 rounded-xl bg-white p-6 shadow-md">
-					<div class="flex items-center justify-between border-b border-tertiary-medium pb-4">
-						<span class="text-lg font-medium text-secondary">Subtotal</span>
-						<span class="text-2xl font-bold text-secondary">{subtotal}</span>
+					<h2 class="text-xl font-semibold text-secondary">Order Summary</h2>
+
+					<!-- Summary Line Items -->
+					<div class="mt-4 space-y-3">
+						<!-- Subtotal -->
+						<div class="flex items-center justify-between">
+							<span class="text-text-light">Subtotal</span>
+							<span class="font-medium text-secondary">{subtotal}</span>
+						</div>
+
+						<!-- Tip (if any) -->
+						{#if tipAmountCents > 0}
+							<div class="flex items-center justify-between">
+								<span class="text-text-light">Tip</span>
+								<span class="font-medium text-secondary">{formatPrice(tipAmountCents)}</span>
+							</div>
+						{/if}
+
+						<!-- Gift Box (if selected) -->
+						{#if includeGiftBox}
+							<div class="flex items-center justify-between">
+								<span class="text-text-light">Gift Box</span>
+								<span class="font-medium text-secondary"
+									>{formatPrice(config.giftBox.priceCents)}</span
+								>
+							</div>
+						{/if}
+
+						<!-- Tax (if enabled) -->
+						{#if config.order.taxEnabled && taxCents > 0}
+							<div class="flex items-center justify-between">
+								<span class="text-text-light">
+									Tax ({(config.order.salesTaxRate * 100).toFixed(2)}%)
+								</span>
+								<span class="font-medium text-secondary">{formatPrice(taxCents)}</span>
+							</div>
+						{/if}
 					</div>
 
-					<p class="mt-4 text-sm text-text-light">
-						Shipping, taxes, and tip will be calculated at checkout.
-					</p>
+					<!-- Total -->
+					<div class="mt-4 flex items-center justify-between border-t border-tertiary-medium pt-4">
+						<span class="text-lg font-semibold text-secondary">Total</span>
+						<span class="text-2xl font-bold text-primary">{orderTotalFormatted}</span>
+					</div>
 
 					<!-- Continue Shopping Link -->
 					<div class="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
