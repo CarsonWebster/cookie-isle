@@ -84,3 +84,10 @@ export const dailyCapacity = sqliteTable('daily_capacity', {
 	cookiesOrdered: integer('cookies_ordered').default(0),
 	updatedAt: text('updated_at').default(sql`(datetime('now'))`)
 });
+
+// Admin sessions table
+export const adminSessions = sqliteTable('admin_sessions', {
+	id: text('id').primaryKey(), // Random UUID
+	expiresAt: text('expires_at').notNull(), // ISO datetime
+	createdAt: text('created_at').default(sql`(datetime('now'))`)
+});
