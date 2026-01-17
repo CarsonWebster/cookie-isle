@@ -916,35 +916,37 @@ Before marking any TODO as complete:
 
 ### 6.4 Admin layout
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                                              | Status      |
-| ----- | --------------------------------------------------------------------------------- | ----------- |
-| 6.4.1 | Create `src/routes/admin/+layout.svelte`                                          | Not Started |
-| 6.4.2 | Add sidebar navigation with links: Dashboard, Orders, Products, Slots, Newsletter | Not Started |
-| 6.4.3 | Highlight current page in sidebar                                                 | Not Started |
-| 6.4.4 | Add site title/logo at top of sidebar                                             | Not Started |
-| 6.4.5 | Add logout button at bottom of sidebar                                            | Not Started |
-| 6.4.6 | Create main content area with slot                                                | Not Started |
-| 6.4.7 | Make layout responsive: sidebar collapses to top nav on mobile                    | Not Started |
-| 6.4.8 | Style with Tailwind: dark sidebar, light content area                             | Not Started |
-| 6.4.9 | **Commit:** `feat: create admin layout with sidebar`                              | Not Started |
+| ID    | Task                                                                              | Status    |
+| ----- | --------------------------------------------------------------------------------- | --------- |
+| 6.4.1 | Create `src/routes/admin/+layout.svelte`                                          | Completed |
+| 6.4.2 | Add sidebar navigation with links: Dashboard, Orders, Products, Slots, Newsletter | Completed |
+| 6.4.3 | Highlight current page in sidebar                                                 | Completed |
+| 6.4.4 | Add site title/logo at top of sidebar                                             | Completed |
+| 6.4.5 | Add logout button at bottom of sidebar                                            | Completed |
+| 6.4.6 | Create main content area with slot                                                | Completed |
+| 6.4.7 | Make layout responsive: sidebar collapses to top nav on mobile                    | Completed |
+| 6.4.8 | Style with Tailwind: dark sidebar, light content area                             | Completed |
+| 6.4.9 | **Commit:** `feat: create admin layout with sidebar`                              | Completed |
 
 ### 6.5 Admin logout
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                               | Status      |
-| ----- | -------------------------------------------------- | ----------- |
-| 6.5.1 | Create `src/routes/admin/logout/+page.server.ts`   | Not Started |
-| 6.5.2 | Delete session from database                       | Not Started |
-| 6.5.3 | Clear admin_session cookie                         | Not Started |
-| 6.5.4 | Redirect to `/admin/login`                         | Not Started |
-| 6.5.5 | **Commit:** `feat: add admin logout functionality` | Not Started |
+| ID    | Task                                               | Status    |
+| ----- | -------------------------------------------------- | --------- |
+| 6.5.1 | Create `src/routes/admin/logout/+page.server.ts`   | Completed |
+| 6.5.2 | Delete session from database                       | Completed |
+| 6.5.3 | Clear admin_session cookie                         | Completed |
+| 6.5.4 | Redirect to `/admin/login`                         | Completed |
+| 6.5.5 | **Commit:** `feat: add admin logout functionality` | Completed |
 
 ### 6.6 Admin dashboard
 
-**Status:** Not Started
+**Status:** In Progress (Placeholder)
+
+> Note: A placeholder dashboard page was created in Phase 6.4 as part of the layout implementation. This section will be fully implemented with real data queries.
 
 | ID     | Task                                                                | Status      |
 | ------ | ------------------------------------------------------------------- | ----------- |
@@ -954,12 +956,12 @@ Before marking any TODO as complete:
 | 6.6.4  | Query pending orders count                                          | Not Started |
 | 6.6.5  | Query this week's revenue                                           | Not Started |
 | 6.6.6  | Load 5 most recent orders                                           | Not Started |
-| 6.6.7  | Create `src/routes/admin/+page.svelte`                              | Not Started |
-| 6.6.8  | Display stat cards: Today's Orders, Today's Revenue, Pending Orders | Not Started |
+| 6.6.7  | Create `src/routes/admin/+page.svelte`                              | Completed   |
+| 6.6.8  | Display stat cards: Today's Orders, Today's Revenue, Pending Orders | Completed   |
 | 6.6.9  | Display "Cookies Needed Today" breakdown by product                 | Not Started |
 | 6.6.10 | Display recent orders list with status badges                       | Not Started |
 | 6.6.11 | Add quick links to common actions                                   | Not Started |
-| 6.6.12 | Style with Tailwind: card grid, clean typography                    | Not Started |
+| 6.6.12 | Style with Tailwind: card grid, clean typography                    | Completed   |
 | 6.6.13 | Write page test in `tests/integration/admin-dashboard.test.ts`      | Not Started |
 | 6.6.14 | **Commit:** `feat: create admin dashboard with daily stats`         | Not Started |
 

@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-17, Phase 6.2 Complete)
+## Current Progress (as of 2026-01-16, Phase 6.4 Complete)
 
 ### Phase 0 Status: COMPLETE
 
@@ -2238,13 +2238,15 @@ export const actions = {
 4. **No plaintext storage:** Only session ID stored in DB, not the password
 5. **Error messages:** Generic errors don't leak security info
 
-### Next Tasks (Phase 6.4+)
+### Next Tasks (Phase 6.6+)
 
 1. ~~Create admin login page (PRD 6.2)~~ DONE
 2. ~~Create admin auth guard (PRD 6.3)~~ DONE
-3. Create admin layout with sidebar (PRD 6.4)
-4. Create admin logout (PRD 6.5)
-5. Create admin dashboard (PRD 6.6)
+3. ~~Create admin layout with sidebar (PRD 6.4)~~ DONE
+4. ~~Create admin logout (PRD 6.5)~~ DONE
+5. Create admin dashboard with real data (PRD 6.6)
+6. Create orders list page (PRD 6.7)
+7. Create order detail page (PRD 6.8)
 
 ## Admin Login Page Notes (Phase 6.2 - COMPLETE)
 
@@ -2419,10 +2421,118 @@ All routes under `/admin/` except `/admin/login`:
 - Multiple admin routes protection (18 tests)
 - Type exports (2 tests)
 
-### Test Coverage Summary (Updated)
+### Test Coverage Summary (Updated - Phase 6.4 Complete)
 
 | Test File                                    | Tests | Purpose                       |
 | -------------------------------------------- | ----- | ----------------------------- |
 | `src/routes/admin/login/page.server.spec.ts` | 27    | Admin login page load/actions |
 | `src/routes/admin/layout.server.spec.ts`     | 48    | Admin auth guard              |
 | **Total**                                    | 1001  |                               |
+
+## Admin Layout Notes (Phase 6.4 & 6.5 - COMPLETE)
+
+The `src/routes/admin/+layout.svelte` component implements the admin dashboard layout wrapper.
+
+### Key Features
+
+1. **Desktop Sidebar (fixed left side):**
+   - 256px width (w-64)
+   - Dark background using `bg-footer-bg` theme color (#264653)
+   - Logo/brand section at top with cookie emoji and site title
+   - Navigation links with icons (Dashboard, Orders, Products, Slots, Newsletter)
+   - Logout button at bottom with form POST to `/admin/logout`
+   - Active page highlighting with primary color background
+
+2. **Mobile Responsive:**
+   - Fixed header at top with hamburger menu button
+   - Slide-out drawer navigation from left side
+   - Overlay backdrop when menu is open
+   - Closes automatically on route change or Escape key press
+   - Uses transform transitions for smooth animations
+
+3. **Active Page Logic:**
+   - Dashboard (`/admin`): Only active on exact match
+   - Other pages: Active if pathname starts with href (handles subroutes)
+   - Uses SvelteKit's `$page.url.pathname` from `$app/stores`
+
+4. **Main Content Area:**
+   - Full height with `flex-1`
+   - Offset by sidebar width on desktop (`md:ml-64`)
+   - Padding offset for mobile header (`pt-16 md:pt-0`)
+   - Responsive padding: `p-4 sm:p-6 lg:p-8`
+
+### Navigation Items Structure
+
+```typescript
+const navItems = [
+	{ href: '/admin', label: 'Dashboard', icon: '📊' },
+	{ href: '/admin/orders', label: 'Orders', icon: '📦' },
+	{ href: '/admin/products', label: 'Products', icon: '🍪' },
+	{ href: '/admin/slots', label: 'Fulfillment Slots', icon: '📅' },
+	{ href: '/admin/newsletter', label: 'Newsletter', icon: '📧' }
+];
+```
+
+### Logout Endpoint (`src/routes/admin/logout/+page.server.ts`)
+
+1. **Default Form Action:**
+   - Gets `admin_session` cookie
+   - Attempts to delete session from D1 using `deleteSession(db, sessionId)`
+   - Continues logout even if DB deletion fails (logs error)
+   - Always clears `admin_session` cookie with `path: '/admin'`
+   - Redirects to `/admin/login`
+
+2. **Error Handling:**
+   - Try-catch around database operations
+   - Logs error but doesn't block logout
+   - Ensures user can always logout even if DB is down
+
+### Tailwind Classes Used
+
+- **Sidebar colors:** `bg-footer-bg`, `text-footer-text`, `border-footer-text/20`
+- **Active state:** `bg-primary text-white`
+- **Hover state:** `text-footer-text hover:bg-footer-text/10`
+- **Layout:** `fixed inset-y-0 left-0`, `flex min-h-screen`, `flex-1`
+- **Mobile:** `md:hidden`, `md:block`, `md:ml-64`
+- **Animation:** `transition-transform`, `translate-x-0`, `-translate-x-full`
+
+### Usage Pattern
+
+The layout wraps all `/admin/*` routes (except `/admin/login` which is excluded by the auth guard):
+
+```
+src/routes/admin/
+├── +layout.server.ts    # Auth guard (validates session)
+├── +layout.svelte       # Layout wrapper with sidebar
+├── +page.svelte         # Dashboard page content
+├── login/               # Login page (excluded from layout auth)
+├── logout/              # Logout endpoint
+├── orders/              # Future: orders routes
+├── products/            # Future: products routes
+├── slots/               # Future: slots routes
+└── newsletter/          # Future: newsletter routes
+```
+
+### Placeholder Dashboard (`src/routes/admin/+page.svelte`)
+
+A simple placeholder page was created with:
+
+- Page header with title and description
+- 4 stat cards (Today's Orders, Pending Orders, Today's Revenue, Total Products) - all showing zero
+- "Coming Soon" message explaining full implementation is next
+- Basic Tailwind styling matching admin theme
+
+### SvelteKit Patterns Used
+
+1. **$page store:** Reactive access to current route for active highlighting
+2. **$effect:** Auto-close mobile menu on route changes
+3. **Form actions:** Native form POST for logout (no JavaScript required)
+4. **Layout composition:** Children slot for rendering nested routes
+
+### What's Not Included (Future Work)
+
+- Real dashboard statistics (PRD 6.6)
+- Orders list/detail pages (PRD 6.7-6.8)
+- Products CRUD pages (PRD 6.9-6.11)
+- Fulfillment slots management (PRD 6.12)
+- Newsletter subscribers list (PRD 6.13)
