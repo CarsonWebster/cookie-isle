@@ -299,7 +299,8 @@ async function main() {
 	// Get platform from Bun
 	// Note: This script should be run with wrangler or in a context where platform is available
 	// For development, we'll use the local D1 database
-	const platform = (globalThis as any).platform;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const platform = (globalThis as any).platform as App.Platform | undefined;
 
 	if (!platform?.env) {
 		console.error('Error: Platform environment not available');
@@ -309,7 +310,8 @@ async function main() {
 		process.exit(1);
 	}
 
-	const { DB, IMAGES } = platform.env;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const { DB, IMAGES } = platform.env as any;
 
 	if (!DB) {
 		console.error('Error: D1 database binding not found');
