@@ -453,21 +453,21 @@ Before marking any TODO as complete:
 
 ### 2.3 MenuCard component
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                                 | Status      |
-| ------ | -------------------------------------------------------------------- | ----------- |
-| 2.3.1  | Create `src/lib/components/MenuCard.svelte` with Product type prop   | Not Started |
-| 2.3.2  | Display product image (from R2 URL) with aspect ratio container      | Not Started |
-| 2.3.3  | Add image placeholder when no image URL                              | Not Started |
-| 2.3.4  | Display title as link to `/menu/[slug]`                              | Not Started |
-| 2.3.5  | Display formatted price (cents to dollars)                           | Not Started |
-| 2.3.6  | Display description (truncated to 2 lines)                           | Not Started |
-| 2.3.7  | Display tags as small badges                                         | Not Started |
-| 2.3.8  | Add "Add to Cart" button with product data attributes                | Not Started |
-| 2.3.9  | Style with Tailwind: card shadow, hover lift effect, rounded corners | Not Started |
-| 2.3.10 | Write component test in `tests/unit/MenuCard.test.svelte.ts`         | Not Started |
-| 2.3.11 | **Commit:** `feat: create MenuCard component`                        | Not Started |
+| ID     | Task                                                                 | Status    |
+| ------ | -------------------------------------------------------------------- | --------- |
+| 2.3.1  | Create `src/lib/components/MenuCard.svelte` with Product type prop   | Completed |
+| 2.3.2  | Display product image (from R2 URL) with aspect ratio container      | Completed |
+| 2.3.3  | Add image placeholder when no image URL                              | Completed |
+| 2.3.4  | Display title as link to `/menu/[slug]`                              | Completed |
+| 2.3.5  | Display formatted price (cents to dollars)                           | Completed |
+| 2.3.6  | Display description (truncated to 2 lines)                           | Completed |
+| 2.3.7  | Display tags as small badges                                         | Completed |
+| 2.3.8  | Add "Add to Cart" button with product data attributes                | Completed |
+| 2.3.9  | Style with Tailwind: card shadow, hover lift effect, rounded corners | Completed |
+| 2.3.10 | Write component test in `src/lib/components/MenuCard.spec.ts`        | Completed |
+| 2.3.11 | **Commit:** `feat: create MenuCard component`                        | Completed |
 
 ### 2.4 Menu page
 

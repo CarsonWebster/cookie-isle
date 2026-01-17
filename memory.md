@@ -54,6 +54,11 @@ This file contains useful findings for future agents working on this project.
   - Tests: `src/lib/components/Hero.spec.ts` (19 tests) - Config and props validation
   - Features: Gradient background, radial gradient overlays, bouncing cookie emoji, CTA button with arrow, decorative wave SVG
   - Props: `title` (required), `tagline`, `ctaText`, `ctaHref` (all optional)
+- 2.3: MenuCard Component COMPLETE (done before 2.2 as it's a dependency)
+  - Implementation: `src/lib/components/MenuCard.svelte` - Product card with image, title, price, description, tags, add to cart button
+  - Tests: `src/lib/components/MenuCard.spec.ts` (37 tests) - Product type validation, price formatting, cart config
+  - Features: Aspect-ratio image container, cookie emoji placeholder, line-clamp-2 description, tag badges, hover lift effect
+  - Props: `product` (required) - Product type with id, slug, title, priceCents, stripePriceId, description?, imageUrl?, tags?
 
 ## Key File Locations
 
@@ -63,6 +68,8 @@ This file contains useful findings for future agents working on this project.
 | `src/lib/config.ts`                  | Site configuration (migrated from hugo.toml)          |
 | `src/lib/components/Header.svelte`   | Header with desktop/mobile nav, cart badge            |
 | `src/lib/components/Footer.svelte`   | Footer with brand, nav, contact, social               |
+| `src/lib/components/Hero.svelte`     | Hero section with gradient, CTA button                |
+| `src/lib/components/MenuCard.svelte` | Product card with image, price, add to cart           |
 | `src/routes/(public)/+layout.svelte` | Public pages layout (Header + main + Footer)          |
 | `src/routes/(public)/+page.svelte`   | Homepage (placeholder, will add Hero in Phase 2)      |
 | `src/lib/server/db/schema.ts`        | Drizzle table definitions                             |
@@ -106,7 +113,8 @@ export const tableName = sqliteTable('table_name', {
 9. ~~Footer component (PRD 1.4)~~ DONE - `src/lib/components/Footer.svelte` with 15 tests
 10. ~~Public layout group (PRD 1.5)~~ DONE - `src/routes/(public)/+layout.svelte` with Header and Footer
 11. ~~Hero component (PRD 2.1)~~ DONE - `src/lib/components/Hero.svelte` with 19 tests
-12. **NEXT: Homepage (PRD 2.2)** - `src/routes/(public)/+page.svelte` with Hero and featured products
+12. ~~MenuCard component (PRD 2.3)~~ DONE - `src/lib/components/MenuCard.svelte` with 37 tests
+13. **NEXT: Homepage (PRD 2.2)** - `src/routes/(public)/+page.svelte` with Hero and featured products
 
 ## Commands Reference
 
@@ -140,16 +148,17 @@ bun run db:push      # Push schema to D1
 
 ## Test Coverage Summary
 
-| Test File                           | Tests | Purpose                            |
-| ----------------------------------- | ----- | ---------------------------------- |
-| `src/demo.spec.ts`                  | 1     | Demo test from sv create           |
-| `src/lib/config.spec.ts`            | 35    | Site configuration and helpers     |
-| `src/lib/server/db/schema.spec.ts`  | 23    | Schema table definitions and types |
-| `src/lib/server/db/db.spec.ts`      | 10    | Database helper functions          |
-| `src/lib/components/Header.spec.ts` | 13    | Header component config logic      |
-| `src/lib/components/Footer.spec.ts` | 15    | Footer component config logic      |
-| `src/lib/components/Hero.spec.ts`   | 19    | Hero component config logic        |
-| **Total**                           | 116   |                                    |
+| Test File                             | Tests | Purpose                            |
+| ------------------------------------- | ----- | ---------------------------------- |
+| `src/demo.spec.ts`                    | 1     | Demo test from sv create           |
+| `src/lib/config.spec.ts`              | 35    | Site configuration and helpers     |
+| `src/lib/server/db/schema.spec.ts`    | 23    | Schema table definitions and types |
+| `src/lib/server/db/db.spec.ts`        | 10    | Database helper functions          |
+| `src/lib/components/Header.spec.ts`   | 13    | Header component config logic      |
+| `src/lib/components/Footer.spec.ts`   | 15    | Footer component config logic      |
+| `src/lib/components/Hero.spec.ts`     | 19    | Hero component config logic        |
+| `src/lib/components/MenuCard.spec.ts` | 37    | MenuCard product type and config   |
+| **Total**                             | 153   |                                    |
 
 ## Site Config Notes
 
@@ -322,4 +331,54 @@ src/routes/(public)/
 │   └── +page.svelte  # About page (/about)
 └── checkout/
     └── +page.svelte  # Checkout (/checkout)
+```
+
+## MenuCard Component Notes
+
+The `src/lib/components/MenuCard.svelte` component implements:
+
+1. **Props Interface:**
+   - `product` (required): Product object with id, slug, title, priceCents, stripePriceId
+   - Optional fields: description, imageUrl, tags
+2. **Visual Design:**
+   - Aspect-square image container with cover object-fit
+   - Cookie emoji placeholder when no imageUrl
+   - Card with rounded-xl, shadow-md, hover lift effect (-translate-y-1, shadow-xl)
+   - line-clamp-2 for description truncation
+   - Tag badges with rounded-full styling
+3. **Data Attributes:** Button includes data attributes for cart integration:
+   - `data-product-id`, `data-product-slug`, `data-product-title`
+   - `data-product-price`, `data-product-stripe-price-id`
+
+### MenuCard Usage (for Menu/Homepage)
+
+```svelte
+<script lang="ts">
+	import MenuCard from '$lib/components/MenuCard.svelte';
+	import type { Product } from '$lib/components/MenuCard.svelte';
+
+	// Products from page.server.ts load function
+	let { data } = $props();
+</script>
+
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+	{#each data.products as product}
+		<MenuCard {product} />
+	{/each}
+</div>
+```
+
+### Product Type (exported from MenuCard.svelte)
+
+```typescript
+interface Product {
+	id: number;
+	slug: string;
+	title: string;
+	priceCents: number;
+	stripePriceId: string;
+	description?: string | null;
+	imageUrl?: string | null;
+	tags?: string[] | null;
+}
 ```
