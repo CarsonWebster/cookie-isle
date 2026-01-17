@@ -10,7 +10,7 @@ This file contains useful findings for future agents working on this project.
 
 ## Current Progress (as of 2026-01-16)
 
-### Phase 0 Status
+### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
 - 0.1-0.5: Completed (project setup, TypeScript, Vitest, Tailwind)
 - 0.6: Partially complete (D1 configured, R2 pending - needs enabling in CF Dashboard)
@@ -19,7 +19,9 @@ This file contains useful findings for future agents working on this project.
   - Migrations generated - DONE
   - Schema tests written (23 tests) - DONE (`src/lib/server/db/schema.spec.ts`)
   - Remaining: push to D1 (0.7.9 - needs CF credentials)
-- 0.8: Database helper EXISTS (`src/lib/server/db/index.ts`) - just needs tests
+- 0.8: Database helper COMPLETE
+  - Implementation: `src/lib/server/db/index.ts` with `getDb()` and `createDb()` functions
+  - Tests: `src/lib/server/db/db.spec.ts` (10 tests) - Tests cover error handling and successful DB creation
 
 ## Key File Locations
 
@@ -59,9 +61,14 @@ export const tableName = sqliteTable('table_name', {
 1. ~~Add `adminSessions` table to schema (PRD 0.7.6)~~ DONE
 2. ~~Generate migrations (PRD 0.7.8)~~ DONE - See `drizzle/migrations/0000_unknown_mandrill.sql`
 3. ~~Write schema type tests (PRD 0.7.10)~~ DONE - 23 tests in `src/lib/server/db/schema.spec.ts`
-4. Push migrations to D1 (PRD 0.7.9) - Requires CF credentials in env vars (blocked on CF setup)
-5. Write database helper tests (PRD 0.8.4) - `src/lib/server/db/index.ts` already has implementation
-6. Start Phase 1: Core Layout & Components (1.1 Site configuration is first)
+4. ~~Write database helper tests (PRD 0.8.4)~~ DONE - 10 tests in `src/lib/server/db/db.spec.ts`
+5. Push migrations to D1 (PRD 0.7.9) - Requires CF credentials in env vars (blocked on CF setup)
+6. **START Phase 1: Core Layout & Components**
+   - 1.1 Site configuration (`src/lib/config.ts`) - migrate settings from `_legacy/hugo.toml`
+   - 1.2 Root layout - HTML structure and meta tags
+   - 1.3 Header component - with mobile nav
+   - 1.4 Footer component
+   - 1.5 Public layout group
 
 ## Commands Reference
 
@@ -86,3 +93,15 @@ bun run db:push      # Push schema to D1
 8. **drizzle-kit generate works locally:** The d1-http driver credentials are only needed for `push` operations, not `generate`.
 9. **Test file locations:** Tests live in `src/` alongside source files, not in a separate `tests/` directory. Use `*.spec.ts` for server tests and `*.svelte.spec.ts` for browser tests.
 10. **Drizzle introspection:** Use `getTableName()` and `getTableColumns()` from `drizzle-orm` to introspect schema for testing.
+11. **Mocking drizzle-orm/d1:** When testing database helpers, mock the `drizzle-orm/d1` module with `vi.mock()`. See `db.spec.ts` for the pattern.
+12. **D1Database mocking:** Create mock D1Database with `prepare`, `dump`, `batch`, `exec` methods. Cast as `unknown as D1Database` to satisfy TypeScript.
+13. **Phase 0 complete:** All coding tasks in Phase 0 are done. Only blocked tasks are CF deployment (0.6.3 R2, 0.7.9 push to D1) which require manual CF Dashboard setup.
+
+## Test Coverage Summary
+
+| Test File                          | Tests | Purpose                            |
+| ---------------------------------- | ----- | ---------------------------------- |
+| `src/demo.spec.ts`                 | 1     | Demo test from sv create           |
+| `src/lib/server/db/schema.spec.ts` | 23    | Schema table definitions and types |
+| `src/lib/server/db/db.spec.ts`     | 10    | Database helper functions          |
+| **Total**                          | 34    |                                    |

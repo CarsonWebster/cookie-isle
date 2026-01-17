@@ -213,7 +213,7 @@ Before marking any TODO as complete:
 
 ## Phase 0: Repository Setup
 
-**Status:** In Progress
+**Status:** Completed (except CF deployment tasks)
 
 ### 0.1 Archive legacy project
 
@@ -321,18 +321,18 @@ Before marking any TODO as complete:
 
 ### 0.8 Create database helper
 
-**Status:** Partially Complete
+**Status:** Completed
 
-> Note: Database helper already exists at `src/lib/server/db/index.ts` with `getDb()` and `createDb()` functions. Just needs tests.
+> Note: Database helper already exists at `src/lib/server/db/index.ts` with `getDb()` and `createDb()` functions.
 
-| ID    | Task                                                                | Status      |
-| ----- | ------------------------------------------------------------------- | ----------- |
-| 0.8.1 | Create `src/lib/server/db/index.ts` with `getDb(platform)` function | Completed   |
-| 0.8.2 | Export typed Drizzle instance that takes Platform.env.DB            | Completed   |
-| 0.8.3 | Add error handling for missing DB binding                           | Completed   |
-| 0.8.4 | Write unit test for db helper in `src/lib/server/db/db.spec.ts`     | Not Started |
-| 0.8.5 | Run `bun run check` and `bun run test:unit` - must pass             | Not Started |
-| 0.8.6 | **Commit:** `feat: add database connection helper`                  | Not Started |
+| ID    | Task                                                                | Status    |
+| ----- | ------------------------------------------------------------------- | --------- |
+| 0.8.1 | Create `src/lib/server/db/index.ts` with `getDb(platform)` function | Completed |
+| 0.8.2 | Export typed Drizzle instance that takes Platform.env.DB            | Completed |
+| 0.8.3 | Add error handling for missing DB binding                           | Completed |
+| 0.8.4 | Write unit test for db helper in `src/lib/server/db/db.spec.ts`     | Completed |
+| 0.8.5 | Run `bun run check` and `bun run test:unit` - must pass             | Completed |
+| 0.8.6 | **Commit:** `feat: add database connection helper`                  | Completed |
 
 ---
 
