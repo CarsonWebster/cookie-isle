@@ -32,9 +32,19 @@ export const load: PageServerLoad = async ({ params, platform }) => {
 export const actions: Actions = {
 	update: async ({ request, params, platform }) => {
 		// Get DB connection
-		const db = getDb(platform);
-		if (!db) {
-			return fail(500, { error: 'Database not available' });
+		let db;
+		try {
+			db = getDb(platform);
+		} catch (err) {
+			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+			return fail(500, {
+				error: `Database not available: ${errorMessage}`,
+				debugInfo: {
+					hasPlatform: !!platform,
+					hasEnv: !!platform?.env,
+					hasDB: !!platform?.env?.DB
+				}
+			});
 		}
 
 		// Parse product ID
@@ -57,6 +67,17 @@ export const actions: Actions = {
 		const sortOrderStr = formData.get('sortOrder')?.toString();
 		const featured = formData.get('featured') === 'on';
 		const active = formData.get('active') === 'on';
+
+		// Debug log the parsed values
+		console.log('Parsed form data:', {
+			title,
+			slug,
+			imageUrl,
+			heroImageUrl,
+			description: description?.substring(0, 50),
+			featured,
+			active
+		});
 
 		// Parse focal point values
 		const cardFocalXStr = formData.get('cardFocalX')?.toString();
@@ -164,7 +185,15 @@ export const actions: Actions = {
 				.where(eq(products.id, id));
 		} catch (err) {
 			console.error('Error updating product:', err);
-			return fail(500, { error: 'Failed to update product' });
+			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+			return fail(500, {
+				error: `Failed to update product: ${errorMessage}`,
+				debugInfo: {
+					errorType: err instanceof Error ? err.constructor.name : typeof err,
+					hasDB: !!db,
+					productId: id
+				}
+			});
 		}
 
 		// Redirect to products list
