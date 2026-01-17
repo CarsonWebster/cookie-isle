@@ -18,18 +18,18 @@
 			"database_name": "cookie-isle-db",
 			"database_id": "c804e72f-a721-4d5f-8332-f2f11c49504d"
 		}
+	],
+
+	// R2 Bucket binding
+	"r2_buckets": [
+		{
+			"binding": "IMAGES",
+			"bucket_name": "cookie-isle-images"
+		}
 	]
 
 	// Environment variables are loaded from:
 	// - .dev.vars file for local development
 	// - Cloudflare Pages > Settings > Environment Variables for production
 	// Required variables: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ADMIN_PASSWORD
-
-	// R2 Bucket binding - Enable R2 in Cloudflare Dashboard first, then add:
-	// "r2_buckets": [
-	// 	{
-	// 		"binding": "IMAGES",
-	// 		"bucket_name": "cookie-isle-images"
-	// 	}
-	// ]
 }

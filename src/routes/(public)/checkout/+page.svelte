@@ -31,8 +31,8 @@
 		initializeCart,
 		getMaxQuantityPerItem
 	} from '$lib/stores/cart.svelte';
-	import { formatTimeDisplay } from './+page.server';
-	import type { FulfillmentSlotWithCapacity, SlotsByDate } from './+page.server';
+	import { formatTimeDisplay } from './checkout-utils';
+	import type { FulfillmentSlotWithCapacity, SlotsByDate } from './checkout-utils';
 
 	// Page data from server load function
 	interface Props {

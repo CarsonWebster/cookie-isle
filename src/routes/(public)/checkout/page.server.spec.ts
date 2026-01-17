@@ -8,12 +8,12 @@
  */
 
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
+import { load } from './+page.server';
 import {
-	load,
 	formatTimeDisplay,
 	type FulfillmentSlotWithCapacity,
 	type SlotsByDate
-} from './+page.server';
+} from './checkout-utils';
 
 // Mock the database module
 vi.mock('$lib/server/db', () => ({

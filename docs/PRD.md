@@ -965,22 +965,22 @@ Before marking any TODO as complete:
 
 ### 6.7 Orders list page
 
-**Status:** Not Started
+**Status:** Completed
 
 | ID     | Task                                                                       | Status      |
 | ------ | -------------------------------------------------------------------------- | ----------- |
-| 6.7.1  | Create `src/routes/admin/orders/+page.server.ts`                           | Not Started |
-| 6.7.2  | Accept query params: date filter, status filter                            | Not Started |
-| 6.7.3  | Query orders with filters, ordered by created_at DESC                      | Not Started |
-| 6.7.4  | Create `src/routes/admin/orders/+page.svelte`                              | Not Started |
-| 6.7.5  | Add date picker filter (default to today)                                  | Not Started |
-| 6.7.6  | Add status filter dropdown (all, pending, paid, fulfilled)                 | Not Started |
-| 6.7.7  | Display orders table: ID, Customer, Items, Total, Status, Date             | Not Started |
-| 6.7.8  | Add status badges with colors (pending=yellow, paid=blue, fulfilled=green) | Not Started |
-| 6.7.9  | Make rows clickable to go to order detail                                  | Not Started |
-| 6.7.10 | Add pagination if >20 orders                                               | Not Started |
-| 6.7.11 | Show empty state when no orders match filters                              | Not Started |
-| 6.7.12 | Write page test in `tests/integration/admin-orders.test.ts`                | Not Started |
+| 6.7.1  | Create `src/routes/admin/orders/+page.server.ts`                           | Completed   |
+| 6.7.2  | Accept query params: date filter, status filter                            | Completed   |
+| 6.7.3  | Query orders with filters, ordered by created_at DESC                      | Completed   |
+| 6.7.4  | Create `src/routes/admin/orders/+page.svelte`                              | Completed   |
+| 6.7.5  | Add date picker filter (default to today)                                  | Completed   |
+| 6.7.6  | Add status filter dropdown (all, pending, paid, fulfilled)                 | Completed   |
+| 6.7.7  | Display orders table: ID, Customer, Items, Total, Status, Date             | Completed   |
+| 6.7.8  | Add status badges with colors (pending=yellow, paid=blue, fulfilled=green) | Completed   |
+| 6.7.9  | Make rows clickable to go to order detail                                  | Completed   |
+| 6.7.10 | Add pagination if >20 orders                                               | Deferred    |
+| 6.7.11 | Show empty state when no orders match filters                              | Completed   |
+| 6.7.12 | Write page test in `src/routes/admin/orders/page.server.spec.ts`           | Completed   |
 | 6.7.13 | **Commit:** `feat: create orders list page`                                | Not Started |
 
 ### 6.8 Order detail page

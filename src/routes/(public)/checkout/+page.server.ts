@@ -12,30 +12,7 @@ import { getDb } from '$lib/server/db';
 import { fulfillmentSlots, dailyCapacity } from '$lib/server/db/schema';
 import { eq, and, gte } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
-
-/**
- * Represents a fulfillment slot with capacity information
- */
-export interface FulfillmentSlotWithCapacity {
-	id: number;
-	date: string; // YYYY-MM-DD format
-	startTime: string; // HH:MM format
-	endTime: string; // HH:MM format
-	slotType: string | null; // 'pickup', 'delivery', or 'both'
-	maxCookies: number | null;
-	cookiesOrdered: number; // From daily_capacity table, 0 if no record
-	remainingCapacity: number; // maxCookies - cookiesOrdered
-	isSoldOut: boolean; // remainingCapacity <= 0
-}
-
-/**
- * Groups slots by date for easier rendering
- */
-export interface SlotsByDate {
-	date: string;
-	formattedDate: string; // e.g., "Saturday, January 18"
-	slots: FulfillmentSlotWithCapacity[];
-}
+import type { FulfillmentSlotWithCapacity, SlotsByDate } from './checkout-utils';
 
 /**
  * Formats a date string (YYYY-MM-DD) to a human-readable format
@@ -47,16 +24,6 @@ function formatDateHeading(dateStr: string): string {
 		month: 'long',
 		day: 'numeric'
 	});
-}
-
-/**
- * Formats a time string (HH:MM) to a human-readable format (e.g., "10:00 AM")
- */
-export function formatTimeDisplay(timeStr: string): string {
-	const [hours, minutes] = timeStr.split(':').map(Number);
-	const period = hours >= 12 ? 'PM' : 'AM';
-	const displayHours = hours % 12 || 12;
-	return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
 }
 
 /**

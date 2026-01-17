@@ -158,7 +158,8 @@ export const tableName = sqliteTable('table_name', {
 31. ~~Checkout success page (PRD 4.4)~~ DONE - `src/routes/(public)/checkout/success/` with 27 tests
 32. ~~Newsletter signup endpoint (PRD 4.5)~~ DONE - `src/routes/api/newsletter/+server.ts` with 54 tests
 33. ~~Connect newsletter form (PRD 4.6)~~ DONE - ComingSoon component now POSTs to `/api/newsletter`
-34. **NEXT: Phase 5 - R2 Image Upload** - R2 bucket is ready, start with upload endpoint (PRD 5.1)
+34. ~~Admin orders list page (PRD 6.7)~~ DONE - `src/routes/admin/orders/` with 24 tests
+35. **NEXT: Phase 6.8 - Order Detail Page** - View individual order with full details and status update
 
 ## Commands Reference
 
@@ -235,7 +236,10 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/api/newsletter/server.spec.ts`                 | 54    | Newsletter API validation & helpers  |
 | `src/lib/server/auth.spec.ts`                              | 66    | Admin authentication helpers         |
 | `src/routes/admin/login/page.server.spec.ts`               | 27    | Admin login page load & actions      |
-| **Total**                                                  | 953   |                                      |
+| `src/routes/admin/page.server.spec.ts`                     | 20    | Admin dashboard stats                |
+| `src/routes/admin/layout.server.spec.ts`                   | 48    | Admin auth guard layout              |
+| `src/routes/admin/orders/page.server.spec.ts`              | 24    | Admin orders list with filters       |
+| **Total**                                                  | 1045  |                                      |
 
 ## Site Config Notes
 
@@ -2636,7 +2640,108 @@ LIMIT 5
 
 - "Cookies Needed Today" breakdown by product (PRD 6.6.3)
 - This week's revenue query (PRD 6.6.5)
-- Orders list/detail pages (PRD 6.7-6.8)
+
+## Admin Orders List Page Notes (Phase 6.7 - COMPLETE)
+
+The `src/routes/admin/orders/` implements a filterable orders list for admin management.
+
+### Key Features
+
+1. **Server Load Function (`+page.server.ts`):**
+   - Accepts query params: `date` and `status` for filtering
+   - Queries orders with dynamic WHERE conditions based on filters
+   - Orders by `created_at DESC` (most recent first)
+   - Queries distinct fulfillment dates for filter dropdown
+   - Graceful fallback: returns empty array if platform/DB unavailable
+   - Error handling: catches DB errors and returns empty data
+   - Default filter values: `date=all`, `status=all`
+
+2. **Orders List Page (`+page.svelte`):**
+   - **Filter Controls:**
+     - Date filter dropdown (All Dates, Today, or specific dates from DB)
+     - Status filter dropdown (All, Pending, Paid, Fulfilled, Cancelled)
+     - Filters use URL query params and update via `goto()` with `replaceState: true`
+   - **Desktop Table View:**
+     - Columns: Order #, Customer, Items, Total, Status, Fulfillment, Date
+     - Status badges with color coding (pending=yellow, paid=blue, fulfilled=green, cancelled=red)
+     - Clickable rows navigate to order detail page (`/admin/orders/{id}`)
+     - Hover effect for visual feedback
+   - **Mobile Card View:**
+     - Stacked card layout with compact information display
+     - Same clickable behavior as desktop
+   - **Empty State:**
+     - Shows when no orders match current filters
+     - Helpful message: "Try adjusting your filters"
+
+### Exported Helper Functions
+
+| Function               | Purpose                                              |
+| ---------------------- | ---------------------------------------------------- |
+| `getTodayDate(now?)`   | Get today's date in YYYY-MM-DD format                |
+| `formatItemsSummary()` | Format items as "2x Cookie, 1x Brownie" or "5 items" |
+| `formatDateTime()`     | Format ISO to "Jan 16, 3:30 PM"                      |
+| `queryOrders(db, ...)` | Query orders with optional filters                   |
+
+### Exported Types
+
+```typescript
+interface AdminOrder {
+	id: number;
+	customerName: string | null;
+	customerEmail: string | null;
+	itemsSummary: string;
+	totalCents: number | null;
+	totalFormatted: string;
+	status: string | null;
+	fulfillmentDate: string | null;
+	fulfillmentType: string | null;
+	createdAt: string | null;
+	createdAtFormatted: string;
+}
+
+interface OrdersPageData {
+	orders: AdminOrder[];
+	dateFilter: string;
+	statusFilter: string;
+	availableDates: string[];
+	todayDate: string;
+}
+```
+
+### Test Coverage
+
+24 tests in `src/routes/admin/orders/page.server.spec.ts`:
+
+- getTodayDate function (3 tests)
+- formatItemsSummary (5 tests)
+- formatDateTime (4 tests)
+- queryOrders (6 tests)
+- load function (6 tests)
+
+### Database Queries
+
+Orders with filters:
+
+```sql
+SELECT * FROM orders
+WHERE fulfillment_date = '2026-01-17'  -- if date filter applied
+  AND status = 'paid'                  -- if status filter applied
+ORDER BY created_at DESC
+```
+
+Available dates for dropdown:
+
+```sql
+SELECT DISTINCT fulfillment_date
+FROM orders
+GROUP BY fulfillment_date
+ORDER BY fulfillment_date DESC
+```
+
+### What's Not Included (Deferred)
+
+- Pagination for >20 orders (PRD 6.7.10) - deferred for now, can add later if needed
+- Order detail page (PRD 6.8) - next task
 - Products CRUD pages (PRD 6.9-6.11)
 - Fulfillment slots management (PRD 6.12)
 - Newsletter subscribers list (PRD 6.13)

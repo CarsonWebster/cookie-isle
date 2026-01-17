@@ -6,7 +6,7 @@
 
 ITERATIONS=10
 PROMPT_FILE="ralphprompt.txt"
-MODEL="anthropic/claude-opus-4-5"
+MODEL="anthropic/claude-sonnet-4-5"
 
 echo "=========================================="
 echo "  Ralph - Cookie Isle Task Runner"
