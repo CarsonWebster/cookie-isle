@@ -703,7 +703,7 @@ Before marking any TODO as complete:
 
 ## Phase 4: API Routes & Stripe
 
-**Status:** In Progress
+**Status:** Completed
 
 ### 4.1 Stripe checkout endpoint
 
@@ -801,15 +801,15 @@ Before marking any TODO as complete:
 
 ### 4.6 Connect newsletter form
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                     | Status      |
-| ----- | -------------------------------------------------------- | ----------- |
-| 4.6.1 | Update ComingSoon component to POST to `/api/newsletter` | Not Started |
-| 4.6.2 | Add loading state to submit button                       | Not Started |
-| 4.6.3 | Display success/error message below form                 | Not Started |
-| 4.6.4 | Clear input on success                                   | Not Started |
-| 4.6.5 | **Commit:** `feat: connect newsletter form to API`       | Not Started |
+| ID    | Task                                                     | Status    |
+| ----- | -------------------------------------------------------- | --------- |
+| 4.6.1 | Update ComingSoon component to POST to `/api/newsletter` | Completed |
+| 4.6.2 | Add loading state to submit button                       | Completed |
+| 4.6.3 | Display success/error message below form                 | Completed |
+| 4.6.4 | Clear input on success                                   | Completed |
+| 4.6.5 | **Commit:** `feat: connect newsletter form to API`       | Completed |
 
 ---
 

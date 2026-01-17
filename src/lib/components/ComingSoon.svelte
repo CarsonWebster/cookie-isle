@@ -22,10 +22,18 @@
 	// Derived state for form validation
 	let isValidEmail = $derived(email.includes('@') && email.includes('.'));
 
+	/** Response type from /api/newsletter endpoint */
+	interface NewsletterApiResponse {
+		success: boolean;
+		message?: string;
+		error?: string;
+		details?: string[];
+		alreadySubscribed?: boolean;
+	}
+
 	/**
 	 * Handle newsletter form submission
-	 * For now, this just shows a success message.
-	 * In Phase 4.6, this will POST to /api/newsletter
+	 * POSTs to /api/newsletter endpoint and handles response
 	 */
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
@@ -37,13 +45,30 @@
 		submitMessage = '';
 
 		try {
-			// TODO: In Phase 4.6, this will POST to /api/newsletter
-			// For now, simulate a successful submission
-			await new Promise((resolve) => setTimeout(resolve, 500));
+			const response = await fetch('/api/newsletter', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					email: email.trim(),
+					source: 'coming-soon'
+				})
+			});
 
-			submitStatus = 'success';
-			submitMessage = config.newsletter.successMessage;
-			email = ''; // Clear the form
+			const data: NewsletterApiResponse = await response.json();
+
+			if (data.success) {
+				submitStatus = 'success';
+				submitMessage = data.message || config.newsletter.successMessage;
+				email = ''; // Clear the form on success
+			} else {
+				submitStatus = 'error';
+				// Use first validation detail if available, otherwise generic error
+				if (data.details && data.details.length > 0) {
+					submitMessage = data.details[0];
+				} else {
+					submitMessage = data.error || config.newsletter.errorMessage;
+				}
+			}
 		} catch {
 			submitStatus = 'error';
 			submitMessage = config.newsletter.errorMessage;

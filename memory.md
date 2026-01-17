@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16, Phase 4.4 Complete)
+## Current Progress (as of 2026-01-16, Phase 4 Complete)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -155,7 +155,8 @@ export const tableName = sqliteTable('table_name', {
 30. ~~Stripe webhook handler (PRD 4.3)~~ DONE - `src/routes/api/webhook/+server.ts` with 44 tests
 31. ~~Checkout success page (PRD 4.4)~~ DONE - `src/routes/(public)/checkout/success/` with 27 tests
 32. ~~Newsletter signup endpoint (PRD 4.5)~~ DONE - `src/routes/api/newsletter/+server.ts` with 54 tests
-33. **NEXT: Connect newsletter form (PRD 4.6)** - Update ComingSoon to POST to `/api/newsletter`
+33. ~~Connect newsletter form (PRD 4.6)~~ DONE - ComingSoon component now POSTs to `/api/newsletter`
+34. **NEXT: Phase 5 - R2 Image Upload** - Start with R2 upload endpoint (PRD 5.1)
 
 ## Commands Reference
 
@@ -2095,6 +2096,17 @@ if (data.success) {
 - **503 Service Unavailable:** Newsletter disabled in config or database unavailable
 - **500 Internal Server Error:** Database insert failure
 
-### Next Task
+### Phase 4.6 Complete - Newsletter Form Connected
 
-**Phase 4.6: Connect newsletter form** - Update ComingSoon component to POST to `/api/newsletter`
+The ComingSoon component now POSTs to `/api/newsletter` with:
+
+- Real API call instead of simulated submission
+- Error handling for validation errors (shows first detail error)
+- Network error handling with fallback message from config
+- Source tracking set to "coming-soon" for analytics
+
+### Next Phase
+
+**Phase 5: Image Upload (R2)** - Start with PRD 5.1 (R2 upload endpoint)
+
+Note: R2 bucket needs to be enabled in Cloudflare Dashboard first (0.6.3 is still pending)
