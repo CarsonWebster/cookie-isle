@@ -471,18 +471,18 @@ Before marking any TODO as complete:
 
 ### 2.4 Menu page
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                                 | Status      |
-| ----- | -------------------------------------------------------------------- | ----------- |
-| 2.4.1 | Create `src/routes/(public)/menu/+page.server.ts`                    | Not Started |
-| 2.4.2 | Query: `SELECT * FROM products WHERE active = 1 ORDER BY sort_order` | Not Started |
-| 2.4.3 | Create `src/routes/(public)/menu/+page.svelte`                       | Not Started |
-| 2.4.4 | Add page title "Our Menu" with decorative underline                  | Not Started |
-| 2.4.5 | Render responsive grid of MenuCard components                        | Not Started |
-| 2.4.6 | Add empty state message if no products                               | Not Started |
-| 2.4.7 | Write page test in `tests/integration/menu.test.ts`                  | Not Started |
-| 2.4.8 | **Commit:** `feat: create menu page with product grid`               | Not Started |
+| ID    | Task                                                                 | Status    |
+| ----- | -------------------------------------------------------------------- | --------- |
+| 2.4.1 | Create `src/routes/(public)/menu/+page.server.ts`                    | Completed |
+| 2.4.2 | Query: `SELECT * FROM products WHERE active = 1 ORDER BY sort_order` | Completed |
+| 2.4.3 | Create `src/routes/(public)/menu/+page.svelte`                       | Completed |
+| 2.4.4 | Add page title "Our Menu" with decorative underline                  | Completed |
+| 2.4.5 | Render responsive grid of MenuCard components                        | Completed |
+| 2.4.6 | Add empty state message if no products                               | Completed |
+| 2.4.7 | Write page test in `src/routes/(public)/menu/page.server.spec.ts`    | Completed |
+| 2.4.8 | **Commit:** `feat: create menu page with product grid`               | Completed |
 
 ### 2.5 Cookie detail page
 

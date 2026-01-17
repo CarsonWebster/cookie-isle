@@ -115,7 +115,8 @@ export const tableName = sqliteTable('table_name', {
 11. ~~Hero component (PRD 2.1)~~ DONE - `src/lib/components/Hero.svelte` with 19 tests
 12. ~~MenuCard component (PRD 2.3)~~ DONE - `src/lib/components/MenuCard.svelte` with 37 tests
 13. ~~Homepage (PRD 2.2)~~ DONE - `src/routes/(public)/+page.svelte` with Hero and featured products (7 tests)
-14. **NEXT: Menu page (PRD 2.4)** - `src/routes/(public)/menu/+page.svelte` with all products grid
+14. ~~Menu page (PRD 2.4)~~ DONE - `src/routes/(public)/menu/+page.svelte` with all products grid (10 tests)
+15. **NEXT: Cookie detail page (PRD 2.5)** - `src/routes/(public)/menu/[slug]/+page.svelte` with product details
 
 ## Commands Reference
 
@@ -149,18 +150,19 @@ bun run db:push      # Push schema to D1
 
 ## Test Coverage Summary
 
-| Test File                                 | Tests | Purpose                            |
-| ----------------------------------------- | ----- | ---------------------------------- |
-| `src/demo.spec.ts`                        | 1     | Demo test from sv create           |
-| `src/lib/config.spec.ts`                  | 35    | Site configuration and helpers     |
-| `src/lib/server/db/schema.spec.ts`        | 23    | Schema table definitions and types |
-| `src/lib/server/db/db.spec.ts`            | 10    | Database helper functions          |
-| `src/lib/components/Header.spec.ts`       | 13    | Header component config logic      |
-| `src/lib/components/Footer.spec.ts`       | 15    | Footer component config logic      |
-| `src/lib/components/Hero.spec.ts`         | 19    | Hero component config logic        |
-| `src/lib/components/MenuCard.spec.ts`     | 37    | MenuCard product type and config   |
-| `src/routes/(public)/page.server.spec.ts` | 7     | Homepage load function             |
-| **Total**                                 | 160   |                                    |
+| Test File                                      | Tests | Purpose                            |
+| ---------------------------------------------- | ----- | ---------------------------------- |
+| `src/demo.spec.ts`                             | 1     | Demo test from sv create           |
+| `src/lib/config.spec.ts`                       | 35    | Site configuration and helpers     |
+| `src/lib/server/db/schema.spec.ts`             | 23    | Schema table definitions and types |
+| `src/lib/server/db/db.spec.ts`                 | 10    | Database helper functions          |
+| `src/lib/components/Header.spec.ts`            | 13    | Header component config logic      |
+| `src/lib/components/Footer.spec.ts`            | 15    | Footer component config logic      |
+| `src/lib/components/Hero.spec.ts`              | 19    | Hero component config logic        |
+| `src/lib/components/MenuCard.spec.ts`          | 37    | MenuCard product type and config   |
+| `src/routes/(public)/page.server.spec.ts`      | 7     | Homepage load function             |
+| `src/routes/(public)/menu/page.server.spec.ts` | 10    | Menu page load function            |
+| **Total**                                      | 170   |                                    |
 
 ## Site Config Notes
 
@@ -440,3 +442,42 @@ const createMockDb = (products) => {
 const result = await load({ platform: undefined });
 expect(result).toEqual({ featuredProducts: [] });
 ```
+
+## Menu Page Notes
+
+The `src/routes/(public)/menu/+page.svelte` page implements:
+
+1. **Server Load Function (`+page.server.ts`):**
+   - Loads all active products from D1: `active=true ORDER BY sortOrder`
+   - Returns `{ products: [] }` when database is unavailable (graceful fallback)
+   - Uses same pattern as homepage but without `featured` filter
+
+2. **Page Component (`+page.svelte`):**
+   - Page title "Our Menu" with decorative underline (primary color, h-1 w-24)
+   - Subtitle describing freshly baked cookies
+   - Responsive 3-column grid of MenuCard components
+   - Empty state with large cookie emoji and "Back to Home" link
+
+3. **Key Patterns:**
+   - Uses `$derived()` for `hasProducts` boolean
+   - Keyed `{#each}` with `product.id` for efficient updates
+   - Meta description optimized for menu page
+
+### Menu Page Data Flow
+
+```
++page.server.ts (load)
+      ↓
+    D1 Query: SELECT ... WHERE active=1 ORDER BY sortOrder
+      ↓
+    { products: Product[] }
+      ↓
++page.svelte (data prop)
+      ↓
+    Page Header → MenuCard grid (or empty state)
+```
+
+### Difference from Homepage
+
+- Homepage: Filters for `featured=true AND active=true`, shows subset
+- Menu page: Filters for only `active=true`, shows all products
