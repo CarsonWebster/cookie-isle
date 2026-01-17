@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-17, Phase 6.11 Complete)
+## Current Progress (as of 2026-01-17, Phase 5.1 Complete - R2 Upload Endpoint)
 
 ### Phase 0 Status: COMPLETE
 
@@ -165,7 +165,8 @@ export const tableName = sqliteTable('table_name', {
 38. ~~Product edit page (PRD 6.11)~~ DONE - `src/routes/admin/products/[id]/` with 21 tests
 39. ~~Fulfillment slots page (PRD 6.12)~~ DONE - `src/routes/admin/slots/` with 21 tests
 40. ~~Newsletter subscribers page (PRD 6.13)~~ DONE - `src/routes/admin/newsletter/` with 23 tests
-41. **NEXT: Phase 5 (R2 Image Upload) OR Phase 7 (Data Migration & Deployment)** - R2 blocked until bucket enabled
+41. ~~R2 upload endpoint (PRD 5.1)~~ DONE - `src/routes/api/upload/+server.ts` with 45 tests
+42. **NEXT: Phase 5.2 (Image Serving) OR Phase 7 (Data Migration & Deployment)**
 
 ## Commands Reference
 
@@ -251,7 +252,8 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/admin/products/[id]/page.server.spec.ts`       | 21    | Product edit form with delete        |
 | `src/routes/admin/slots/page.server.spec.ts`               | 21    | Admin slots management with capacity |
 | `src/routes/admin/newsletter/page.server.spec.ts`          | 23    | Newsletter subscribers with CSV      |
-| **Total**                                                  | 1174  |                                      |
+| `src/routes/api/upload/server.spec.ts`                     | 45    | R2 image upload API                  |
+| **Total**                                                  | 1219  |                                      |
 
 ## Site Config Notes
 
@@ -2160,9 +2162,96 @@ The ComingSoon component now POSTs to `/api/newsletter` with:
 
 ### Next Phase
 
-**Phase 5: Image Upload (R2)** - BLOCKED (R2 bucket needs to be enabled in Cloudflare Dashboard first - 0.6.3 is still pending)
+**Phase 5: Image Upload (R2)** - IN PROGRESS (Phase 5.1 R2 Upload Endpoint COMPLETE)
 
-**Phase 6: Admin Dashboard** - Started with PRD 6.1 (Admin authentication)
+**Phase 6: Admin Dashboard** - COMPLETE (All phases 6.1-6.13 done)
+
+## R2 Image Upload API Notes (Phase 5.1 - COMPLETE)
+
+The `src/routes/api/upload/+server.ts` module handles secure image uploads to Cloudflare R2 storage.
+
+### Key Features
+
+1. **Admin Authentication Required:** Uses session cookie validation to ensure only authenticated admins can upload
+2. **Multipart Form Data Parsing:** Extracts file from `multipart/form-data` requests
+3. **File Type Validation:** Only allows `image/jpeg`, `image/png`, and `image/webp`
+4. **File Size Validation:** Maximum 5MB file size
+5. **Unique Filename Generation:** Pattern `{timestamp}-{randomId}.{ext}` (e.g., `1705445678901-a3f9d2e1.jpg`)
+6. **R2 Upload:** Stores file in `cookie-isle-images` bucket with proper content type headers
+7. **Public URL Return:** Returns placeholder URL pattern (to be configured with custom domain)
+
+### Exported Helper Functions
+
+| Function                      | Purpose                                        |
+| ----------------------------- | ---------------------------------------------- |
+| `validateFileType(mimeType)`  | Check if MIME type is allowed                  |
+| `validateFileSize(size)`      | Check if size is within limits (5MB)           |
+| `getExtensionFromMimeType()`  | Map MIME type to file extension                |
+| `generateUniqueFilename()`    | Create unique filename with timestamp + UUID   |
+| `parseMultipartFormData()`    | Extract File from form data                    |
+| `uploadToR2(bucket, name, f)` | Upload file to R2 with metadata                |
+| `getPublicImageUrl(filename)` | Construct public URL (placeholder for now)     |
+| `POST`                        | Main handler - authenticates, validates, saves |
+
+### Usage from Admin UI
+
+```typescript
+const formData = new FormData();
+formData.append('file', selectedFile);
+
+const response = await fetch('/api/upload', {
+	method: 'POST',
+	body: formData // Session cookie sent automatically
+});
+
+const data = await response.json();
+if (data.success) {
+	console.log('Image URL:', data.url);
+	console.log('Filename:', data.filename);
+}
+```
+
+### Test Coverage
+
+45 tests in `src/routes/api/upload/server.spec.ts`:
+
+- validateFileType (8 tests) - JPEG, PNG, WebP accepted; GIF, SVG, PDF rejected
+- validateFileSize (7 tests) - 5MB max, zero/negative rejected
+- getExtensionFromMimeType (5 tests) - jpg/png/webp mapping, null for unsupported
+- generateUniqueFilename (5 tests) - Pattern validation, uniqueness, error for invalid MIME
+- parseMultipartFormData (4 tests) - Extract file, missing file, invalid data, parse failure
+- uploadToR2 (4 tests) - Success, R2 errors, unknown errors, ArrayBuffer conversion
+- getPublicImageUrl (3 tests) - URL construction patterns
+- Module exports (7 tests) - All functions exported
+- Constants validation (2 tests) - MAX_FILE_SIZE=5MB, 3 allowed MIME types
+
+### Error Handling
+
+| Status | Error Message                  | Condition                          |
+| ------ | ------------------------------ | ---------------------------------- |
+| 401    | "Authentication required"      | No session cookie                  |
+| 401    | "Invalid or expired session"   | Session validation failed          |
+| 400    | "No file provided"             | Missing file in form data          |
+| 400    | "Invalid file type..."         | File type not JPEG/PNG/WebP        |
+| 400    | "File too large. Maximum..."   | File exceeds 5MB                   |
+| 500    | "Failed to upload image"       | R2 upload error                    |
+| 503    | "Server configuration error"   | Missing platform/env               |
+| 503    | "Image storage not configured" | Missing R2 bucket binding (IMAGES) |
+
+### Security Considerations
+
+1. **Authentication Required:** Only authenticated admins can upload (validates session on every request)
+2. **File Type Whitelist:** Only image formats allowed (prevents executable uploads)
+3. **Size Limits:** 5MB max prevents abuse
+4. **Unique Filenames:** Timestamp + UUID prevents overwriting and ensures uniqueness
+5. **Content Type Headers:** Proper MIME type set in R2 for secure serving
+
+### TODO for Production
+
+- [ ] Configure R2 custom domain or public URL (currently using placeholder)
+- [ ] Consider adding image optimization/resizing before upload
+- [ ] Add cleanup script for unused images
+- [ ] Implement image serving via Phase 5.2
 
 ## Admin Authentication Notes (Phase 6.1 - COMPLETE)
 

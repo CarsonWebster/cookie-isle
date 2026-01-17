@@ -815,25 +815,25 @@ Before marking any TODO as complete:
 
 ## Phase 5: Image Upload (R2)
 
-**Status:** Not Started
+**Status:** In Progress (5.1 Complete)
 
 ### 5.1 R2 upload endpoint
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                             | Status      |
-| ------ | ---------------------------------------------------------------- | ----------- |
-| 5.1.1  | Create `src/routes/api/upload/+server.ts` POST handler           | Not Started |
-| 5.1.2  | Require admin authentication (check session cookie)              | Not Started |
-| 5.1.3  | Parse multipart form data to get file                            | Not Started |
-| 5.1.4  | Validate file type: only allow image/jpeg, image/png, image/webp | Not Started |
-| 5.1.5  | Validate file size: max 5MB                                      | Not Started |
-| 5.1.6  | Generate unique filename: `{timestamp}-{random}.{ext}`           | Not Started |
-| 5.1.7  | Upload file to R2 bucket using platform.env.IMAGES               | Not Started |
-| 5.1.8  | Return public URL for uploaded image                             | Not Started |
-| 5.1.9  | Handle upload errors with appropriate status codes               | Not Started |
-| 5.1.10 | Write unit tests in `tests/unit/upload-api.test.ts`              | Not Started |
-| 5.1.11 | **Commit:** `feat: create R2 image upload endpoint`              | Not Started |
+| ID     | Task                                                             | Status    |
+| ------ | ---------------------------------------------------------------- | --------- |
+| 5.1.1  | Create `src/routes/api/upload/+server.ts` POST handler           | Completed |
+| 5.1.2  | Require admin authentication (check session cookie)              | Completed |
+| 5.1.3  | Parse multipart form data to get file                            | Completed |
+| 5.1.4  | Validate file type: only allow image/jpeg, image/png, image/webp | Completed |
+| 5.1.5  | Validate file size: max 5MB                                      | Completed |
+| 5.1.6  | Generate unique filename: `{timestamp}-{random}.{ext}`           | Completed |
+| 5.1.7  | Upload file to R2 bucket using platform.env.IMAGES               | Completed |
+| 5.1.8  | Return public URL for uploaded image                             | Completed |
+| 5.1.9  | Handle upload errors with appropriate status codes               | Completed |
+| 5.1.10 | Write unit tests in `src/routes/api/upload/server.spec.ts`       | Completed |
+| 5.1.11 | **Commit:** `feat: create R2 image upload endpoint`              | Completed |
 
 ### 5.2 Image serving configuration
 
