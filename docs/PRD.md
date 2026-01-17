@@ -1053,40 +1053,40 @@ Before marking any TODO as complete:
 
 **Status:** Completed
 
-| ID      | Task                                                                    | Status      |
-| ------- | ----------------------------------------------------------------------- | ----------- |
-| 6.11.1  | Create `src/routes/admin/products/[id]/+page.server.ts`                 | Completed   |
-| 6.11.2  | Load product by ID, return 404 if not found                             | Completed   |
-| 6.11.3  | Create `src/routes/admin/products/[id]/+page.svelte`                    | Completed   |
-| 6.11.4  | Reuse product form component from create page                           | Completed   |
-| 6.11.5  | Pre-populate form with existing product data                            | Completed   |
-| 6.11.6  | Show current images with option to replace                              | Deferred    |
-| 6.11.7  | Create form action to update product                                    | Completed   |
-| 6.11.8  | Add "Delete Product" button with confirmation modal                     | Completed   |
-| 6.11.9  | Create form action to delete product                                    | Completed   |
-| 6.11.10 | Redirect to /admin/products on success                                  | Completed   |
-| 6.11.11 | Write page test in `src/routes/admin/products/[id]/page.server.spec.ts` | Completed   |
-| 6.11.12 | **Commit:** `feat: create product edit page with delete`                | Not Started |
+| ID      | Task                                                                    | Status    |
+| ------- | ----------------------------------------------------------------------- | --------- |
+| 6.11.1  | Create `src/routes/admin/products/[id]/+page.server.ts`                 | Completed |
+| 6.11.2  | Load product by ID, return 404 if not found                             | Completed |
+| 6.11.3  | Create `src/routes/admin/products/[id]/+page.svelte`                    | Completed |
+| 6.11.4  | Reuse product form component from create page                           | Completed |
+| 6.11.5  | Pre-populate form with existing product data                            | Completed |
+| 6.11.6  | Show current images with option to replace                              | Deferred  |
+| 6.11.7  | Create form action to update product                                    | Completed |
+| 6.11.8  | Add "Delete Product" button with confirmation modal                     | Completed |
+| 6.11.9  | Create form action to delete product                                    | Completed |
+| 6.11.10 | Redirect to /admin/products on success                                  | Completed |
+| 6.11.11 | Write page test in `src/routes/admin/products/[id]/page.server.spec.ts` | Completed |
+| 6.11.12 | **Commit:** `feat: create product edit page with delete`                | Completed |
 
 ### 6.12 Fulfillment slots page
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID      | Task                                                                                       | Status      |
-| ------- | ------------------------------------------------------------------------------------------ | ----------- |
-| 6.12.1  | Create `src/routes/admin/slots/+page.server.ts`                                            | Not Started |
-| 6.12.2  | Load all slots ordered by date, start_time                                                 | Not Started |
-| 6.12.3  | Load daily capacity data for slots                                                         | Not Started |
-| 6.12.4  | Create `src/routes/admin/slots/+page.svelte`                                               | Not Started |
-| 6.12.5  | Display slots grouped by date                                                              | Not Started |
-| 6.12.6  | Show for each slot: time range, type, capacity used/max, active toggle                     | Not Started |
-| 6.12.7  | Add form to create new slot: date picker, start time, end time, type dropdown, max cookies | Not Started |
-| 6.12.8  | Create form action to insert new slot                                                      | Not Started |
-| 6.12.9  | Add inline active toggle with form action                                                  | Not Started |
-| 6.12.10 | Add delete button for each slot                                                            | Not Started |
-| 6.12.11 | Create form action to delete slot                                                          | Not Started |
-| 6.12.12 | Write page test in `tests/integration/admin-slots.test.ts`                                 | Not Started |
-| 6.12.13 | **Commit:** `feat: create fulfillment slots management`                                    | Not Started |
+| ID      | Task                                                                                       | Status    |
+| ------- | ------------------------------------------------------------------------------------------ | --------- |
+| 6.12.1  | Create `src/routes/admin/slots/+page.server.ts`                                            | Completed |
+| 6.12.2  | Load all slots ordered by date, start_time                                                 | Completed |
+| 6.12.3  | Load daily capacity data for slots                                                         | Completed |
+| 6.12.4  | Create `src/routes/admin/slots/+page.svelte`                                               | Completed |
+| 6.12.5  | Display slots grouped by date                                                              | Completed |
+| 6.12.6  | Show for each slot: time range, type, capacity used/max, active toggle                     | Completed |
+| 6.12.7  | Add form to create new slot: date picker, start time, end time, type dropdown, max cookies | Completed |
+| 6.12.8  | Create form action to insert new slot                                                      | Completed |
+| 6.12.9  | Add inline active toggle with form action                                                  | Completed |
+| 6.12.10 | Add delete button for each slot                                                            | Completed |
+| 6.12.11 | Create form action to delete slot                                                          | Completed |
+| 6.12.12 | Write page test in `src/routes/admin/slots/page.server.spec.ts` (21 tests)                 | Completed |
+| 6.12.13 | **Commit:** `feat: create fulfillment slots management`                                    | Completed |
 
 ### 6.13 Newsletter subscribers page
 

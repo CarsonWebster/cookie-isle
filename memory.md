@@ -163,7 +163,8 @@ export const tableName = sqliteTable('table_name', {
 36. ~~Products list page (PRD 6.9)~~ DONE - `src/routes/admin/products/` with 21 tests
 37. ~~Product create page (PRD 6.10)~~ DONE - `src/routes/admin/products/new/` with 12 tests
 38. ~~Product edit page (PRD 6.11)~~ DONE - `src/routes/admin/products/[id]/` with 21 tests
-39. **NEXT: Phase 6.12 - Fulfillment Slots Page** - Manage delivery/pickup slots and daily capacity
+39. ~~Fulfillment slots page (PRD 6.12)~~ DONE - `src/routes/admin/slots/` with 21 tests
+40. **NEXT: Phase 6.13 - Newsletter Subscribers Page** - View and export newsletter subscribers
 
 ## Commands Reference
 
@@ -247,7 +248,8 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/admin/products/page.server.spec.ts`            | 21    | Admin products list with toggles     |
 | `src/routes/admin/products/new/page.server.spec.ts`        | 12    | Product create form validation       |
 | `src/routes/admin/products/[id]/page.server.spec.ts`       | 21    | Product edit form with delete        |
-| **Total**                                                  | 1130  |                                      |
+| `src/routes/admin/slots/page.server.spec.ts`               | 21    | Admin slots management with capacity |
+| **Total**                                                  | 1151  |                                      |
 
 ## Site Config Notes
 
@@ -3211,3 +3213,131 @@ These require the R2 upload endpoint from Phase 5.1 to be implemented first.
 - Product edit page (6.11) - Pre-populated form with delete option
 - Fulfillment slots management (6.12) - Calendar-based slot creation
 - Image upload endpoint (5.1) - Required before adding image upload to product forms
+
+## Fulfillment Slots Page Notes (Phase 6.12 - COMPLETE)
+
+The `src/routes/admin/slots/` page allows admins to manage pickup and delivery time slots.
+
+### Key Features
+
+1. **Load Function (`+page.server.ts`):**
+   - Loads future slots ordered by date and start time
+   - Loads daily capacity data for capacity tracking
+   - Returns `{ slots, capacityMap }` object
+
+2. **Page Component (`+page.svelte`):**
+   - **Create Slot Form:** Date picker (min=tomorrow), start/end time inputs, type dropdown, max cookies
+   - **Slots Display:** Grouped by date with formatted headers (e.g., "Monday, January 20, 2026")
+   - **Capacity Tracking:** Shows used/max cookies per date with low stock warning (>80% capacity)
+   - **Slot Cards:** Time range with AM/PM formatting, type badges (pickup/delivery/both), active toggle
+   - **Actions:** Toggle active status, delete with confirmation
+
+3. **Form Actions:**
+   - `createSlot`: Validates format (YYYY-MM-DD dates, HH:MM times), slot type, max cookies, time ordering
+   - `toggleActive`: Toggles boolean active status for a slot
+   - `deleteSlot`: Removes slot from database
+
+4. **Validation:**
+   - Date format: YYYY-MM-DD regex
+   - Time format: HH:MM regex
+   - Slot type: Must be 'pickup', 'delivery', or 'both'
+   - Max cookies: Must be positive integer (default 200)
+   - Time ordering: End time must be after start time
+
+### Implementation Details
+
+```typescript
+// Time formatting (HH:MM -> h:MM AM/PM)
+function formatTime(timeStr: string): string {
+	const [hours, minutes] = timeStr.split(':').map(Number);
+	const period = hours >= 12 ? 'PM' : 'AM';
+	const displayHours = hours % 12 || 12;
+	return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
+// Capacity calculation
+function getCapacityUsed(date: string): number {
+	return data.capacityMap[date]?.cookiesOrdered ?? 0;
+}
+
+function getMaxCapacity(date: string): number {
+	const slotsOnDate = data.slots.filter((s) => s.date === date && s.active);
+	return slotsOnDate.reduce((sum, slot) => sum + (slot.maxCookies ?? 0), 0);
+}
+```
+
+### Slots Grouping Pattern
+
+```svelte
+// Group slots by date using Map
+const slotsByDate = $derived(() => {
+	const grouped = new Map<string, typeof data.slots>();
+	for (const slot of data.slots) {
+		if (!grouped.has(slot.date)) {
+			grouped.set(slot.date, []);
+		}
+		grouped.get(slot.date)!.push(slot);
+	}
+	return grouped;
+});
+
+// Render grouped slots
+{#each [...slotsByDate()] as [dateStr, slotsForDate]}
+	<!-- Date header with capacity -->
+	{#each slotsForDate as slot}
+		<!-- Slot row -->
+	{/each}
+{/each}
+```
+
+### Badge Styling
+
+```typescript
+function getSlotTypeBadge(type: string) {
+	switch (type) {
+		case 'pickup':
+			return 'bg-blue-100 text-blue-800';
+		case 'delivery':
+			return 'bg-green-100 text-green-800';
+		case 'both':
+			return 'bg-purple-100 text-purple-800';
+		default:
+			return 'bg-gray-100 text-gray-800';
+	}
+}
+```
+
+### Testing Pattern (21 tests)
+
+- **Load Function Tests:** Success, DB unavailable, empty results
+- **Create Slot Tests:** Valid creation, validation errors (date format, time format, slot type, max cookies, time ordering)
+- **Toggle Active Tests:** Active to inactive, inactive to active, missing/invalid ID
+- **Delete Slot Tests:** Success, missing/invalid ID, DB errors
+
+### Database Schema
+
+```typescript
+export const fulfillmentSlots = sqliteTable('fulfillment_slots', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	date: text('date').notNull(), // YYYY-MM-DD
+	startTime: text('start_time').notNull(), // HH:MM
+	endTime: text('end_time').notNull(), // HH:MM
+	slotType: text('slot_type').default('both'), // pickup, delivery, both
+	maxCookies: integer('max_cookies').default(200),
+	active: integer('active', { mode: 'boolean' }).default(true)
+});
+
+export const dailyCapacity = sqliteTable('daily_capacity', {
+	date: text('date').primaryKey(), // YYYY-MM-DD
+	cookiesOrdered: integer('cookies_ordered').default(0),
+	updatedAt: text('updated_at').default(sql`(datetime('now'))`)
+});
+```
+
+### Usage Notes
+
+- Slots are filtered to show only future dates (>= today)
+- Daily capacity is tracked separately from slot max capacity
+- Low stock warning appears when capacity is >80% used
+- Delete action includes browser confirmation dialog
+- Form resets after successful submission using `$effect`
