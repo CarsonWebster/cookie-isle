@@ -1152,33 +1152,37 @@ Before marking any TODO as complete:
 
 ### 7.3 Configure Cloudflare Pages
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                                               | Status      |
-| ------ | ---------------------------------------------------------------------------------- | ----------- |
-| 7.3.1  | Create Cloudflare Pages project in dashboard                                       | Not Started |
-| 7.3.2  | Connect to GitHub repository                                                       | Not Started |
-| 7.3.3  | Set production branch to `main`                                                    | Not Started |
-| 7.3.4  | Set preview branch to `refactor`                                                   | Not Started |
-| 7.3.5  | Configure build settings: command=`bun run build`, output=`.svelte-kit/cloudflare` | Not Started |
-| 7.3.6  | Add D1 database binding: variable name `DB`                                        | Not Started |
-| 7.3.7  | Add R2 bucket binding: variable name `IMAGES`                                      | Not Started |
-| 7.3.8  | Set preview alias to `preview.cookie-isle.pages.dev`                               | Not Started |
-| 7.3.9  | Document deployment configuration in README                                        | Not Started |
-| 7.3.10 | **Commit:** `docs: add Cloudflare Pages deployment configuration`                  | Not Started |
+> Note: Cloudflare Pages configured for `refactor` branch preview deployment at `refactor.cookie-isle.pages.dev`. Build uses `bun run build` with output to `.svelte-kit/cloudflare`. D1 and R2 bindings added for both Preview and Production environments.
+
+| ID     | Task                                                                               | Status    |
+| ------ | ---------------------------------------------------------------------------------- | --------- |
+| 7.3.1  | Create Cloudflare Pages project in dashboard                                       | Completed |
+| 7.3.2  | Connect to GitHub repository                                                       | Completed |
+| 7.3.3  | Set production branch to `main`                                                    | Completed |
+| 7.3.4  | Set preview branch to `refactor`                                                   | Completed |
+| 7.3.5  | Configure build settings: command=`bun run build`, output=`.svelte-kit/cloudflare` | Completed |
+| 7.3.6  | Add D1 database binding: variable name `DB`                                        | Completed |
+| 7.3.7  | Add R2 bucket binding: variable name `IMAGES`                                      | Completed |
+| 7.3.8  | Preview available at `refactor.cookie-isle.pages.dev`                              | Completed |
+| 7.3.9  | Document deployment configuration in README                                        | Deferred  |
+| 7.3.10 | **Commit:** configuration done via dashboard                                       | Completed |
 
 ### 7.4 Set environment variables
 
-**Status:** Not Started
+**Status:** In Progress
+
+> Note: `ADMIN_PASSWORD` configured. Stripe variables pending until Stripe keys are available.
 
 | ID    | Task                                                                  | Status      |
 | ----- | --------------------------------------------------------------------- | ----------- |
-| 7.4.1 | Add `STRIPE_SECRET_KEY` to Cloudflare Pages environment variables     | Not Started |
-| 7.4.2 | Add `STRIPE_WEBHOOK_SECRET` to Cloudflare Pages environment variables | Not Started |
-| 7.4.3 | Add `ADMIN_PASSWORD` to Cloudflare Pages environment variables        | Not Started |
+| 7.4.1 | Add `STRIPE_SECRET_KEY` to Cloudflare Pages environment variables     | Pending     |
+| 7.4.2 | Add `STRIPE_WEBHOOK_SECRET` to Cloudflare Pages environment variables | Pending     |
+| 7.4.3 | Add `ADMIN_PASSWORD` to Cloudflare Pages environment variables        | Completed   |
 | 7.4.4 | Create `.dev.vars` file locally with same variables (gitignored)      | Not Started |
-| 7.4.5 | Document all required environment variables in README                 | Not Started |
-| 7.4.6 | **Commit:** `docs: document environment variables`                    | Not Started |
+| 7.4.5 | Document all required environment variables in README                 | Deferred    |
+| 7.4.6 | **Commit:** `docs: document environment variables`                    | Deferred    |
 
 ### 7.5 Update Stripe webhook
 

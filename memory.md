@@ -8,7 +8,28 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-17, Phase 5.3 Complete - Image Migration to R2)
+## Current Progress (as of 2026-01-17, Phase 7.3 Complete - Cloudflare Pages Deployed)
+
+### Deployment Status
+
+- **Preview URL:** `https://refactor.cookie-isle.pages.dev`
+- **Branch:** `refactor`
+- **Build:** `bun run build` → `.svelte-kit/cloudflare`
+- **Bindings configured:** D1 (`DB`), R2 (`IMAGES`) for both Preview and Production
+- **Environment variables:** `ADMIN_PASSWORD` set, Stripe keys pending
+
+### What Works on Preview
+
+- Homepage, menu, product detail pages
+- Admin login and dashboard
+- Admin orders, products, slots, newsletter management
+- Image gallery and uploads
+- Cart functionality
+
+### What's Pending
+
+- Stripe checkout (needs `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`)
+- Production deployment (merge to `main`)
 
 ### Phase 0 Status: COMPLETE
 
