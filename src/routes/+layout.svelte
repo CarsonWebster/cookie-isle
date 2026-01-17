@@ -2,11 +2,15 @@
 	import './layout.css';
 	import { config } from '$lib/config';
 	import favicon from '$lib/assets/favicon.svg';
+	import ComingSoon from '$lib/components/ComingSoon.svelte';
 
 	let { children } = $props();
 
 	// Open Graph image URL (using a placeholder for now, will be updated when images are in R2)
 	const ogImage = `${config.baseUrl}/og-image.png`;
+
+	// Check if we should show the coming soon page
+	const showComingSoon = config.features.comingSoonMode;
 </script>
 
 <svelte:head>
@@ -38,6 +42,10 @@
 	<meta name="theme-color" content={config.colors.primary} />
 </svelte:head>
 
-<div class="flex min-h-screen flex-col bg-tertiary">
-	{@render children()}
-</div>
+{#if showComingSoon}
+	<ComingSoon />
+{:else}
+	<div class="flex min-h-screen flex-col bg-tertiary">
+		{@render children()}
+	</div>
+{/if}
