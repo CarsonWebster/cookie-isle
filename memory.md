@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16, updated for Phase 3.4)
+## Current Progress (as of 2026-01-17, updated for local dev setup)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -18,7 +18,9 @@ This file contains useful findings for future agents working on this project.
   - All 6 tables in schema: `products`, `orders`, `newsletter`, `fulfillmentSlots`, `dailyCapacity`, `adminSessions`
   - Migrations generated - DONE
   - Schema tests written (23 tests) - DONE (`src/lib/server/db/schema.spec.ts`)
-  - Remaining: push to D1 (0.7.9 - needs CF credentials)
+  - Local D1 schema applied - DONE (via wrangler d1 execute --local)
+  - Seed data created - DONE (`drizzle/seed.sql` with 4 products, 4 fulfillment slots)
+  - Remaining: push to remote D1 (needs CF credentials)
 - 0.8: Database helper COMPLETE
   - Implementation: `src/lib/server/db/index.ts` with `getDb()` and `createDb()` functions
   - Tests: `src/lib/server/db/db.spec.ts` (10 tests) - Tests cover error handling and successful DB creation
@@ -95,9 +97,10 @@ This file contains useful findings for future agents working on this project.
 ## Testing Notes
 
 - **Server tests:** `bunx vitest run --project=server` - Works out of the box
-- **Browser tests:** Require `npx playwright install` first (optional per PRD 0.4.6)
-- Running `bun run test` shows "1 passed" for server tests but errors for browser due to missing Playwright
-- Use `bunx vitest run --project=server` for CI-safe testing without browser deps
+- **Browser tests:** `bunx vitest run --project=browser` - Requires Playwright browsers installed
+- **All tests:** `bun run test` - Runs both server and browser tests
+- Playwright browsers installed to `~/.cache/ms-playwright/` (Chromium, Firefox, WebKit)
+- Note: Some system dependencies may be missing - run `sudo npx playwright install-deps` if browser tests fail
 
 ## Schema Pattern
 
@@ -137,22 +140,34 @@ export const tableName = sqliteTable('table_name', {
 19. ~~Cart badge component (PRD 3.2)~~ DONE - `src/lib/components/CartBadge.svelte` with 26 tests
 20. ~~Cart toast notification (PRD 3.3)~~ DONE - `src/lib/components/CartToast.svelte` with 35 tests
 21. ~~Add to cart functionality (PRD 3.4)~~ DONE - `src/lib/components/AddToCartButton.svelte` with 46 tests
-22. **NEXT: Checkout page - Cart display (PRD 3.5)** - `src/routes/(public)/checkout/+page.svelte` with cart items list
+22. ~~Checkout page - Cart display (PRD 3.5)~~ DONE - `src/routes/(public)/checkout/+page.svelte` with cart items list (47 tests)
+23. **NEXT: Checkout page - Customer form (PRD 3.6)** - Customer info form with validation, fulfillment type toggle
 
 ## Commands Reference
 
 ```bash
-bun run dev          # Start dev server
+# Development
+bun run dev          # Start dev server at localhost:5173
 bun run check        # TypeScript check (must pass before commits)
-bun run test         # Run all tests
-bunx vitest run --project=server  # Server tests only (no Playwright needed)
+
+# Testing
+bun run test         # Run all tests (server + browser)
+bunx vitest run --project=server   # Server tests only
+bunx vitest run --project=browser  # Browser tests only (requires Playwright)
+
+# Database (Drizzle)
 bun run db:generate  # Generate SQL migrations
-bun run db:push      # Push schema to D1
+bun run db:push      # Push schema to remote D1
+
+# Local D1 Database
+npx wrangler d1 execute cookie-isle-db --local --file=drizzle/migrations/0000_unknown_mandrill.sql  # Apply migrations
+npx wrangler d1 execute cookie-isle-db --local --file=drizzle/seed.sql  # Seed with sample data
+npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products"  # Query local DB
 ```
 
 ## Gotchas
 
-1. **Playwright not installed:** Browser tests will fail. Use `--project=server` for server-only tests
+1. **Playwright installed:** Browser tests now work. Run `npx playwright install` if browsers get removed.
 2. **R2 not enabled:** R2 bucket binding is commented out in `wrangler.jsonc` - needs enabling in CF Dashboard first
 3. **Database helper exists:** Task 0.8 says "Not Started" but `src/lib/server/db/index.ts` already has `getDb()` function
 4. **Commit message style:** Use conventional commits (`feat:`, `fix:`, `chore:`, etc.)
@@ -191,7 +206,8 @@ bun run db:push      # Push schema to D1
 | `src/lib/components/CartBadge.spec.ts`                | 26    | CartBadge component logic          |
 | `src/lib/components/CartToast.spec.ts`                | 35    | CartToast notification logic       |
 | `src/lib/components/AddToCartButton.spec.ts`          | 46    | AddToCartButton integration logic  |
-| **Total**                                             | 390   |                                    |
+| `src/routes/(public)/checkout/page.spec.ts`           | 47    | Checkout page cart display logic   |
+| **Total**                                             | 437   |                                    |
 
 ## Site Config Notes
 
@@ -958,6 +974,57 @@ interface AddToCartProduct {
 - `data-product-id`, `data-product-slug`, `data-product-title`
 - `data-product-price`, `data-product-stripe-price-id`
 
+## Local Development Setup
+
+### First-time Setup
+
+After cloning the repo, run these commands to set up local development:
+
+```bash
+# 1. Install dependencies
+bun install
+
+# 2. Install Playwright browsers (for browser tests)
+npx playwright install
+
+# 3. Apply database migrations to local D1
+npx wrangler d1 execute cookie-isle-db --local --file=drizzle/migrations/0000_unknown_mandrill.sql
+
+# 4. Seed the database with sample data
+npx wrangler d1 execute cookie-isle-db --local --file=drizzle/seed.sql
+
+# 5. Start the dev server
+bun run dev
+```
+
+### Seed Data Contents
+
+The `drizzle/seed.sql` file contains:
+
+**Products (4 cookies):**
+| slug | title | price | featured |
+|------|-------|-------|----------|
+| chocolate-chip | Chocolate Chip | $3.50 | Yes |
+| brownie | Brownie | $5.00 | Yes |
+| salted-caramel | Salted Caramel Bliss | $4.00 | Yes |
+| oatmeal-raisin | Oatmeal Raisin | $3.25 | No |
+
+**Fulfillment Slots (4 slots):**
+
+- 2 pickup slots (tomorrow)
+- 1 delivery slot (day after tomorrow)
+- 1 both slot (3 days from now)
+
+### Re-seeding the Database
+
+To reset and re-seed the local database:
+
+```bash
+npx wrangler d1 execute cookie-isle-db --local --file=drizzle/seed.sql
+```
+
+The seed script includes `DELETE` statements to clear existing data first.
+
 ## Phase 3 Remaining Tasks
 
 Files still to create for Phase 3:
@@ -966,4 +1033,79 @@ Files still to create for Phase 3:
 2. ~~`src/lib/components/CartBadge.svelte`~~ - DONE (26 tests)
 3. ~~`src/lib/components/CartToast.svelte`~~ - DONE (35 tests)
 4. ~~`src/lib/components/AddToCartButton.svelte`~~ - DONE (46 tests)
-5. `src/routes/(public)/checkout/+page.svelte` - Checkout page (PRD 3.5)
+5. ~~`src/routes/(public)/checkout/+page.svelte`~~ - DONE (47 tests) - Cart display with items list, quantity controls, subtotal
+6. Customer form (PRD 3.6) - Form fields, validation, fulfillment type toggle
+7. Slots selection (PRD 3.7) - Server load for available slots, slot picker UI
+8. Extras section (PRD 3.8) - Tip, gift box, order summary
+9. Submit functionality (PRD 3.9) - Form validation, loading states
+
+## Checkout Page Notes (Phase 3.5 - COMPLETE)
+
+The `src/routes/(public)/checkout/+page.svelte` page implements cart display.
+
+### Key Features
+
+1. **Empty Cart State:**
+   - Cookie emoji icon in rounded container
+   - "Your Cart is Empty" heading with config message
+   - "Browse Menu" CTA button linking to /menu
+
+2. **Cart Items Display:**
+   - Desktop: HTML table with Product, Price, Quantity, Total, Actions columns
+   - Mobile: Card layout with stacked content
+   - Each item links to product detail page via slug
+
+3. **Quantity Controls:**
+   - Increment (+) and decrement (-) buttons
+   - Increment disabled at max quantity (99)
+   - Decrement removes item when quantity reaches 0
+
+4. **Remove Functionality:**
+   - Trash icon button with hover:text-red-600
+   - Calls `removeFromCart(productId)` from cart store
+
+5. **Subtotal Display:**
+   - Uses `getCartTotalFormatted()` from cart store
+   - Shows "Shipping, taxes, and tip will be calculated at checkout"
+
+6. **Continue Shopping:**
+   - Link with left arrow icon to /menu
+
+### Usage of Cart Store Functions
+
+```typescript
+import {
+	getItems, // Get cart items array
+	getCartTotalFormatted, // Get "$X.XX" formatted total
+	isCartEmpty, // Check if cart is empty
+	updateQuantity, // Set new quantity
+	removeFromCart, // Remove item entirely
+	initializeCart, // Load from localStorage
+	getMaxQuantityPerItem // Get max qty limit (99)
+} from '$lib/stores/cart.svelte';
+```
+
+### Responsive Design Pattern
+
+```svelte
+<!-- Desktop Table (hidden on mobile) -->
+<div class="hidden md:block">
+	<table>...</table>
+</div>
+
+<!-- Mobile Cards (hidden on desktop) -->
+<div class="space-y-4 md:hidden">
+	{#each items as item}
+		<div class="rounded-xl bg-white p-4 shadow-md">...</div>
+	{/each}
+</div>
+```
+
+### Next Step: Customer Form (PRD 3.6)
+
+The checkout page will be extended to include:
+
+- Customer information form (first_name, last_name, email, phone)
+- Fulfillment type toggle (Pickup / Delivery)
+- Delivery address fields (conditional on fulfillment type)
+- ZIP code validation against `config.fulfillment.allowedDeliveryZips`

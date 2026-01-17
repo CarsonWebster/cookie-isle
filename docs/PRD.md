@@ -265,7 +265,7 @@ Before marking any TODO as complete:
 | 0.4.3 | Demo test exists at `src/demo.spec.ts`                                     | Completed   |
 | 0.4.4 | Test scripts in `package.json` (test, test:unit)                           | Completed   |
 | 0.4.5 | Run `bun run test` - server tests pass                                     | Completed   |
-| 0.4.6 | **Optional:** Run `npx playwright install` for browser component tests     | Not Started |
+| 0.4.6 | **Optional:** Run `npx playwright install` for browser component tests     | Completed   |
 | 0.4.7 | **Commit:** `feat: setup Vitest testing framework`                         | Not Started |
 
 ### 0.5 Setup Tailwind CSS
@@ -303,21 +303,21 @@ Before marking any TODO as complete:
 
 ### 0.7 Create database schema
 
-**Status:** In Progress
+**Status:** Completed (local)
 
-| ID     | Task                                                                    | Status      |
-| ------ | ----------------------------------------------------------------------- | ----------- |
-| 0.7.1  | Create `drizzle/schema.ts` with `products` table (see Appendix A)       | Completed   |
-| 0.7.2  | Add `orders` table to schema                                            | Completed   |
-| 0.7.3  | Add `newsletter` table to schema                                        | Completed   |
-| 0.7.4  | Add `fulfillmentSlots` table to schema                                  | Completed   |
-| 0.7.5  | Add `dailyCapacity` table to schema                                     | Completed   |
-| 0.7.6  | Add `adminSessions` table to schema                                     | Completed   |
-| 0.7.7  | Create TypeScript types for JSON columns (OrderItem, DeliveryAddress)   | Completed   |
-| 0.7.8  | Run `bun run drizzle-kit generate` to create SQL migration              | Completed   |
-| 0.7.9  | Run `bun run drizzle-kit push` to apply schema to D1                    | Not Started |
-| 0.7.10 | Write unit tests for schema types in `src/lib/server/db/schema.spec.ts` | Completed   |
-| 0.7.11 | **Commit:** `feat: create database schema with Drizzle`                 | Not Started |
+| ID     | Task                                                                    | Status            |
+| ------ | ----------------------------------------------------------------------- | ----------------- |
+| 0.7.1  | Create `drizzle/schema.ts` with `products` table (see Appendix A)       | Completed         |
+| 0.7.2  | Add `orders` table to schema                                            | Completed         |
+| 0.7.3  | Add `newsletter` table to schema                                        | Completed         |
+| 0.7.4  | Add `fulfillmentSlots` table to schema                                  | Completed         |
+| 0.7.5  | Add `dailyCapacity` table to schema                                     | Completed         |
+| 0.7.6  | Add `adminSessions` table to schema                                     | Completed         |
+| 0.7.7  | Create TypeScript types for JSON columns (OrderItem, DeliveryAddress)   | Completed         |
+| 0.7.8  | Run `bun run drizzle-kit generate` to create SQL migration              | Completed         |
+| 0.7.9  | Run `bun run drizzle-kit push` to apply schema to D1                    | Completed (local) |
+| 0.7.10 | Write unit tests for schema types in `src/lib/server/db/schema.spec.ts` | Completed         |
+| 0.7.11 | **Commit:** `feat: create database schema with Drizzle`                 | Not Started       |
 
 ### 0.8 Create database helper
 
@@ -609,20 +609,20 @@ Before marking any TODO as complete:
 
 ### 3.5 Checkout page - Cart display
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                                     | Status      |
-| ------ | ------------------------------------------------------------------------ | ----------- |
-| 3.5.1  | Create `src/routes/(public)/checkout/+page.svelte`                       | Not Started |
-| 3.5.2  | Add empty cart state with cookie icon and "Browse Menu" link             | Not Started |
-| 3.5.3  | Create cart items list with product name, price, quantity                | Not Started |
-| 3.5.4  | Add quantity controls (+/- buttons) for each item                        | Not Started |
-| 3.5.5  | Add remove button (trash icon) for each item                             | Not Started |
-| 3.5.6  | Display subtotal                                                         | Not Started |
-| 3.5.7  | Add "Continue Shopping" link                                             | Not Started |
-| 3.5.8  | Style with Tailwind: table-like layout on desktop, card layout on mobile | Not Started |
-| 3.5.9  | Write page test in `tests/integration/checkout-cart.test.ts`             | Not Started |
-| 3.5.10 | **Commit:** `feat: create checkout page with cart display`               | Not Started |
+| ID     | Task                                                                      | Status    |
+| ------ | ------------------------------------------------------------------------- | --------- |
+| 3.5.1  | Create `src/routes/(public)/checkout/+page.svelte`                        | Completed |
+| 3.5.2  | Add empty cart state with cookie icon and "Browse Menu" link              | Completed |
+| 3.5.3  | Create cart items list with product name, price, quantity                 | Completed |
+| 3.5.4  | Add quantity controls (+/- buttons) for each item                         | Completed |
+| 3.5.5  | Add remove button (trash icon) for each item                              | Completed |
+| 3.5.6  | Display subtotal                                                          | Completed |
+| 3.5.7  | Add "Continue Shopping" link                                              | Completed |
+| 3.5.8  | Style with Tailwind: table-like layout on desktop, card layout on mobile  | Completed |
+| 3.5.9  | Write page test in `src/routes/(public)/checkout/page.spec.ts` (47 tests) | Completed |
+| 3.5.10 | **Commit:** `feat: create checkout page with cart display`                | Completed |
 
 ### 3.6 Checkout page - Customer form
 
