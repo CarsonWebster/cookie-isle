@@ -91,3 +91,19 @@ export const adminSessions = sqliteTable('admin_sessions', {
 	expiresAt: text('expires_at').notNull(), // ISO datetime
 	createdAt: text('created_at').default(sql`(datetime('now'))`)
 });
+
+// Images table - tracks uploaded images in R2
+export const images = sqliteTable('images', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	filename: text('filename').notNull().unique(), // R2 filename (e.g., 1705445678901-a3f9d2e1.jpg)
+	originalName: text('original_name').notNull(), // Original filename uploaded by user
+	url: text('url').notNull(), // Full URL path (/images/{filename})
+	mimeType: text('mime_type').notNull(), // image/jpeg, image/png, image/webp
+	sizeBytes: integer('size_bytes').notNull(), // File size in bytes
+	// Focal points for cropping preview (stored as percentages 0-100)
+	cardFocalX: integer('card_focal_x').default(50), // X position for card (square) crop
+	cardFocalY: integer('card_focal_y').default(50), // Y position for card (square) crop
+	heroFocalX: integer('hero_focal_x').default(50), // X position for hero (wide) crop
+	heroFocalY: integer('hero_focal_y').default(50), // Y position for hero (wide) crop
+	createdAt: text('created_at').default(sql`(datetime('now'))`)
+});

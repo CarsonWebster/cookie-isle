@@ -6,6 +6,7 @@ import {
 	fulfillmentSlots,
 	dailyCapacity,
 	adminSessions,
+	images,
 	type OrderItem,
 	type DeliveryAddress
 } from './schema';
@@ -184,6 +185,32 @@ describe('database schema', () => {
 			expect(typeof item.title).toBe('string');
 			expect(typeof item.priceCents).toBe('number');
 			expect(typeof item.quantity).toBe('number');
+		});
+	});
+
+	describe('images table', () => {
+		it('has the correct table name', () => {
+			expect(getTableName(images)).toBe('images');
+		});
+
+		it('has all required columns', () => {
+			const columns = getTableColumns(images);
+			expect(columns.id).toBeDefined();
+			expect(columns.filename).toBeDefined();
+			expect(columns.originalName).toBeDefined();
+			expect(columns.url).toBeDefined();
+			expect(columns.mimeType).toBeDefined();
+			expect(columns.sizeBytes).toBeDefined();
+			expect(columns.cardFocalX).toBeDefined();
+			expect(columns.cardFocalY).toBeDefined();
+			expect(columns.heroFocalX).toBeDefined();
+			expect(columns.heroFocalY).toBeDefined();
+			expect(columns.createdAt).toBeDefined();
+		});
+
+		it('has correct column count', () => {
+			const columns = getTableColumns(images);
+			expect(Object.keys(columns)).toHaveLength(11);
 		});
 	});
 
