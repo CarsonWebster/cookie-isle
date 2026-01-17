@@ -815,7 +815,7 @@ Before marking any TODO as complete:
 
 ## Phase 5: Image Upload (R2)
 
-**Status:** In Progress (5.1 Complete)
+**Status:** In Progress (5.1 and 5.2 Complete)
 
 ### 5.1 R2 upload endpoint
 
@@ -837,15 +837,17 @@ Before marking any TODO as complete:
 
 ### 5.2 Image serving configuration
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                                           | Status      |
-| ----- | ------------------------------------------------------------------------------ | ----------- |
-| 5.2.1 | Configure R2 bucket for public access via custom domain or Cloudflare settings | Not Started |
-| 5.2.2 | OR create `src/routes/images/[...path]/+server.ts` to serve images             | Not Started |
-| 5.2.3 | Add caching headers for images (Cache-Control: public, max-age=31536000)       | Not Started |
-| 5.2.4 | Document image URL format for frontend use                                     | Not Started |
-| 5.2.5 | **Commit:** `feat: configure R2 image serving`                                 | Not Started |
+| ID    | Task                                                                           | Status    |
+| ----- | ------------------------------------------------------------------------------ | --------- |
+| 5.2.1 | Configure R2 bucket for public access via custom domain or Cloudflare settings | Deferred  |
+| 5.2.2 | OR create `src/routes/images/[...path]/+server.ts` to serve images             | Completed |
+| 5.2.3 | Add caching headers for images (Cache-Control: public, max-age=31536000)       | Completed |
+| 5.2.4 | Document image URL format for frontend use                                     | Completed |
+| 5.2.5 | **Commit:** `feat: configure R2 image serving`                                 | Completed |
+
+> Note: Image serving endpoint created at `src/routes/images/[...path]/+server.ts` with 25 tests. Images are cached for 1 year with immutable directive. Supports JPEG, PNG, WebP, GIF, SVG, AVIF formats. URL format: `https://thecookieisle.com/images/{filename}` or `/images/{filename}` for relative URLs.
 
 ### 5.3 Migrate legacy images to R2
 

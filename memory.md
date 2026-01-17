@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-17, Phase 5.1 Complete - R2 Upload Endpoint)
+## Current Progress (as of 2026-01-17, Phase 5.2 Complete - R2 Image Serving)
 
 ### Phase 0 Status: COMPLETE
 
@@ -166,7 +166,10 @@ export const tableName = sqliteTable('table_name', {
 39. ~~Fulfillment slots page (PRD 6.12)~~ DONE - `src/routes/admin/slots/` with 21 tests
 40. ~~Newsletter subscribers page (PRD 6.13)~~ DONE - `src/routes/admin/newsletter/` with 23 tests
 41. ~~R2 upload endpoint (PRD 5.1)~~ DONE - `src/routes/api/upload/+server.ts` with 45 tests
-42. **NEXT: Phase 5.2 (Image Serving) OR Phase 7 (Data Migration & Deployment)**
+42. ~~R2 image serving endpoint (PRD 5.2)~~ DONE - `src/routes/images/[...path]/+server.ts` with 25 tests
+43. **NEXT: Phase 5.3 (Image Migration) OR Phase 7 (Data Migration & Deployment)**
+
+> Note: Phase 5.2 is complete. Images can now be served from R2 via `/images/{filename}` with 1-year caching.
 
 ## Commands Reference
 
@@ -253,7 +256,8 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/admin/slots/page.server.spec.ts`               | 21    | Admin slots management with capacity |
 | `src/routes/admin/newsletter/page.server.spec.ts`          | 23    | Newsletter subscribers with CSV      |
 | `src/routes/api/upload/server.spec.ts`                     | 45    | R2 image upload API                  |
-| **Total**                                                  | 1219  |                                      |
+| `src/routes/images/[...path]/server.spec.ts`               | 25    | R2 image serving endpoint            |
+| **Total**                                                  | 1244  |                                      |
 
 ## Site Config Notes
 
@@ -1070,6 +1074,83 @@ npx wrangler d1 execute cookie-isle-db --local --file=drizzle/seed.sql
 ```
 
 The seed script includes `DELETE` statements to clear existing data first.
+
+## Phase 5: Image Upload & Serving (R2)
+
+### 5.1 R2 Upload Endpoint (COMPLETE)
+
+The `src/routes/api/upload/+server.ts` endpoint handles image uploads to R2.
+
+**Features:**
+
+- Admin authentication required (validates session)
+- Multipart form data parsing
+- File type validation: JPEG, PNG, WebP only
+- File size validation: max 5MB
+- Unique filename generation: `{timestamp}-{random}.{ext}`
+- Upload to R2 bucket using `platform.env.IMAGES`
+- Returns public URL for uploaded image
+
+**URL Format:** Returns `https://images.thecookieisle.com/{filename}`
+
+**Exported Functions (for testing):**
+
+- `validateFileType(mimeType)` - Check if MIME type is allowed
+- `validateFileSize(size)` - Check if size is under limit
+- `generateUniqueFilename(originalName)` - Create timestamped filename
+- `uploadToR2(bucket, filename, file)` - Upload file to R2
+- `getPublicImageUrl(filename)` - Generate public URL
+
+### 5.2 R2 Image Serving Endpoint (COMPLETE)
+
+The `src/routes/images/[...path]/+server.ts` endpoint serves images from R2.
+
+**Features:**
+
+- GET `/images/{filename}` or `/images/path/to/file.jpg`
+- Fetches images from R2 bucket using `platform.env.IMAGES`
+- Content-Type detection from R2 metadata or file extension
+- Supports: JPEG, PNG, WebP, GIF, SVG, AVIF formats
+- 1-year caching: `Cache-Control: public, max-age=31536000, immutable`
+- ETag header included when available from R2
+- Content-Length header for better performance
+- Error handling: 404 for missing images, 503 when R2 unavailable, 400 for invalid path
+
+**Implementation Details:**
+
+```typescript
+// Usage in components
+<img src="/images/1705445678901-a3f9d2e1.jpg" alt="Product" />
+
+// Or with full URL
+<img src="https://thecookieisle.com/images/products/cookie.jpg" alt="Product" />
+```
+
+**URL Parameter:**
+
+- Rest parameter `[...path]` allows arbitrary nested paths
+- Type assertion needed: `(params as { path: string }).path`
+- SvelteKit infers params from all routes, so explicit typing required
+
+**Caching Strategy:**
+
+- Images are immutable (timestamped filenames from upload endpoint)
+- 1-year cache reduces R2 bandwidth and improves performance
+- Public cache allows CDN/browser caching
+
+**Testing:**
+
+- 25 tests covering all scenarios
+- Content-Type detection for all supported formats
+- Caching header validation
+- Error handling (404, 503, 400)
+- ETag and Content-Length headers
+
+**Next Steps:**
+
+- Phase 5.3: Migrate legacy images from `_legacy/static/` to R2
+- Update product records with new image URLs
+- Consider using Cloudflare Images for automatic optimization (optional)
 
 ## Phase 3 Remaining Tasks
 
