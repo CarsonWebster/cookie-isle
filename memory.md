@@ -93,6 +93,7 @@ This file contains useful findings for future agents working on this project.
 | `src/lib/server/stripe.ts`                  | Stripe client helper (`getStripe`, `createStripeClient`) |
 | `src/routes/api/checkout/+server.ts`        | Stripe checkout API endpoint (POST handler)              |
 | `src/routes/api/webhook/+server.ts`         | Stripe webhook handler (order creation)                  |
+| `src/routes/api/newsletter/+server.ts`      | Newsletter signup API endpoint                           |
 | `drizzle.config.ts`                         | Drizzle Kit config (uses d1-http driver)                 |
 | `wrangler.jsonc`                            | Cloudflare bindings (D1 configured, R2 commented out)    |
 | `AGENTS.md`                                 | Agent instructions and coding standards                  |
@@ -153,7 +154,8 @@ export const tableName = sqliteTable('table_name', {
 29. ~~Connect checkout form to API (PRD 4.2)~~ DONE - `handleSubmit` in checkout page POSTs to `/api/checkout` and redirects to Stripe
 30. ~~Stripe webhook handler (PRD 4.3)~~ DONE - `src/routes/api/webhook/+server.ts` with 44 tests
 31. ~~Checkout success page (PRD 4.4)~~ DONE - `src/routes/(public)/checkout/success/` with 27 tests
-32. **NEXT: Newsletter signup endpoint (PRD 4.5)** - Create `/api/newsletter` POST endpoint
+32. ~~Newsletter signup endpoint (PRD 4.5)~~ DONE - `src/routes/api/newsletter/+server.ts` with 54 tests
+33. **NEXT: Connect newsletter form (PRD 4.6)** - Update ComingSoon to POST to `/api/newsletter`
 
 ## Commands Reference
 
@@ -225,7 +227,8 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/api/checkout/server.spec.ts`                   | 63    | Checkout API validation & helpers    |
 | `src/routes/api/webhook/server.spec.ts`                    | 44    | Webhook parsing and validation       |
 | `src/routes/(public)/checkout/success/page.server.spec.ts` | 27    | Checkout success page load & helpers |
-| **Total**                                                  | 806   |                                      |
+| `src/routes/api/newsletter/server.spec.ts`                 | 54    | Newsletter API validation & helpers  |
+| **Total**                                                  | 860   |                                      |
 
 ## Site Config Notes
 
@@ -2008,3 +2011,90 @@ After Stripe checkout completion, users are redirected to:
 ```
 
 The `{CHECKOUT_SESSION_ID}` is replaced by Stripe with the actual session ID.
+
+## Newsletter Signup API Notes (Phase 4.5 - COMPLETE)
+
+The `src/routes/api/newsletter/+server.ts` module handles newsletter subscription requests.
+
+### Key Features
+
+1. **Email Validation:** Uses regex pattern `/^[^\s@]+@[^\s@]+\.[^\s@]+$/` with length checks (5-254 chars)
+2. **Email Normalization:** Trims whitespace and converts to lowercase before storage
+3. **Duplicate Handling:** Returns success for existing subscribers (privacy-preserving)
+4. **Source Tracking:** Optional `source` field defaults to "website" for tracking signup origin
+5. **Config Integration:** Uses `config.newsletter.successMessage` and `errorMessage` from config
+
+### Exported Types
+
+```typescript
+interface NewsletterRequest {
+	email: string;
+	source?: string;
+}
+
+interface NewsletterResponse {
+	success: boolean;
+	message: string;
+	alreadySubscribed?: boolean;
+}
+
+interface NewsletterErrorResponse {
+	success: false;
+	error: string;
+	details?: string[];
+}
+```
+
+### Exported Helper Functions
+
+| Function                          | Purpose                           |
+| --------------------------------- | --------------------------------- |
+| `isValidEmail(email)`             | Validates email format with regex |
+| `normalizeEmail(email)`           | Trims and lowercases email        |
+| `validateNewsletterRequest(body)` | Validates request body structure  |
+
+### Usage from ComingSoon Component
+
+```typescript
+const response = await fetch('/api/newsletter', {
+	method: 'POST',
+	headers: { 'Content-Type': 'application/json' },
+	body: JSON.stringify({
+		email: email.trim(),
+		source: 'coming-soon'
+	})
+});
+
+const data = await response.json();
+if (data.success) {
+	// Show success message
+} else {
+	// Show error: data.error or data.details
+}
+```
+
+### Test Coverage
+
+54 tests in `src/routes/api/newsletter/server.spec.ts`:
+
+- isValidEmail valid cases (8 tests)
+- isValidEmail invalid cases (12 tests)
+- normalizeEmail (5 tests)
+- validateNewsletterRequest valid requests (3 tests)
+- validateNewsletterRequest invalid body (5 tests)
+- validateNewsletterRequest email validation (7 tests)
+- validateNewsletterRequest source validation (5 tests)
+- Multiple validation errors (1 test)
+- Type exports (2 tests)
+- Edge cases (4 tests)
+- Function composition (2 tests)
+
+### Error Handling
+
+- **400 Bad Request:** Invalid JSON, missing email, invalid email format
+- **503 Service Unavailable:** Newsletter disabled in config or database unavailable
+- **500 Internal Server Error:** Database insert failure
+
+### Next Task
+
+**Phase 4.6: Connect newsletter form** - Update ComingSoon component to POST to `/api/newsletter`

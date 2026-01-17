@@ -784,20 +784,20 @@ Before marking any TODO as complete:
 
 ### 4.5 Newsletter signup endpoint
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                        | Status      |
-| ------ | ----------------------------------------------------------- | ----------- |
-| 4.5.1  | Create `src/routes/api/newsletter/+server.ts` POST handler  | Not Started |
-| 4.5.2  | Validate email format with regex                            | Not Started |
-| 4.5.3  | Check if email already exists in newsletter table           | Not Started |
-| 4.5.4  | If exists, return success with "Already subscribed" message | Not Started |
-| 4.5.5  | Insert new email into newsletter table                      | Not Started |
-| 4.5.6  | Return success response with thank you message              | Not Started |
-| 4.5.7  | Handle database errors gracefully                           | Not Started |
-| 4.5.8  | Add rate limiting consideration (future TODO)               | Not Started |
-| 4.5.9  | Write unit tests in `tests/unit/newsletter-api.test.ts`     | Not Started |
-| 4.5.10 | **Commit:** `feat: create newsletter signup API`            | Not Started |
+| ID     | Task                                                                      | Status    |
+| ------ | ------------------------------------------------------------------------- | --------- |
+| 4.5.1  | Create `src/routes/api/newsletter/+server.ts` POST handler                | Completed |
+| 4.5.2  | Validate email format with regex                                          | Completed |
+| 4.5.3  | Check if email already exists in newsletter table                         | Completed |
+| 4.5.4  | If exists, return success with "Already subscribed" message               | Completed |
+| 4.5.5  | Insert new email into newsletter table                                    | Completed |
+| 4.5.6  | Return success response with thank you message                            | Completed |
+| 4.5.7  | Handle database errors gracefully                                         | Completed |
+| 4.5.8  | Add rate limiting consideration (future TODO)                             | Deferred  |
+| 4.5.9  | Write unit tests in `src/routes/api/newsletter/server.spec.ts` (54 tests) | Completed |
+| 4.5.10 | **Commit:** `feat: create newsletter signup API`                          | Completed |
 
 ### 4.6 Connect newsletter form
 
