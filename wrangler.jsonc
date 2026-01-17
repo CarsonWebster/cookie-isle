@@ -16,7 +16,8 @@
 		{
 			"binding": "DB",
 			"database_name": "cookie-isle-db",
-			"database_id": "c804e72f-a721-4d5f-8332-f2f11c49504d"
+			"database_id": "c804e72f-a721-4d5f-8332-f2f11c49504d",
+			"migrations_dir": "drizzle/migrations"
 		}
 	],
 
