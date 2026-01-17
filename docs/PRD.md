@@ -388,18 +388,18 @@ Before marking any TODO as complete:
 
 ### 1.4 Footer component
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                       | Status      |
-| ----- | ---------------------------------------------------------- | ----------- |
-| 1.4.1 | Create `src/lib/components/Footer.svelte`                  | Not Started |
-| 1.4.2 | Add brand section with site title and tagline              | Not Started |
-| 1.4.3 | Add contact section with email and phone links             | Not Started |
-| 1.4.4 | Add social media icons with links                          | Not Started |
-| 1.4.5 | Add copyright with current year                            | Not Started |
-| 1.4.6 | Style with Tailwind: dark background, responsive grid      | Not Started |
-| 1.4.7 | Write component test in `tests/unit/Footer.test.svelte.ts` | Not Started |
-| 1.4.8 | **Commit:** `feat: create Footer component`                | Not Started |
+| ID    | Task                                                        | Status    |
+| ----- | ----------------------------------------------------------- | --------- |
+| 1.4.1 | Create `src/lib/components/Footer.svelte`                   | Completed |
+| 1.4.2 | Add brand section with site title and tagline               | Completed |
+| 1.4.3 | Add contact section with email and phone links              | Completed |
+| 1.4.4 | Add social media icons with links                           | Completed |
+| 1.4.5 | Add copyright with current year                             | Completed |
+| 1.4.6 | Style with Tailwind: dark background, responsive grid       | Completed |
+| 1.4.7 | Write component test in `src/lib/components/Footer.spec.ts` | Completed |
+| 1.4.8 | **Commit:** `feat: create Footer component`                 | Completed |
 
 ### 1.5 Public layout group
 

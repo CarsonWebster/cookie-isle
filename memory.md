@@ -38,7 +38,10 @@ This file contains useful findings for future agents working on this project.
   - Implementation: `src/lib/components/Header.svelte` - Svelte 5 runes, mobile nav
   - Tests: `src/lib/components/Header.spec.ts` (13 tests) - Config integration tests
   - Features: Logo, desktop nav, mobile slide-out drawer, cart badge, social icons, keyboard nav (Escape to close)
-- 1.4-1.5: Not Started (Footer, Public layout)
+- 1.4: Footer Component COMPLETE
+  - Implementation: `src/lib/components/Footer.svelte` - Brand, nav, contact, social, copyright
+  - Tests: `src/lib/components/Footer.spec.ts` (15 tests) - Config integration tests
+- 1.5: Not Started (Public layout)
 
 ## Key File Locations
 
@@ -85,8 +88,8 @@ export const tableName = sqliteTable('table_name', {
 6. ~~Site configuration (PRD 1.1)~~ DONE - `src/lib/config.ts` with 35 tests
 7. ~~Root layout (PRD 1.2)~~ DONE - `src/routes/+layout.svelte` with meta tags, favicon, flex container
 8. ~~Header component (PRD 1.3)~~ DONE - `src/lib/components/Header.svelte` with 13 tests
-9. **NEXT: Footer component (PRD 1.4)** - brand section, contact, social icons
-10. Public layout group (PRD 1.5) - `src/routes/(public)/+layout.svelte`
+9. ~~Footer component (PRD 1.4)~~ DONE - `src/lib/components/Footer.svelte` with 15 tests
+10. **NEXT: Public layout group (PRD 1.5)** - `src/routes/(public)/+layout.svelte` with Header and Footer
 
 ## Commands Reference
 
@@ -127,7 +130,8 @@ bun run db:push      # Push schema to D1
 | `src/lib/server/db/schema.spec.ts`  | 23    | Schema table definitions and types |
 | `src/lib/server/db/db.spec.ts`      | 10    | Database helper functions          |
 | `src/lib/components/Header.spec.ts` | 13    | Header component config logic      |
-| **Total**                           | 82    |                                    |
+| `src/lib/components/Footer.spec.ts` | 15    | Footer component config logic      |
+| **Total**                           | 97    |                                    |
 
 ## Site Config Notes
 
@@ -189,3 +193,33 @@ The `src/lib/components/Header.svelte` component implements:
 - `border-tertiary-medium` - Mobile nav borders
 - `text-text-light` - Contact info in mobile footer
 - `bg-primary` - Cart badge background
+
+## Footer Component Notes
+
+The `src/lib/components/Footer.svelte` component implements:
+
+1. **Brand Section:** Site title (with emoji), tagline, and description
+2. **Navigation Links:** Uses `getSortedMenu()` plus conditional Calendar link
+3. **Contact Section:** Email/phone links with icons (conditional on config flags)
+4. **Social Icons:** Instagram/Facebook rendered conditionally based on config flags
+5. **Copyright:** Dynamic current year with site title
+6. **Responsive Grid:** 1-col on mobile, 3-col on md, 4-col on lg
+7. **Dark Theme:** Uses `bg-footer-bg`, `text-footer-text`, `text-footer-heading` colors
+
+### Footer Usage (for Public Layout)
+
+```svelte
+<script lang="ts">
+	import Footer from '$lib/components/Footer.svelte';
+</script>
+
+<Footer />
+```
+
+### Footer Tailwind Theme Colors Used
+
+- `bg-footer-bg` - Dark blue-green background (#264653)
+- `text-footer-text` - Light cream text (#FBF8F3)
+- `text-footer-heading` - Golden accent for headings (#E9B44C)
+- `text-footer-text/80` - 80% opacity for secondary text
+- `border-footer-text/20` - 20% opacity for divider line
