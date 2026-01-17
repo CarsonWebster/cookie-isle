@@ -535,29 +535,29 @@ Before marking any TODO as complete:
 
 ## Phase 3: Cart System
 
-**Status:** Not Started
+**Status:** In Progress
 
 ### 3.1 Cart store
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                                                  | Status      |
-| ------ | ------------------------------------------------------------------------------------- | ----------- |
-| 3.1.1  | Create `src/lib/stores/cart.svelte.ts` using Svelte 5 runes                           | Not Started |
-| 3.1.2  | Define CartItem type: { productId, slug, title, priceCents, stripePriceId, quantity } | Not Started |
-| 3.1.3  | Create `$state` for cart items array                                                  | Not Started |
-| 3.1.4  | Implement `addToCart(product)` function - add or increment quantity                   | Not Started |
-| 3.1.5  | Implement `removeFromCart(productId)` function                                        | Not Started |
-| 3.1.6  | Implement `updateQuantity(productId, quantity)` function                              | Not Started |
-| 3.1.7  | Implement `clearCart()` function                                                      | Not Started |
-| 3.1.8  | Create `$derived` for `cartCount` (total items)                                       | Not Started |
-| 3.1.9  | Create `$derived` for `cartTotal` (total cents)                                       | Not Started |
-| 3.1.10 | Create `$derived` for `cartTotalFormatted` (e.g., "$12.50")                           | Not Started |
-| 3.1.11 | Add localStorage persistence with SSR safety (check `typeof window`)                  | Not Started |
-| 3.1.12 | Load cart from localStorage on initialization                                         | Not Started |
-| 3.1.13 | Save cart to localStorage on every change using `$effect`                             | Not Started |
-| 3.1.14 | Write comprehensive unit tests in `tests/unit/cart.test.ts`                           | Not Started |
-| 3.1.15 | **Commit:** `feat: create cart store with localStorage persistence`                   | Not Started |
+| ID     | Task                                                                                  | Status    |
+| ------ | ------------------------------------------------------------------------------------- | --------- |
+| 3.1.1  | Create `src/lib/stores/cart.svelte.ts` using Svelte 5 runes                           | Completed |
+| 3.1.2  | Define CartItem type: { productId, slug, title, priceCents, stripePriceId, quantity } | Completed |
+| 3.1.3  | Create `$state` for cart items array                                                  | Completed |
+| 3.1.4  | Implement `addToCart(product)` function - add or increment quantity                   | Completed |
+| 3.1.5  | Implement `removeFromCart(productId)` function                                        | Completed |
+| 3.1.6  | Implement `updateQuantity(productId, quantity)` function                              | Completed |
+| 3.1.7  | Implement `clearCart()` function                                                      | Completed |
+| 3.1.8  | Create getter for `cartCount` (total items)                                           | Completed |
+| 3.1.9  | Create getter for `cartTotal` (total cents)                                           | Completed |
+| 3.1.10 | Create getter for `cartTotalFormatted` (e.g., "$12.50")                               | Completed |
+| 3.1.11 | Add localStorage persistence with SSR safety (check `typeof window`)                  | Completed |
+| 3.1.12 | Load cart from localStorage on initialization                                         | Completed |
+| 3.1.13 | Save cart to localStorage on every change                                             | Completed |
+| 3.1.14 | Write comprehensive unit tests in `src/lib/stores/cart.spec.ts`                       | Completed |
+| 3.1.15 | **Commit:** `feat: create cart store with localStorage persistence`                   | Completed |
 
 ### 3.2 Cart badge component
 

@@ -77,12 +77,13 @@ This file contains useful findings for future agents working on this project.
 | ------------------------------------ | ----------------------------------------------------- |
 | `docs/PRD.md`                        | Complete migration spec with task tracking            |
 | `src/lib/config.ts`                  | Site configuration (migrated from hugo.toml)          |
+| `src/lib/stores/cart.svelte.ts`      | Cart state management with localStorage               |
 | `src/lib/components/Header.svelte`   | Header with desktop/mobile nav, cart badge            |
 | `src/lib/components/Footer.svelte`   | Footer with brand, nav, contact, social               |
 | `src/lib/components/Hero.svelte`     | Hero section with gradient, CTA button                |
 | `src/lib/components/MenuCard.svelte` | Product card with image, price, add to cart           |
 | `src/routes/(public)/+layout.svelte` | Public pages layout (Header + main + Footer)          |
-| `src/routes/(public)/+page.svelte`   | Homepage (placeholder, will add Hero in Phase 2)      |
+| `src/routes/(public)/+page.svelte`   | Homepage with Hero and featured products              |
 | `src/lib/server/db/schema.ts`        | Drizzle table definitions                             |
 | `src/lib/server/db/index.ts`         | Database helper functions (`getDb`, `createDb`)       |
 | `drizzle.config.ts`                  | Drizzle Kit config (uses d1-http driver)              |
@@ -130,7 +131,8 @@ export const tableName = sqliteTable('table_name', {
 15. ~~Cookie detail page (PRD 2.5)~~ DONE - `src/routes/(public)/menu/[slug]/+page.svelte` with product details (10 tests)
 16. ~~About page (PRD 2.6)~~ DONE - `src/routes/(public)/about/+page.svelte` with prose styling (no server load needed)
 17. ~~Coming Soon mode (PRD 2.7)~~ DONE - `src/lib/components/ComingSoon.svelte` with 46 tests
-18. **NEXT: Cart store (PRD 3.1)** - `src/lib/stores/cart.svelte.ts` with Svelte 5 runes and localStorage persistence
+18. ~~Cart store (PRD 3.1)~~ DONE - `src/lib/stores/cart.svelte.ts` with Svelte 5 runes and localStorage persistence (57 tests)
+19. **NEXT: Cart badge component (PRD 3.2)** - `src/lib/components/CartBadge.svelte` to display cart count in header
 
 ## Commands Reference
 
@@ -161,6 +163,8 @@ bun run db:push      # Push schema to D1
 14. **Favicon location:** The favicon is at `src/lib/assets/favicon.svg`, not in `static/favicon/`. It's imported as a Svelte asset.
 15. **Tailwind theme colors:** Custom colors are defined in `src/routes/layout.css` under `@theme`. Use them as `bg-tertiary`, `text-primary`, etc.
 16. **Root layout pattern:** Uses Svelte 5 runes (`$props`) and imports config from `$lib/config`. Wraps content in `<div class="min-h-screen flex flex-col bg-tertiary">`.
+17. **Testing .svelte.ts files:** Don't export `$derived` values directly - the Svelte compiler is needed. Use getter functions that compute values from `$state`. Tests in `.spec.ts` run in Node without Svelte compilation.
+18. **Cart store testing:** Use `_resetForTesting()` before each test. Mock `window` and `localStorage` for persistence tests. See `cart.spec.ts` for patterns.
 
 ## Test Coverage Summary
 
@@ -178,7 +182,8 @@ bun run db:push      # Push schema to D1
 | `src/routes/(public)/page.server.spec.ts`             | 7     | Homepage load function             |
 | `src/routes/(public)/menu/page.server.spec.ts`        | 10    | Menu page load function            |
 | `src/routes/(public)/menu/[slug]/page.server.spec.ts` | 10    | Cookie detail page load function   |
-| **Total**                                             | 226   |                                    |
+| `src/lib/stores/cart.spec.ts`                         | 57    | Cart store state and persistence   |
+| **Total**                                             | 283   |                                    |
 
 ## Site Config Notes
 
@@ -663,37 +668,106 @@ When `comingSoonMode` is **true**:
 - No Header, Footer, or other routes are visible
 - Newsletter signup is the primary CTA
 
-## Phase 3 Preview: Cart System
+## Cart Store Notes (Phase 3.1 - COMPLETE)
 
-The next major task is implementing the cart system. Key files to create:
+The `src/lib/stores/cart.svelte.ts` module implements cart state management.
 
-1. `src/lib/stores/cart.svelte.ts` - Cart state with Svelte 5 runes
-2. `src/lib/components/CartBadge.svelte` - Badge showing item count in header
-3. `src/lib/components/CartToast.svelte` - "Added to cart" notification
-4. `src/lib/components/AddToCartButton.svelte` - Reusable add to cart button
-5. `src/routes/(public)/checkout/+page.svelte` - Checkout page
+### Key Design Decisions
 
-### Cart Store Pattern (PRD 3.1)
+1. **Svelte 5 Runes:** Uses `$state` for reactive cart items array
+2. **Getter Functions:** Derived values exposed via functions (not `$derived` exports) for Node.js test compatibility
+3. **localStorage Persistence:** Saves on every cart modification, loads on `initializeCart()` call
+4. **SSR Safety:** All localStorage operations check `typeof window !== 'undefined'`
+5. **Max Quantity:** Enforces 99 max items per product
+
+### Exported Types
 
 ```typescript
-// src/lib/stores/cart.svelte.ts
-interface CartItem {
-	productId: number;
+interface CartProduct {
+	id: number;
 	slug: string;
 	title: string;
 	priceCents: number;
 	stripePriceId: string;
-	quantity: number;
 }
 
-let items = $state<CartItem[]>([]);
-let cartCount = $derived(items.reduce((sum, item) => sum + item.quantity, 0));
-let cartTotal = $derived(items.reduce((sum, item) => sum + item.priceCents * item.quantity, 0));
+interface CartItem extends CartProduct {
+	productId: number; // Same as id
+	quantity: number;
+}
+```
 
-// localStorage persistence with SSR safety
-$effect(() => {
-	if (typeof window !== 'undefined') {
-		localStorage.setItem('cart', JSON.stringify(items));
+### Exported Functions
+
+| Function                       | Purpose                                      |
+| ------------------------------ | -------------------------------------------- |
+| `addToCart(product)`           | Add product or increment quantity            |
+| `removeFromCart(productId)`    | Remove product entirely                      |
+| `updateQuantity(productId, n)` | Set quantity (removes if n <= 0)             |
+| `clearCart()`                  | Empty the cart                               |
+| `getItems()`                   | Get readonly cart items array                |
+| `getCartItem(productId)`       | Get specific item or undefined               |
+| `isInCart(productId)`          | Check if product is in cart                  |
+| `getQuantity(productId)`       | Get quantity for product (0 if not in cart)  |
+| `getCartCount()`               | Total item count (sum of quantities)         |
+| `getCartTotal()`               | Total price in cents                         |
+| `getCartTotalFormatted()`      | Total price as "$X.XX" string                |
+| `isCartEmpty()`                | Check if cart has no items                   |
+| `initializeCart()`             | Load from localStorage (call once on client) |
+| `clearStorage()`               | Remove localStorage data                     |
+| `getMaxQuantityPerItem()`      | Get max quantity constant (99)               |
+
+### Usage in Components
+
+```svelte
+<script lang="ts">
+	import { addToCart, getCartCount, initializeCart } from '$lib/stores/cart.svelte';
+	import { onMount } from 'svelte';
+
+	// Initialize cart from localStorage on client
+	onMount(() => {
+		initializeCart();
+	});
+
+	// Add a product
+	function handleAdd(product) {
+		const success = addToCart(product);
+		if (!success) {
+			// Max quantity reached
+		}
 	}
+
+	// Display cart count in template
+	// Note: Call getCartCount() in template for reactivity
+</script>
+
+<span>Cart: {getCartCount()}</span>
+```
+
+### Testing Pattern
+
+```typescript
+import { _resetForTesting, _setItemsForTesting, addToCart } from './cart.svelte';
+
+beforeEach(() => {
+	_resetForTesting(); // Clear cart and reset initialized flag
+});
+
+// Mock localStorage for persistence tests
+vi.stubGlobal('window', {});
+vi.stubGlobal('localStorage', {
+	getItem: vi.fn(),
+	setItem: vi.fn(),
+	removeItem: vi.fn()
 });
 ```
+
+## Phase 3 Remaining Tasks
+
+Files still to create for Phase 3:
+
+1. ~~`src/lib/stores/cart.svelte.ts`~~ - DONE
+2. `src/lib/components/CartBadge.svelte` - Badge showing item count in header
+3. `src/lib/components/CartToast.svelte` - "Added to cart" notification
+4. `src/lib/components/AddToCartButton.svelte` - Reusable add to cart button
+5. `src/routes/(public)/checkout/+page.svelte` - Checkout page
