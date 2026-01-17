@@ -13,15 +13,17 @@ This file contains useful findings for future agents working on this project.
 ### Phase 0 Status
 
 - 0.1-0.5: Completed (project setup, TypeScript, Vitest, Tailwind)
-- 0.6: Partially complete (D1 configured, R2 pending)
-- 0.7: In progress - Schema tables being added
+- 0.6: Partially complete (D1 configured, R2 pending - needs enabling in CF Dashboard)
+- 0.7: Schema and Migrations MOSTLY COMPLETE
   - `products` - DONE
   - `orders` - DONE
   - `newsletter` - DONE
   - `fulfillmentSlots` - DONE
   - `dailyCapacity` - DONE
-  - `adminSessions` - NOT STARTED
-- 0.8: Not started (database helper - but `src/lib/server/db/index.ts` already exists with `getDb()`)
+  - `adminSessions` - DONE
+  - Migrations generated (0.7.8) - DONE
+  - Remaining: push to D1 (0.7.9 - needs CF credentials), schema tests (0.7.10)
+- 0.8: Database helper EXISTS (`src/lib/server/db/index.ts`) - just needs verification and tests
 
 ## Key File Locations
 
@@ -58,11 +60,12 @@ export const tableName = sqliteTable('table_name', {
 
 ## Next Tasks (Priority Order)
 
-1. Add `adminSessions` table to schema (PRD 0.7.6)
-2. Generate and push migrations (PRD 0.7.8, 0.7.9)
-3. Write schema type tests (PRD 0.7.10)
-4. Complete database helper tasks (PRD 0.8)
-5. Start Phase 1: Core Layout & Components
+1. ~~Add `adminSessions` table to schema (PRD 0.7.6)~~ DONE
+2. ~~Generate migrations (PRD 0.7.8)~~ DONE - See `drizzle/migrations/0000_unknown_mandrill.sql`
+3. Push migrations to D1 (PRD 0.7.9) - Requires CF credentials in env vars
+4. Write schema type tests (PRD 0.7.10)
+5. Verify database helper (PRD 0.8) - `src/lib/server/db/index.ts` already exists with `getDb()` and `createDb()`
+6. Start Phase 1: Core Layout & Components (1.1 Site configuration is first)
 
 ## Commands Reference
 
@@ -81,3 +84,7 @@ bun run db:push      # Push schema to D1
 2. **R2 not enabled:** R2 bucket binding is commented out in `wrangler.jsonc` - needs enabling in CF Dashboard first
 3. **Database helper exists:** Task 0.8 says "Not Started" but `src/lib/server/db/index.ts` already has `getDb()` function
 4. **Commit message style:** Use conventional commits (`feat:`, `fix:`, `chore:`, etc.)
+5. **Schema complete:** All 6 tables are now in schema.ts. Migrations have been generated.
+6. **PRD sync:** Some PRD task statuses were out of sync - products/newsletter tables were marked "Not Started" but existed. Fixed in this session.
+7. **Migrations generated:** The migration file `drizzle/migrations/0000_unknown_mandrill.sql` contains CREATE TABLE for all 6 tables. Ready to push to D1.
+8. **drizzle-kit generate works locally:** The d1-http driver credentials are only needed for `push` operations, not `generate`.

@@ -303,18 +303,18 @@ Before marking any TODO as complete:
 
 ### 0.7 Create database schema
 
-**Status:** Not Started
+**Status:** In Progress
 
 | ID     | Task                                                                  | Status      |
 | ------ | --------------------------------------------------------------------- | ----------- |
-| 0.7.1  | Create `drizzle/schema.ts` with `products` table (see Appendix A)     | Not Started |
+| 0.7.1  | Create `drizzle/schema.ts` with `products` table (see Appendix A)     | Completed   |
 | 0.7.2  | Add `orders` table to schema                                          | Completed   |
-| 0.7.3  | Add `newsletter` table to schema                                      | Not Started |
+| 0.7.3  | Add `newsletter` table to schema                                      | Completed   |
 | 0.7.4  | Add `fulfillmentSlots` table to schema                                | Completed   |
 | 0.7.5  | Add `dailyCapacity` table to schema                                   | Completed   |
-| 0.7.6  | Add `adminSessions` table to schema                                   | Not Started |
+| 0.7.6  | Add `adminSessions` table to schema                                   | Completed   |
 | 0.7.7  | Create TypeScript types for JSON columns (OrderItem, DeliveryAddress) | Completed   |
-| 0.7.8  | Run `bun run drizzle-kit generate` to create SQL migration            | Not Started |
+| 0.7.8  | Run `bun run drizzle-kit generate` to create SQL migration            | Completed   |
 | 0.7.9  | Run `bun run drizzle-kit push` to apply schema to D1                  | Not Started |
 | 0.7.10 | Write unit tests for schema types in `tests/unit/schema.test.ts`      | Not Started |
 | 0.7.11 | **Commit:** `feat: create database schema with Drizzle`               | Not Started |
