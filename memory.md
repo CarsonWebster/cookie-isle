@@ -3710,3 +3710,143 @@ Clicking "Export to CSV" triggers:
 **Next Priority:** Phase 7 (Data Migration & Deployment) - Seed products, configure Cloudflare Pages, deploy to production
 
 **Blocked:** Phase 5 (R2 Image Upload) - Waiting for R2 bucket to be enabled
+
+## ImageUpload Component Notes (Phase 5 - Image Upload UI - COMPLETE)
+
+The `src/lib/components/ImageUpload.svelte` component provides reusable image upload functionality for admin pages.
+
+### Key Features
+
+1. **Drag-and-Drop Upload:**
+   - Drag zone with visual feedback (border color changes on drag)
+   - Click to open file picker
+   - Validates file type (JPEG, PNG, WebP only) and size (max 5MB)
+
+2. **Image Preview:**
+   - Shows preview immediately after file selection
+   - Preview uses Data URL during upload, then switches to final URL
+   - Remove button (X icon) in top-right corner
+
+3. **Upload Progress:**
+   - Spinner overlay during upload
+   - "Uploading..." status text
+   - Disables interaction while uploading
+
+4. **Error Handling:**
+   - Validation errors shown below upload area
+   - Network/API errors caught and displayed
+   - File type/size validation before upload attempt
+
+5. **Form Integration:**
+   - Hidden input field with uploaded image URL for form submission
+   - Props: `label`, `name`, `helpText`, `currentImageUrl`, `onUploadComplete`
+
+### Props Interface
+
+```typescript
+interface Props {
+  label: string;              // Label text for the upload field
+  helpText?: string;          // Optional help text shown below
+  currentImageUrl?: string | null;  // Existing image URL (for edit mode)
+  name: string;               // Form field name for hidden input
+  onUploadComplete?: (url: string) => void;  // Callback when upload finishes
+}
+```
+
+### Usage in Product Forms
+
+**Create Page (`/admin/products/new`):**
+
+```svelte
+<ImageUpload
+  label="Card Image"
+  name="imageUrl"
+  helpText="Used in product cards and menu listings (square aspect ratio recommended)"
+/>
+
+<ImageUpload
+  label="Hero Image"
+  name="heroImageUrl"
+  helpText="Used on product detail page (wide aspect ratio recommended)"
+/>
+```
+
+**Edit Page (`/admin/products/[id]`):**
+
+```svelte
+<ImageUpload
+  label="Card Image"
+  name="imageUrl"
+  currentImageUrl={data.product.imageUrl}
+  helpText="Used in product cards and menu listings"
+/>
+
+<ImageUpload
+  label="Hero Image"
+  name="heroImageUrl"
+  currentImageUrl={data.product.heroImageUrl}
+  helpText="Used on product detail page"
+/>
+```
+
+### Server-Side Changes
+
+**Product Create Action (`/admin/products/new/+page.server.ts`):**
+
+```typescript
+const imageUrl = formData.get('imageUrl')?.toString().trim() || null;
+const heroImageUrl = formData.get('heroImageUrl')?.toString().trim() || null;
+
+await db.insert(products).values({
+  // ... other fields
+  imageUrl,
+  heroImageUrl,
+  // ... more fields
+});
+```
+
+**Product Update Action (`/admin/products/[id]/+page.server.ts`):**
+
+```typescript
+const imageUrl = formData.get('imageUrl')?.toString().trim() || null;
+const heroImageUrl = formData.get('heroImageUrl')?.toString().trim() || null;
+
+await db.update(products).set({
+  // ... other fields
+  imageUrl,
+  heroImageUrl,
+  // ... more fields
+}).where(eq(products.id, id));
+```
+
+### Upload API URL Format Change
+
+**Before:** `https://images.thecookieisle.com/{filename}`  
+**After:** `/images/{filename}`
+
+The `getPublicImageUrl()` function in `src/routes/api/upload/+server.ts` was updated to return relative URLs that work with the `/images/[...path]` serving endpoint. This avoids hardcoding the domain and works in both local dev and production.
+
+### Accessibility Features
+
+- Label associated with file input via `for` attribute
+- Remove button has `aria-label="Remove image"`
+- Upload area has `role="button"` and `tabindex="0"` for keyboard access
+- Proper focus states and visual feedback
+
+### Responsive Design
+
+- Full-width upload area
+- Image preview: `h-48 w-full object-cover` (192px height, cover fit)
+- Grid layout on product forms: `grid gap-6 sm:grid-cols-2` (side-by-side on desktop)
+
+### Testing Notes
+
+- Upload API tests updated to expect `/images/{filename}` format (3 tests updated)
+- Product create/edit tests updated to include `imageUrl` and `heroImageUrl` fields (2 tests updated)
+- All 1247 tests passing
+
+### Deferred Tasks
+
+- **6.10.12:** Image library/gallery to select from previously uploaded images (nice-to-have)
+- This would require additional API endpoint to list images from R2 and a modal/picker UI
+

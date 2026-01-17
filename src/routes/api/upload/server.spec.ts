@@ -271,18 +271,18 @@ describe('Upload API Helper Functions', () => {
 	});
 
 	describe('getPublicImageUrl', () => {
-		it('should return URL with correct base URL', () => {
+		it('should return URL with correct relative path', () => {
 			const filename = '1705445678901-a3f9d2e1.jpg';
 			const url = getPublicImageUrl(filename);
 
-			expect(url).toBe('https://images.thecookieisle.com/1705445678901-a3f9d2e1.jpg');
+			expect(url).toBe('/images/1705445678901-a3f9d2e1.jpg');
 		});
 
 		it('should handle filename with special characters', () => {
 			const filename = 'test-file_123.png';
 			const url = getPublicImageUrl(filename);
 
-			expect(url).toBe('https://images.thecookieisle.com/test-file_123.png');
+			expect(url).toBe('/images/test-file_123.png');
 		});
 
 		it('should not double-slash if filename starts with slash', () => {
@@ -290,7 +290,7 @@ describe('Upload API Helper Functions', () => {
 			const filename = '/already-has-slash.webp';
 			const url = getPublicImageUrl(filename);
 
-			expect(url).toBe('https://images.thecookieisle.com//already-has-slash.webp');
+			expect(url).toBe('/images//already-has-slash.webp');
 			// Note: This shows we should normalize the filename, but for now we'll leave it as-is
 		});
 	});

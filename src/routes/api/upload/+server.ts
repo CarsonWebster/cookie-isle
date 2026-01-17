@@ -102,14 +102,10 @@ export async function uploadToR2(
 
 /**
  * Constructs public URL for uploaded image
- * For development, this uses a placeholder pattern
- * In production, this should point to your R2 custom domain or public bucket URL
+ * Uses the /images/[...path] endpoint to serve images from R2
  */
 export function getPublicImageUrl(filename: string): string {
-	// For now, use a placeholder URL pattern
-	// TODO: Configure R2 custom domain or public URL
-	const baseUrl = 'https://images.thecookieisle.com';
-	return `${baseUrl}/${filename}`;
+	return `/images/${filename}`;
 }
 
 /**

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
+	import ImageUpload from '$lib/components/ImageUpload.svelte';
 
 	let { form }: { form: ActionData | null | undefined } = $props();
 
@@ -228,6 +229,26 @@
 			</div>
 		</div>
 
+		<!-- Images -->
+		<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+			<h2 class="mb-4 text-lg font-semibold text-gray-900">Images</h2>
+			<div class="grid gap-6 sm:grid-cols-2">
+				<!-- Card Image (used in product cards and listings) -->
+				<ImageUpload
+					label="Card Image"
+					name="imageUrl"
+					helpText="Used in product cards and menu listings (square aspect ratio recommended)"
+				/>
+
+				<!-- Hero Image (used on product detail page) -->
+				<ImageUpload
+					label="Hero Image"
+					name="heroImageUrl"
+					helpText="Used on product detail page (wide aspect ratio recommended)"
+				/>
+			</div>
+		</div>
+
 		<!-- Display Settings -->
 		<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
 			<h2 class="mb-4 text-lg font-semibold text-gray-900">Display Settings</h2>
@@ -290,9 +311,6 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- TODO: Image Upload Section (Phase 5.1) -->
-		<!-- Will be added when R2 upload endpoint is implemented -->
 
 		<!-- Form Error -->
 		{#if form && 'error' in form && form.error}

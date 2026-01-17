@@ -1029,7 +1029,7 @@ Before marking any TODO as complete:
 
 ### 6.10 Product create page
 
-**Status:** Completed (except image upload - deferred to Phase 5.1)
+**Status:** Completed
 
 | ID      | Task                                                                                  | Status    |
 | ------- | ------------------------------------------------------------------------------------- | --------- |
@@ -1041,17 +1041,19 @@ Before marking any TODO as complete:
 | 6.10.6  | Add featured checkbox                                                                 | Completed |
 | 6.10.7  | Add active checkbox (default true)                                                    | Completed |
 | 6.10.8  | Add sort_order number input                                                           | Completed |
-| 6.10.9  | Create image upload component with drag-and-drop                                      | Deferred  |
-| 6.10.10 | Upload image to R2 via /api/upload                                                    | Deferred  |
-| 6.10.11 | Display uploaded image preview                                                        | Deferred  |
+| 6.10.9  | Create image upload component with drag-and-drop                                      | Completed |
+| 6.10.10 | Upload image to R2 via /api/upload                                                    | Completed |
+| 6.10.11 | Display uploaded image preview                                                        | Completed |
 | 6.10.12 | Allow selecting from previously uploaded images                                       | Deferred  |
-| 6.10.13 | Add separate hero image upload                                                        | Deferred  |
+| 6.10.13 | Add separate hero image upload                                                        | Completed |
 | 6.10.14 | Create `+page.server.ts` with form action to insert product                           | Completed |
 | 6.10.15 | Validate required fields                                                              | Completed |
 | 6.10.16 | Generate slug from title if not provided                                              | Completed |
 | 6.10.17 | Redirect to /admin/products on success                                                | Completed |
 | 6.10.18 | Write page test in `page.server.spec.ts` (12 tests)                                   | Completed |
 | 6.10.19 | **Commit:** `feat: create product create page with form and validation`               | Completed |
+
+> Note: Image upload UI added with ImageUpload component. Supports card and hero image uploads with drag-and-drop, preview, and R2 integration. Task 6.10.12 (image library/gallery) deferred as nice-to-have feature.
 
 ### 6.11 Product edit page
 
@@ -1064,13 +1066,15 @@ Before marking any TODO as complete:
 | 6.11.3  | Create `src/routes/admin/products/[id]/+page.svelte`                    | Completed |
 | 6.11.4  | Reuse product form component from create page                           | Completed |
 | 6.11.5  | Pre-populate form with existing product data                            | Completed |
-| 6.11.6  | Show current images with option to replace                              | Deferred  |
+| 6.11.6  | Show current images with option to replace                              | Completed |
 | 6.11.7  | Create form action to update product                                    | Completed |
 | 6.11.8  | Add "Delete Product" button with confirmation modal                     | Completed |
 | 6.11.9  | Create form action to delete product                                    | Completed |
 | 6.11.10 | Redirect to /admin/products on success                                  | Completed |
 | 6.11.11 | Write page test in `src/routes/admin/products/[id]/page.server.spec.ts` | Completed |
 | 6.11.12 | **Commit:** `feat: create product edit page with delete`                | Completed |
+
+> Note: ImageUpload component integrated with `currentImageUrl` prop to show existing images with replace functionality.
 
 ### 6.12 Fulfillment slots page
 

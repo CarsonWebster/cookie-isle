@@ -21,6 +21,8 @@ export const actions: Actions = {
 		const description = formData.get('description')?.toString().trim() || null;
 		const ingredients = formData.get('ingredients')?.toString().trim() || null;
 		const tagsStr = formData.get('tags')?.toString().trim();
+		const imageUrl = formData.get('imageUrl')?.toString().trim() || null;
+		const heroImageUrl = formData.get('heroImageUrl')?.toString().trim() || null;
 		const sortOrderStr = formData.get('sortOrder')?.toString();
 		const featured = formData.get('featured') === 'on';
 		const active = formData.get('active') === 'on';
@@ -103,6 +105,8 @@ export const actions: Actions = {
 				stripePriceId: stripePriceId!,
 				description,
 				ingredients,
+				imageUrl,
+				heroImageUrl,
 				tags,
 				featured,
 				active,
