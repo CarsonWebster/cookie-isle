@@ -864,22 +864,22 @@ Before marking any TODO as complete:
 
 ## Phase 6: Admin Dashboard
 
-**Status:** Not Started
+**Status:** In Progress
 
 ### 6.1 Admin authentication
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                                             | Status      |
-| ----- | -------------------------------------------------------------------------------- | ----------- |
-| 6.1.1 | Create `src/lib/server/auth.ts`                                                  | Not Started |
-| 6.1.2 | Implement `verifyPassword(password)` - compare with ADMIN_PASSWORD env var       | Not Started |
-| 6.1.3 | Implement `createSession()` - generate random ID, store in adminSessions table   | Not Started |
-| 6.1.4 | Implement `validateSession(sessionId)` - check if session exists and not expired | Not Started |
-| 6.1.5 | Implement `deleteSession(sessionId)` - remove session on logout                  | Not Started |
-| 6.1.6 | Set session expiration to 7 days                                                 | Not Started |
-| 6.1.7 | Write unit tests in `tests/unit/auth.test.ts`                                    | Not Started |
-| 6.1.8 | **Commit:** `feat: add admin authentication helpers`                             | Not Started |
+| ID    | Task                                                                             | Status    |
+| ----- | -------------------------------------------------------------------------------- | --------- |
+| 6.1.1 | Create `src/lib/server/auth.ts`                                                  | Completed |
+| 6.1.2 | Implement `verifyPassword(password)` - compare with ADMIN_PASSWORD env var       | Completed |
+| 6.1.3 | Implement `createSession()` - generate random ID, store in adminSessions table   | Completed |
+| 6.1.4 | Implement `validateSession(sessionId)` - check if session exists and not expired | Completed |
+| 6.1.5 | Implement `deleteSession(sessionId)` - remove session on logout                  | Completed |
+| 6.1.6 | Set session expiration to 7 days                                                 | Completed |
+| 6.1.7 | Write unit tests in `src/lib/server/auth.spec.ts` (66 tests)                     | Completed |
+| 6.1.8 | **Commit:** `feat: add admin authentication helpers`                             | Completed |
 
 ### 6.2 Admin login page
 

@@ -8,7 +8,7 @@ This file contains useful findings for future agents working on this project.
 - **Runtime:** Bun
 - **Primary Documentation:** `docs/PRD.md` - Contains all migration tasks with status tracking
 
-## Current Progress (as of 2026-01-16, Phase 4 Complete)
+## Current Progress (as of 2026-01-16, Phase 6.1 Complete)
 
 ### Phase 0 Status: COMPLETE (except CF deployment tasks)
 
@@ -94,6 +94,7 @@ This file contains useful findings for future agents working on this project.
 | `src/routes/api/checkout/+server.ts`        | Stripe checkout API endpoint (POST handler)              |
 | `src/routes/api/webhook/+server.ts`         | Stripe webhook handler (order creation)                  |
 | `src/routes/api/newsletter/+server.ts`      | Newsletter signup API endpoint                           |
+| `src/lib/server/auth.ts`                    | Admin auth helpers (session mgmt, password verify)       |
 | `drizzle.config.ts`                         | Drizzle Kit config (uses d1-http driver)                 |
 | `wrangler.jsonc`                            | Cloudflare bindings (D1 configured, R2 commented out)    |
 | `AGENTS.md`                                 | Agent instructions and coding standards                  |
@@ -229,7 +230,8 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/routes/api/webhook/server.spec.ts`                    | 44    | Webhook parsing and validation       |
 | `src/routes/(public)/checkout/success/page.server.spec.ts` | 27    | Checkout success page load & helpers |
 | `src/routes/api/newsletter/server.spec.ts`                 | 54    | Newsletter API validation & helpers  |
-| **Total**                                                  | 860   |                                      |
+| `src/lib/server/auth.spec.ts`                              | 66    | Admin authentication helpers         |
+| **Total**                                                  | 926   |                                      |
 
 ## Site Config Notes
 
@@ -2107,6 +2109,135 @@ The ComingSoon component now POSTs to `/api/newsletter` with:
 
 ### Next Phase
 
-**Phase 5: Image Upload (R2)** - Start with PRD 5.1 (R2 upload endpoint)
+**Phase 5: Image Upload (R2)** - BLOCKED (R2 bucket needs to be enabled in Cloudflare Dashboard first - 0.6.3 is still pending)
 
-Note: R2 bucket needs to be enabled in Cloudflare Dashboard first (0.6.3 is still pending)
+**Phase 6: Admin Dashboard** - Started with PRD 6.1 (Admin authentication)
+
+## Admin Authentication Notes (Phase 6.1 - COMPLETE)
+
+The `src/lib/server/auth.ts` module implements admin authentication for the dashboard.
+
+### Key Features
+
+1. **Constant-Time Password Verification:** Uses XOR comparison to prevent timing attacks
+2. **UUID Session IDs:** Generates cryptographically secure session IDs with `crypto.randomUUID()`
+3. **7-Day Session Expiration:** Sessions auto-expire after 7 days
+4. **Automatic Cleanup:** Validates and auto-deletes expired sessions
+
+### Exported Constants
+
+| Constant                | Value                    | Purpose                            |
+| ----------------------- | ------------------------ | ---------------------------------- |
+| `SESSION_DURATION_MS`   | 604800000 (7 days in ms) | Session duration in milliseconds   |
+| `SESSION_DURATION_DAYS` | 7                        | Session duration for documentation |
+
+### Exported Functions
+
+| Function                      | Purpose                                           |
+| ----------------------------- | ------------------------------------------------- |
+| `verifyPassword(pw, adminPw)` | Constant-time password comparison                 |
+| `generateSessionId()`         | Create cryptographically secure UUID              |
+| `calculateExpirationDate()`   | Calculate session expiration (7 days from now)    |
+| `formatExpirationDate(date)`  | Format date as ISO string for storage             |
+| `parseExpirationDate(str)`    | Parse ISO string back to Date                     |
+| `isSessionExpired(exp, now)`  | Check if session has expired                      |
+| `createSession(db, now?)`     | Create and store new session, returns ID + expiry |
+| `validateSession(db, id)`     | Check session validity, auto-delete if expired    |
+| `deleteSession(db, id)`       | Remove session (logout)                           |
+| `cleanupExpiredSessions(db)`  | Delete all expired sessions (maintenance)         |
+| `getAdminPassword(platform)`  | Get ADMIN_PASSWORD from env, throws if missing    |
+
+### Usage in Admin Routes
+
+```typescript
+import {
+	verifyPassword,
+	createSession,
+	validateSession,
+	deleteSession,
+	getAdminPassword
+} from '$lib/server/auth';
+import { getDb } from '$lib/server/db';
+
+// Login: verify password and create session
+export const actions = {
+	default: async ({ request, cookies, platform }) => {
+		const data = await request.formData();
+		const password = data.get('password') as string;
+		const adminPassword = getAdminPassword(platform);
+
+		if (!verifyPassword(password, adminPassword)) {
+			return { error: 'Invalid password' };
+		}
+
+		const db = getDb(platform);
+		const { sessionId, expiresAt } = await createSession(db);
+
+		cookies.set('admin_session', sessionId, {
+			path: '/admin',
+			httpOnly: true,
+			secure: true,
+			sameSite: 'lax',
+			expires: expiresAt
+		});
+
+		redirect(303, '/admin');
+	}
+};
+
+// Auth guard: validate session
+export const load = async ({ cookies, platform }) => {
+	const sessionId = cookies.get('admin_session');
+	const db = getDb(platform);
+	const { valid } = await validateSession(db, sessionId);
+
+	if (!valid) {
+		redirect(303, '/admin/login');
+	}
+};
+
+// Logout: delete session
+export const actions = {
+	default: async ({ cookies, platform }) => {
+		const sessionId = cookies.get('admin_session');
+		const db = getDb(platform);
+		await deleteSession(db, sessionId);
+		cookies.delete('admin_session', { path: '/admin' });
+		redirect(303, '/admin/login');
+	}
+};
+```
+
+### Test Coverage
+
+66 tests in `src/lib/server/auth.spec.ts`:
+
+- Constants (2 tests)
+- verifyPassword (12 tests) - matching, non-matching, edge cases, unicode
+- generateSessionId (4 tests) - UUID format, uniqueness
+- calculateExpirationDate (4 tests) - 7-day offset, leap years, year boundaries
+- formatExpirationDate (2 tests) - ISO format
+- parseExpirationDate (6 tests) - valid, null, undefined, invalid
+- isSessionExpired (4 tests) - future, past, exact, default now
+- createSession (2 tests) - DB insert, UUID format
+- validateSession (5 tests) - undefined, non-existent, valid, expired, invalid format
+- deleteSession (3 tests) - undefined, success, not found
+- cleanupExpiredSessions (3 tests) - delete count, zero results, provided date
+- getAdminPassword (6 tests) - configured, undefined platform/env/password, empty string, error message
+- Module exports (13 tests)
+
+### Security Considerations
+
+1. **Constant-time comparison:** Prevents timing attacks on password verification
+2. **Cryptographic random IDs:** Uses Web Crypto API for secure session IDs
+3. **Automatic cleanup:** Expired sessions are deleted on validation attempt
+4. **No plaintext storage:** Only session ID stored in DB, not the password
+5. **Error messages:** Generic errors don't leak security info
+
+### Next Tasks (Phase 6.2+)
+
+1. Create admin login page (PRD 6.2)
+2. Create admin auth guard (PRD 6.3)
+3. Create admin layout with sidebar (PRD 6.4)
+4. Create admin logout (PRD 6.5)
+5. Create admin dashboard (PRD 6.6)
