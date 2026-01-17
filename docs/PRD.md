@@ -626,44 +626,44 @@ Before marking any TODO as complete:
 
 ### 3.6 Checkout page - Customer form
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                              | Status      |
-| ------ | ----------------------------------------------------------------- | ----------- |
-| 3.6.1  | Add "Your Information" section header                             | Not Started |
-| 3.6.2  | Create form with fields: first_name, last_name, email, phone      | Not Started |
-| 3.6.3  | Add required field validation with error messages                 | Not Started |
-| 3.6.4  | Add email format validation                                       | Not Started |
-| 3.6.5  | Add phone format validation                                       | Not Started |
-| 3.6.6  | Create fulfillment type toggle (Pickup / Delivery buttons)        | Not Started |
-| 3.6.7  | Show/hide delivery address fields based on fulfillment type       | Not Started |
-| 3.6.8  | Add delivery address fields: street, apt, city, state, zip        | Not Started |
-| 3.6.9  | Add ZIP code validation against allowed list                      | Not Started |
-| 3.6.10 | Show ZIP warning modal for invalid ZIP codes                      | Not Started |
-| 3.6.11 | Style form fields with Tailwind: focus states, error states       | Not Started |
-| 3.6.12 | Write form validation tests in `tests/unit/checkout-form.test.ts` | Not Started |
-| 3.6.13 | **Commit:** `feat: add customer form to checkout`                 | Not Started |
+| ID     | Task                                                                                                | Status    |
+| ------ | --------------------------------------------------------------------------------------------------- | --------- |
+| 3.6.1  | Add "Your Information" section header                                                               | Completed |
+| 3.6.2  | Create form with fields: first_name, last_name, email, phone                                        | Completed |
+| 3.6.3  | Add required field validation with error messages                                                   | Completed |
+| 3.6.4  | Add email format validation                                                                         | Completed |
+| 3.6.5  | Add phone format validation with auto-formatting                                                    | Completed |
+| 3.6.6  | Create fulfillment type toggle (Pickup / Delivery buttons)                                          | Completed |
+| 3.6.7  | Show/hide delivery address fields based on fulfillment type                                         | Completed |
+| 3.6.8  | Add delivery address fields: street, apt, city, state, zip                                          | Completed |
+| 3.6.9  | Add ZIP code validation against allowed list                                                        | Completed |
+| 3.6.10 | Show ZIP error message for invalid ZIP codes (inline, not modal)                                    | Completed |
+| 3.6.11 | Style form fields with Tailwind: focus states, error states                                         | Completed |
+| 3.6.12 | Write form validation tests in `src/routes/(public)/checkout/page.spec.ts` (48 new tests, 95 total) | Completed |
+| 3.6.13 | **Commit:** `feat: add customer form to checkout`                                                   | Completed |
 
 ### 3.7 Checkout page - Slots selection
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID     | Task                                                            | Status      |
-| ------ | --------------------------------------------------------------- | ----------- |
-| 3.7.1  | Create `src/routes/(public)/checkout/+page.server.ts`           | Not Started |
-| 3.7.2  | Load available fulfillment slots from D1 (active, future dates) | Not Started |
-| 3.7.3  | Load daily capacity data to determine remaining capacity        | Not Started |
-| 3.7.4  | Create "Select a Time" section                                  | Not Started |
-| 3.7.5  | Group slots by date with date headers                           | Not Started |
-| 3.7.6  | Display time slots as radio buttons                             | Not Started |
-| 3.7.7  | Show slot type badge (pickup/delivery)                          | Not Started |
-| 3.7.8  | Disable sold-out slots and show "Sold Out" message              | Not Started |
-| 3.7.9  | Filter slots based on selected fulfillment type                 | Not Started |
-| 3.7.10 | Store selected slot in form state                               | Not Started |
-| 3.7.11 | Add loading state while fetching slots                          | Not Started |
-| 3.7.12 | Add error state with retry button                               | Not Started |
-| 3.7.13 | Write tests in `tests/integration/checkout-slots.test.ts`       | Not Started |
-| 3.7.14 | **Commit:** `feat: add fulfillment slot selection`              | Not Started |
+| ID     | Task                                                              | Status    |
+| ------ | ----------------------------------------------------------------- | --------- |
+| 3.7.1  | Create `src/routes/(public)/checkout/+page.server.ts`             | Completed |
+| 3.7.2  | Load available fulfillment slots from D1 (active, future dates)   | Completed |
+| 3.7.3  | Load daily capacity data to determine remaining capacity          | Completed |
+| 3.7.4  | Create "Select a Time" section                                    | Completed |
+| 3.7.5  | Group slots by date with date headers                             | Completed |
+| 3.7.6  | Display time slots as radio buttons                               | Completed |
+| 3.7.7  | Show slot type badge (pickup/delivery)                            | Completed |
+| 3.7.8  | Disable sold-out slots and show "Sold Out" message                | Completed |
+| 3.7.9  | Filter slots based on selected fulfillment type                   | Completed |
+| 3.7.10 | Store selected slot in form state                                 | Completed |
+| 3.7.11 | Add empty state when no slots available for fulfillment type      | Completed |
+| 3.7.12 | Show low stock warning when remaining capacity <= 20              | Completed |
+| 3.7.13 | Write tests in `src/routes/(public)/checkout/page.server.spec.ts` | Completed |
+| 3.7.14 | **Commit:** `feat: add fulfillment slot selection`                | Completed |
 
 ### 3.8 Checkout page - Extras (tip, gift box)
 

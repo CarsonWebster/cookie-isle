@@ -141,7 +141,8 @@ export const tableName = sqliteTable('table_name', {
 20. ~~Cart toast notification (PRD 3.3)~~ DONE - `src/lib/components/CartToast.svelte` with 35 tests
 21. ~~Add to cart functionality (PRD 3.4)~~ DONE - `src/lib/components/AddToCartButton.svelte` with 46 tests
 22. ~~Checkout page - Cart display (PRD 3.5)~~ DONE - `src/routes/(public)/checkout/+page.svelte` with cart items list (47 tests)
-23. **NEXT: Checkout page - Customer form (PRD 3.6)** - Customer info form with validation, fulfillment type toggle
+23. ~~Checkout page - Customer form (PRD 3.6)~~ DONE - Customer info form with validation, fulfillment type toggle (95 total tests)
+24. **NEXT: Checkout page - Slots selection (PRD 3.7)** - Server load for available slots, slot picker UI
 
 ## Commands Reference
 
@@ -200,14 +201,16 @@ npx wrangler d1 execute cookie-isle-db --local --command "SELECT * FROM products
 | `src/lib/components/MenuCard.spec.ts`                 | 37    | MenuCard product type and config   |
 | `src/lib/components/ComingSoon.spec.ts`               | 46    | ComingSoon config, email, state    |
 | `src/routes/(public)/page.server.spec.ts`             | 7     | Homepage load function             |
+| `src/routes/(public)/page.svelte.spec.ts`             | 1     | Homepage component (browser test)  |
 | `src/routes/(public)/menu/page.server.spec.ts`        | 10    | Menu page load function            |
 | `src/routes/(public)/menu/[slug]/page.server.spec.ts` | 10    | Cookie detail page load function   |
 | `src/lib/stores/cart.spec.ts`                         | 57    | Cart store state and persistence   |
 | `src/lib/components/CartBadge.spec.ts`                | 26    | CartBadge component logic          |
 | `src/lib/components/CartToast.spec.ts`                | 35    | CartToast notification logic       |
 | `src/lib/components/AddToCartButton.spec.ts`          | 46    | AddToCartButton integration logic  |
-| `src/routes/(public)/checkout/page.spec.ts`           | 47    | Checkout page cart display logic   |
-| **Total**                                             | 437   |                                    |
+| `src/routes/(public)/checkout/page.spec.ts`           | 95    | Checkout page cart & form logic    |
+| `src/routes/(public)/checkout/page.server.spec.ts`    | 25    | Checkout slots load function       |
+| **Total**                                             | 511   |                                    |
 
 ## Site Config Notes
 
@@ -1034,9 +1037,9 @@ Files still to create for Phase 3:
 3. ~~`src/lib/components/CartToast.svelte`~~ - DONE (35 tests)
 4. ~~`src/lib/components/AddToCartButton.svelte`~~ - DONE (46 tests)
 5. ~~`src/routes/(public)/checkout/+page.svelte`~~ - DONE (47 tests) - Cart display with items list, quantity controls, subtotal
-6. Customer form (PRD 3.6) - Form fields, validation, fulfillment type toggle
-7. Slots selection (PRD 3.7) - Server load for available slots, slot picker UI
-8. Extras section (PRD 3.8) - Tip, gift box, order summary
+6. ~~Customer form (PRD 3.6)~~ - DONE (95 total tests) - Form fields, validation, fulfillment type toggle
+7. ~~Slots selection (PRD 3.7)~~ - DONE (25 tests) - Server load for slots, slot picker UI with filtering
+8. **NEXT: Extras section (PRD 3.8)** - Tip, gift box, order summary
 9. Submit functionality (PRD 3.9) - Form validation, loading states
 
 ## Checkout Page Notes (Phase 3.5 - COMPLETE)
@@ -1101,11 +1104,209 @@ import {
 </div>
 ```
 
-### Next Step: Customer Form (PRD 3.6)
+## Customer Form Notes (Phase 3.6 - COMPLETE)
+
+The checkout page now includes a customer information form between cart items and the cart summary.
+
+### Form Fields
+
+1. **Customer Information:**
+   - First Name (required)
+   - Last Name (required)
+   - Email (required, validated)
+   - Phone (required, auto-formatted)
+
+2. **Fulfillment Type Toggle:**
+   - Pickup button (if `config.fulfillment.pickupEnabled`)
+   - Delivery button (if `config.fulfillment.deliveryEnabled`)
+   - Shows pickup location or delivery area based on selection
+
+3. **Delivery Address (conditional):**
+   - Street Address (required)
+   - Apt/Suite/Unit (optional)
+   - City (required)
+   - State (defaults to CA)
+   - ZIP (required, validated against allowed list)
+
+### Form State Management
+
+```typescript
+// Customer fields
+let firstName = $state('');
+let lastName = $state('');
+let email = $state('');
+let phone = $state('');
+
+// Fulfillment type: 'pickup' or 'delivery'
+let fulfillmentType = $state<'pickup' | 'delivery'>('pickup');
+
+// Delivery address fields
+let street = $state('');
+let apt = $state('');
+let city = $state('');
+let addressState = $state('CA');
+let zip = $state('');
+
+// Validation state
+let errors = $state<Record<string, string>>({});
+let touched = $state<Record<string, boolean>>({});
+```
+
+### Validation Logic
+
+```typescript
+// Derived validation states
+let isValidEmail = $derived(email.includes('@') && email.includes('.') && email.length >= 5);
+let isValidPhone = $derived(phone.replace(/\D/g, '').length >= 10);
+let isValidZip = $derived(
+	fulfillmentType === 'pickup' || (zip.length === 5 && /^\d{5}$/.test(zip))
+);
+let isDeliveryZipAllowed = $derived(fulfillmentType === 'pickup' || isZipAllowedForDelivery(zip));
+```
+
+### Phone Formatting
+
+Phone numbers are auto-formatted as the user types:
+
+- Input: `5551234567`
+- Output: `(555) 123-4567`
+
+```typescript
+function formatPhone(value: string): string {
+	const digits = value.replace(/\D/g, '').slice(0, 10);
+	if (digits.length === 0) return '';
+	if (digits.length <= 3) return `(${digits}`;
+	if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+	return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+```
+
+### ZIP Code Validation
+
+Two levels of ZIP validation:
+
+1. **Format:** Must be exactly 5 digits
+2. **Delivery Area:** Must be in `config.fulfillment.allowedDeliveryZips`
+
+Error message from `config.fulfillment.deliveryZipError` is shown for invalid delivery ZIP.
+
+### Test Coverage
+
+48 new tests added for customer form validation (95 total checkout tests):
+
+- Email validation (5 tests)
+- Phone validation (5 tests)
+- Phone formatting (7 tests)
+- ZIP code validation (4 tests)
+- ZIP delivery area validation (3 tests)
+- Fulfillment type logic (5 tests)
+- Form field requirements (3 tests)
+- Validation state management (4 tests)
+- Conditional delivery fields (5 tests)
+- Form accessibility (3 tests)
+- Error message display (4 tests)
+
+## Slot Selection Notes (Phase 3.7 - COMPLETE)
+
+The checkout page now includes fulfillment slot selection with server-side data loading.
+
+### Server Load Function (`+page.server.ts`)
+
+1. **Query Pattern:**
+   - Loads `fulfillment_slots` where `active=true AND date >= today`
+   - Loads all `daily_capacity` records for capacity lookup
+   - Joins data to calculate remaining capacity per slot
+
+2. **Exported Types:**
+
+   ```typescript
+   interface FulfillmentSlotWithCapacity {
+   	id: number;
+   	date: string; // YYYY-MM-DD
+   	startTime: string; // HH:MM
+   	endTime: string; // HH:MM
+   	slotType: string | null; // 'pickup', 'delivery', 'both'
+   	maxCookies: number | null;
+   	cookiesOrdered: number; // From daily_capacity, defaults to 0
+   	remainingCapacity: number;
+   	isSoldOut: boolean; // remainingCapacity <= 0
+   }
+
+   interface SlotsByDate {
+   	date: string;
+   	formattedDate: string; // e.g., "Saturday, January 18"
+   	slots: FulfillmentSlotWithCapacity[];
+   }
+   ```
+
+3. **Helper Functions:**
+   - `formatTimeDisplay(timeStr)` - Converts "14:00" to "2:00 PM"
+
+### Slot Picker UI Features
+
+1. **Filtering by Fulfillment Type:**
+   - Slots filter automatically when user switches pickup/delivery
+   - "both" type slots show for both pickup and delivery
+   - Selected slot resets if it becomes invalid for new fulfillment type
+
+2. **Visual Indicators:**
+   - Selected slot: Primary color border and checkmark icon
+   - Sold out: Red "Sold Out" badge, disabled state
+   - Low stock (<=20 remaining): Yellow warning badge with count
+
+3. **Empty State:**
+   - Shows when no slots match selected fulfillment type
+   - Calendar icon with helpful message
+
+### State Management
+
+```typescript
+// Selected slot ID
+let selectedSlotId = $state<number | null>(null);
+
+// Filter slots by fulfillment type
+let filteredSlotsByDate = $derived(() => {
+	return data.slotsByDate
+		.map((dateGroup) => ({
+			...dateGroup,
+			slots: dateGroup.slots.filter((slot) => {
+				if (slot.slotType === 'both') return true;
+				return slot.slotType === fulfillmentType;
+			})
+		}))
+		.filter((dateGroup) => dateGroup.slots.length > 0);
+});
+
+// Reset slot when fulfillment type changes
+$effect(() => {
+	const currentSlot = selectedSlot();
+	if (currentSlot) {
+		const isValidForType =
+			currentSlot.slotType === 'both' || currentSlot.slotType === fulfillmentType;
+		if (!isValidForType) {
+			selectedSlotId = null;
+		}
+	}
+});
+```
+
+### Test Coverage
+
+25 tests in `src/routes/(public)/checkout/page.server.spec.ts`:
+
+- Platform unavailability handling (3 tests)
+- Slot capacity calculation (6 tests)
+- Sold out status detection (2 tests)
+- Slot sorting by date and time (1 test)
+- Grouping by date (2 tests)
+- Time display formatting (6 tests)
+- Return type validation (3 tests)
+- Multiple capacity records handling (2 tests)
+
+### Next Step: Extras section (PRD 3.8)
 
 The checkout page will be extended to include:
 
-- Customer information form (first_name, last_name, email, phone)
-- Fulfillment type toggle (Pickup / Delivery)
-- Delivery address fields (conditional on fulfillment type)
-- ZIP code validation against `config.fulfillment.allowedDeliveryZips`
+- Tip selection (dollar input + percentage presets)
+- Gift box option with message textarea
+- Order summary with subtotal, tip, gift box, tax, total
