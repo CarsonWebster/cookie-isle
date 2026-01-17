@@ -19,16 +19,31 @@
 		return d.toISOString().split('T')[0];
 	});
 
-	// Group slots by date
-	const slotsByDate = $derived(() => {
-		const grouped = new Map<string, typeof data.slots>();
+	// State for showing/hiding past dates
+	let showPastDates = $state(false);
+
+	// Group slots by date, separating future and past
+	const groupedSlots = $derived.by(() => {
+		const futureMap = new Map<string, typeof data.slots>();
+		const pastMap = new Map<string, typeof data.slots>();
+
 		for (const slot of data.slots) {
-			if (!grouped.has(slot.date)) {
-				grouped.set(slot.date, []);
+			const isPast = slot.date < data.today;
+			const targetMap = isPast ? pastMap : futureMap;
+
+			if (!targetMap.has(slot.date)) {
+				targetMap.set(slot.date, []);
 			}
-			grouped.get(slot.date)!.push(slot);
+			targetMap.get(slot.date)!.push(slot);
 		}
-		return grouped;
+
+		// Sort future dates: soonest first (ascending)
+		const futureDates = [...futureMap.entries()].sort(([a], [b]) => a.localeCompare(b));
+
+		// Sort past dates: most recent first (descending)
+		const pastDates = [...pastMap.entries()].sort(([a], [b]) => b.localeCompare(a));
+
+		return { futureDates, pastDates };
 	});
 
 	// Format date for display
@@ -255,115 +270,162 @@
 				<p class="mt-2 text-text-light">Create your first fulfillment slot using the form above</p>
 			</div>
 		{:else}
-			{#each [...slotsByDate()] as [dateStr, slotsForDate]}
-				<div class="rounded-xl bg-white p-6 shadow-md">
-					<!-- Date Header with Capacity -->
-					<div class="mb-4 flex items-center justify-between border-b border-tertiary-medium pb-4">
-						<div>
-							<h3 class="text-xl font-semibold text-secondary">{formatDate(dateStr)}</h3>
-							<p class="mt-1 text-sm text-text-light">{dateStr}</p>
-						</div>
-						<div class="text-right">
-							<div class="text-text-dark text-sm font-medium">Daily Capacity</div>
-							<div
-								class="mt-1 text-lg font-bold {isLowCapacity(dateStr)
-									? 'text-orange-600'
-									: 'text-secondary'}"
-							>
-								{getCapacityUsed(dateStr)} / {getMaxCapacity(dateStr)} cookies
-							</div>
-							{#if isLowCapacity(dateStr)}
-								<span class="mt-1 inline-block text-xs font-semibold text-orange-600">
-									Low Stock
-								</span>
-							{/if}
-						</div>
-					</div>
-
-					<!-- Slots Table -->
-					<div class="overflow-x-auto">
-						<table class="w-full">
-							<thead>
-								<tr class="border-b border-tertiary-medium text-left text-sm text-text-light">
-									<th class="pr-4 pb-3 font-semibold">Time</th>
-									<th class="pr-4 pb-3 font-semibold">Type</th>
-									<th class="pr-4 pb-3 font-semibold">Max Cookies</th>
-									<th class="pr-4 pb-3 font-semibold">Status</th>
-									<th class="pb-3 font-semibold">Actions</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each slotsForDate as slot}
-									<tr class="border-b border-tertiary-light">
-										<td class="text-text-dark py-3 pr-4 font-medium">
-											{formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-										</td>
-										<td class="py-3 pr-4">
-											<span
-												class="inline-block rounded-full px-3 py-1 text-xs font-semibold capitalize {getSlotTypeBadge(
-													slot.slotType ?? 'both'
-												)}"
-											>
-												{slot.slotType ?? 'both'}
-											</span>
-										</td>
-										<td class="text-text-dark py-3 pr-4">
-											{slot.maxCookies ?? 0} cookies
-										</td>
-										<td class="py-3 pr-4">
-											<form method="POST" action="?/toggleActive" use:enhance>
-												<input type="hidden" name="slotId" value={slot.id} />
-												<input type="hidden" name="active" value={slot.active ? 'true' : 'false'} />
-												<button
-													type="submit"
-													class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold {slot.active
-														? 'bg-green-100 text-green-800 hover:bg-green-200'
-														: 'bg-gray-100 text-gray-800 hover:bg-gray-200'} transition-colors"
-												>
-													{slot.active ? 'Active' : 'Inactive'}
-												</button>
-											</form>
-										</td>
-										<td class="py-3">
-											<form
-												method="POST"
-												action="?/deleteSlot"
-												use:enhance
-												onsubmit={(e) => {
-													if (!confirm('Are you sure you want to delete this slot?')) {
-														e.preventDefault();
-													}
-												}}
-											>
-												<input type="hidden" name="slotId" value={slot.id} />
-												<button
-													type="submit"
-													class="text-red-600 hover:text-red-800"
-													aria-label="Delete slot"
-												>
-													<svg
-														class="h-5 w-5"
-														fill="none"
-														stroke="currentColor"
-														viewBox="0 0 24 24"
-													>
-														<path
-															stroke-linecap="round"
-															stroke-linejoin="round"
-															stroke-width="2"
-															d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-														/>
-													</svg>
-												</button>
-											</form>
-										</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
+			<!-- Future Dates (soonest first) -->
+			{#if groupedSlots.futureDates.length === 0}
+				<div class="rounded-xl bg-white p-8 text-center shadow-md">
+					<p class="text-text-light">No upcoming slots. Create one using the form above.</p>
 				</div>
-			{/each}
+			{:else}
+				{#each groupedSlots.futureDates as [dateStr, slotsForDate]}
+					{@render dateSlotCard(dateStr, slotsForDate)}
+				{/each}
+			{/if}
+
+			<!-- Past Dates (collapsible) -->
+			{#if groupedSlots.pastDates.length > 0}
+				<div class="mt-8">
+					<button
+						type="button"
+						onclick={() => (showPastDates = !showPastDates)}
+						class="flex w-full items-center justify-between rounded-xl bg-gray-100 px-6 py-4 text-left transition-colors hover:bg-gray-200"
+					>
+						<span class="font-semibold text-text-light">
+							Past Dates ({groupedSlots.pastDates.length})
+						</span>
+						<svg
+							class="h-5 w-5 text-text-light transition-transform {showPastDates
+								? 'rotate-180'
+								: ''}"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M19 9l-7 7-7-7"
+							/>
+						</svg>
+					</button>
+
+					{#if showPastDates}
+						<div class="mt-4 space-y-6">
+							{#each groupedSlots.pastDates as [dateStr, slotsForDate]}
+								{@render dateSlotCard(dateStr, slotsForDate, true)}
+							{/each}
+						</div>
+					{/if}
+				</div>
+			{/if}
 		{/if}
 	</div>
 </div>
+
+{#snippet dateSlotCard(dateStr: string, slotsForDate: typeof data.slots, isPast: boolean = false)}
+	<div class="rounded-xl bg-white p-6 shadow-md {isPast ? 'opacity-75' : ''}">
+		<!-- Date Header with Capacity -->
+		<div class="mb-4 flex items-center justify-between border-b border-tertiary-medium pb-4">
+			<div>
+				<h3 class="text-xl font-semibold text-secondary">
+					{formatDate(dateStr)}
+					{#if isPast}
+						<span class="ml-2 text-sm font-normal text-text-light">(Past)</span>
+					{/if}
+				</h3>
+				<p class="mt-1 text-sm text-text-light">{dateStr}</p>
+			</div>
+			<div class="text-right">
+				<div class="text-text-dark text-sm font-medium">Daily Capacity</div>
+				<div
+					class="mt-1 text-lg font-bold {isLowCapacity(dateStr)
+						? 'text-orange-600'
+						: 'text-secondary'}"
+				>
+					{getCapacityUsed(dateStr)} / {getMaxCapacity(dateStr)} cookies
+				</div>
+				{#if isLowCapacity(dateStr)}
+					<span class="mt-1 inline-block text-xs font-semibold text-orange-600"> Low Stock </span>
+				{/if}
+			</div>
+		</div>
+
+		<!-- Slots Table -->
+		<div class="overflow-x-auto">
+			<table class="w-full">
+				<thead>
+					<tr class="border-b border-tertiary-medium text-left text-sm text-text-light">
+						<th class="pr-4 pb-3 font-semibold">Time</th>
+						<th class="pr-4 pb-3 font-semibold">Type</th>
+						<th class="pr-4 pb-3 font-semibold">Max Cookies</th>
+						<th class="pr-4 pb-3 font-semibold">Status</th>
+						<th class="pb-3 font-semibold">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each slotsForDate as slot}
+						<tr class="border-b border-tertiary-light">
+							<td class="text-text-dark py-3 pr-4 font-medium">
+								{formatTime(slot.startTime)} - {formatTime(slot.endTime)}
+							</td>
+							<td class="py-3 pr-4">
+								<span
+									class="inline-block rounded-full px-3 py-1 text-xs font-semibold capitalize {getSlotTypeBadge(
+										slot.slotType ?? 'both'
+									)}"
+								>
+									{slot.slotType ?? 'both'}
+								</span>
+							</td>
+							<td class="text-text-dark py-3 pr-4">
+								{slot.maxCookies ?? 0} cookies
+							</td>
+							<td class="py-3 pr-4">
+								<form method="POST" action="?/toggleActive" use:enhance>
+									<input type="hidden" name="slotId" value={slot.id} />
+									<input type="hidden" name="active" value={slot.active ? 'true' : 'false'} />
+									<button
+										type="submit"
+										class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold {slot.active
+											? 'bg-green-100 text-green-800 hover:bg-green-200'
+											: 'bg-gray-100 text-gray-800 hover:bg-gray-200'} transition-colors"
+									>
+										{slot.active ? 'Active' : 'Inactive'}
+									</button>
+								</form>
+							</td>
+							<td class="py-3">
+								<form
+									method="POST"
+									action="?/deleteSlot"
+									use:enhance
+									onsubmit={(e) => {
+										if (!confirm('Are you sure you want to delete this slot?')) {
+											e.preventDefault();
+										}
+									}}
+								>
+									<input type="hidden" name="slotId" value={slot.id} />
+									<button
+										type="submit"
+										class="text-red-600 hover:text-red-800"
+										aria-label="Delete slot"
+									>
+										<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+											/>
+										</svg>
+									</button>
+								</form>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</div>
+{/snippet}

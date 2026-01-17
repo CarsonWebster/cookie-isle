@@ -1,5 +1,5 @@
 import { error, fail, type Actions } from '@sveltejs/kit';
-import { eq, gte } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { getDb } from '$lib/server/db';
 import { dailyCapacity, fulfillmentSlots } from '$lib/server/db/schema';
 import type { PageServerLoad } from './$types';
@@ -14,27 +14,23 @@ export const load: PageServerLoad = async ({ platform }) => {
 	// Get today's date in YYYY-MM-DD format
 	const today = new Date().toISOString().split('T')[0];
 
-	// Load all future slots ordered by date and start time
+	// Load all slots ordered by date and start time
 	const slots = await db
 		.select()
 		.from(fulfillmentSlots)
-		.where(gte(fulfillmentSlots.date, today))
 		.orderBy(fulfillmentSlots.date, fulfillmentSlots.startTime)
 		.all();
 
-	// Load daily capacity data for future dates
-	const capacityData = await db
-		.select()
-		.from(dailyCapacity)
-		.where(gte(dailyCapacity.date, today))
-		.all();
+	// Load all daily capacity data
+	const capacityData = await db.select().from(dailyCapacity).all();
 
 	// Create a map of date -> capacity data for easy lookup
 	const capacityMap = new Map(capacityData.map((c) => [c.date, c]));
 
 	return {
 		slots,
-		capacityMap: Object.fromEntries(capacityMap)
+		capacityMap: Object.fromEntries(capacityMap),
+		today
 	};
 };
 
