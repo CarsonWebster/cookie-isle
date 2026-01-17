@@ -437,19 +437,19 @@ Before marking any TODO as complete:
 
 ### 2.2 Homepage
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                                                  | Status      |
-| ----- | ------------------------------------------------------------------------------------- | ----------- |
-| 2.2.1 | Create `src/routes/(public)/+page.server.ts` to load featured products from D1        | Not Started |
-| 2.2.2 | Query: `SELECT * FROM products WHERE featured = 1 AND active = 1 ORDER BY sort_order` | Not Started |
-| 2.2.3 | Create `src/routes/(public)/+page.svelte`                                             | Not Started |
-| 2.2.4 | Render Hero component with site title and tagline from config                         | Not Started |
-| 2.2.5 | Add "Featured Cookies" section with heading                                           | Not Started |
-| 2.2.6 | Render grid of MenuCard components for featured products                              | Not Started |
-| 2.2.7 | Add "View Full Menu" button linking to /menu                                          | Not Started |
-| 2.2.8 | Write page test in `tests/integration/homepage.test.ts`                               | Not Started |
-| 2.2.9 | **Commit:** `feat: create homepage with hero and featured products`                   | Not Started |
+| ID    | Task                                                                                  | Status    |
+| ----- | ------------------------------------------------------------------------------------- | --------- |
+| 2.2.1 | Create `src/routes/(public)/+page.server.ts` to load featured products from D1        | Completed |
+| 2.2.2 | Query: `SELECT * FROM products WHERE featured = 1 AND active = 1 ORDER BY sort_order` | Completed |
+| 2.2.3 | Create `src/routes/(public)/+page.svelte`                                             | Completed |
+| 2.2.4 | Render Hero component with site title and tagline from config                         | Completed |
+| 2.2.5 | Add "Featured Cookies" section with heading                                           | Completed |
+| 2.2.6 | Render grid of MenuCard components for featured products                              | Completed |
+| 2.2.7 | Add "View Full Menu" button linking to /menu                                          | Completed |
+| 2.2.8 | Write page test in `src/routes/(public)/page.server.spec.ts` (7 tests)                | Completed |
+| 2.2.9 | **Commit:** `feat: create homepage with hero and featured products`                   | Completed |
 
 ### 2.3 MenuCard component
 

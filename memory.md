@@ -114,7 +114,8 @@ export const tableName = sqliteTable('table_name', {
 10. ~~Public layout group (PRD 1.5)~~ DONE - `src/routes/(public)/+layout.svelte` with Header and Footer
 11. ~~Hero component (PRD 2.1)~~ DONE - `src/lib/components/Hero.svelte` with 19 tests
 12. ~~MenuCard component (PRD 2.3)~~ DONE - `src/lib/components/MenuCard.svelte` with 37 tests
-13. **NEXT: Homepage (PRD 2.2)** - `src/routes/(public)/+page.svelte` with Hero and featured products
+13. ~~Homepage (PRD 2.2)~~ DONE - `src/routes/(public)/+page.svelte` with Hero and featured products (7 tests)
+14. **NEXT: Menu page (PRD 2.4)** - `src/routes/(public)/menu/+page.svelte` with all products grid
 
 ## Commands Reference
 
@@ -148,17 +149,18 @@ bun run db:push      # Push schema to D1
 
 ## Test Coverage Summary
 
-| Test File                             | Tests | Purpose                            |
-| ------------------------------------- | ----- | ---------------------------------- |
-| `src/demo.spec.ts`                    | 1     | Demo test from sv create           |
-| `src/lib/config.spec.ts`              | 35    | Site configuration and helpers     |
-| `src/lib/server/db/schema.spec.ts`    | 23    | Schema table definitions and types |
-| `src/lib/server/db/db.spec.ts`        | 10    | Database helper functions          |
-| `src/lib/components/Header.spec.ts`   | 13    | Header component config logic      |
-| `src/lib/components/Footer.spec.ts`   | 15    | Footer component config logic      |
-| `src/lib/components/Hero.spec.ts`     | 19    | Hero component config logic        |
-| `src/lib/components/MenuCard.spec.ts` | 37    | MenuCard product type and config   |
-| **Total**                             | 153   |                                    |
+| Test File                                 | Tests | Purpose                            |
+| ----------------------------------------- | ----- | ---------------------------------- |
+| `src/demo.spec.ts`                        | 1     | Demo test from sv create           |
+| `src/lib/config.spec.ts`                  | 35    | Site configuration and helpers     |
+| `src/lib/server/db/schema.spec.ts`        | 23    | Schema table definitions and types |
+| `src/lib/server/db/db.spec.ts`            | 10    | Database helper functions          |
+| `src/lib/components/Header.spec.ts`       | 13    | Header component config logic      |
+| `src/lib/components/Footer.spec.ts`       | 15    | Footer component config logic      |
+| `src/lib/components/Hero.spec.ts`         | 19    | Hero component config logic        |
+| `src/lib/components/MenuCard.spec.ts`     | 37    | MenuCard product type and config   |
+| `src/routes/(public)/page.server.spec.ts` | 7     | Homepage load function             |
+| **Total**                                 | 160   |                                    |
 
 ## Site Config Notes
 
@@ -381,4 +383,60 @@ interface Product {
 	imageUrl?: string | null;
 	tags?: string[] | null;
 }
+```
+
+## Homepage Notes
+
+The `src/routes/(public)/+page.svelte` page implements:
+
+1. **Server Load Function (`+page.server.ts`):**
+   - Loads featured products from D1: `featured=true AND active=true ORDER BY sortOrder`
+   - Returns `{ featuredProducts: [] }` when database is unavailable (graceful fallback)
+   - Uses Drizzle ORM with `getDb(platform)` helper
+
+2. **Page Component (`+page.svelte`):**
+   - Renders Hero with `config.title`, `config.tagline`, and CTA linking to `/menu`
+   - Shows "Featured Cookies" section with responsive 3-column grid of MenuCard components
+   - Displays empty state with cookie emoji when no featured products
+   - "View Full Menu" button with outline style at bottom
+
+3. **Key Patterns:**
+   - Uses `$derived()` for `hasFeaturedProducts` boolean
+   - Keyed `{#each}` with `product.id` for efficient updates
+   - Meta description from `config.description`
+
+### Homepage Data Flow
+
+```
++page.server.ts (load)
+      ↓
+    D1 Query: SELECT ... WHERE featured=1 AND active=1
+      ↓
+    { featuredProducts: Product[] }
+      ↓
++page.svelte (data prop)
+      ↓
+    Hero → MenuCard grid → "View Full Menu" button
+```
+
+### Testing Pattern for Server Load Functions
+
+```typescript
+// Mock the database module
+vi.mock('$lib/server/db', () => ({
+	getDb: vi.fn()
+}));
+
+// Create mock db with chainable methods
+const createMockDb = (products) => {
+	const mockOrderBy = vi.fn().mockResolvedValue(products);
+	const mockWhere = vi.fn().mockReturnValue({ orderBy: mockOrderBy });
+	const mockFrom = vi.fn().mockReturnValue({ where: mockWhere });
+	const mockSelect = vi.fn().mockReturnValue({ from: mockFrom });
+	return { select: mockSelect };
+};
+
+// Test with platform undefined (graceful fallback)
+const result = await load({ platform: undefined });
+expect(result).toEqual({ featuredProducts: [] });
 ```
