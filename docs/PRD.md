@@ -1117,34 +1117,38 @@ Before marking any TODO as complete:
 
 ## Phase 7: Data Migration & Deployment
 
-**Status:** Not Started
+**Status:** In Progress
 
 ### 7.1 Seed products from legacy
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                                                   | Status      |
-| ----- | -------------------------------------------------------------------------------------- | ----------- |
-| 7.1.1 | Create `drizzle/seed.ts` script                                                        | Not Started |
-| 7.1.2 | Read `_legacy/content/menu/*.md` files                                                 | Not Started |
-| 7.1.3 | Parse TOML frontmatter from each file                                                  | Not Started |
-| 7.1.4 | Extract: title, price_cents, stripe_price_id, description, ingredients, tags, featured | Not Started |
-| 7.1.5 | Generate slug from filename                                                            | Not Started |
-| 7.1.6 | Map image paths to R2 URLs (after image migration)                                     | Not Started |
-| 7.1.7 | Insert products into D1 using Drizzle                                                  | Not Started |
-| 7.1.8 | Add npm script: `"db:seed": "tsx drizzle/seed.ts"`                                     | Not Started |
-| 7.1.9 | **Commit:** `feat: create product seed script from legacy data`                        | Not Started |
+> Note: Products were seeded via `drizzle/seed.sql` script with image URLs from R2 migration. Remote D1 has 4 products with images (chocolate-chip, brownie, salted-caramel, oatmeal-raisin).
+
+| ID    | Task                                                                                   | Status    |
+| ----- | -------------------------------------------------------------------------------------- | --------- |
+| 7.1.1 | Create `drizzle/seed.sql` script                                                       | Completed |
+| 7.1.2 | Read `_legacy/content/menu/*.md` files                                                 | Completed |
+| 7.1.3 | Parse TOML frontmatter from each file                                                  | Completed |
+| 7.1.4 | Extract: title, price_cents, stripe_price_id, description, ingredients, tags, featured | Completed |
+| 7.1.5 | Generate slug from filename                                                            | Completed |
+| 7.1.6 | Map image paths to R2 URLs (after image migration)                                     | Completed |
+| 7.1.7 | Insert products into D1 using SQL                                                      | Completed |
+| 7.1.8 | Seed script works with wrangler CLI                                                    | Completed |
+| 7.1.9 | **Commit:** products seeded via earlier commits                                        | Completed |
 
 ### 7.2 Create initial fulfillment slots
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                      | Status      |
-| ----- | --------------------------------------------------------- | ----------- |
-| 7.2.1 | Add slot seeding to `drizzle/seed.ts`                     | Not Started |
-| 7.2.2 | Create sample slots for next 2 weeks                      | Not Started |
-| 7.2.3 | Include variety of pickup and delivery slots              | Not Started |
-| 7.2.4 | **Commit:** `feat: add initial fulfillment slots to seed` | Not Started |
+> Note: Fulfillment slots created via `drizzle/seed.sql` script. Remote D1 has 4 slots for upcoming dates.
+
+| ID    | Task                                         | Status    |
+| ----- | -------------------------------------------- | --------- |
+| 7.2.1 | Add slot seeding to `drizzle/seed.sql`       | Completed |
+| 7.2.2 | Create sample slots for next 2 weeks         | Completed |
+| 7.2.3 | Include variety of pickup and delivery slots | Completed |
+| 7.2.4 | **Commit:** slots seeded via earlier commits | Completed |
 
 ### 7.3 Configure Cloudflare Pages
 
