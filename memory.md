@@ -47,6 +47,14 @@ This file contains useful findings for future agents working on this project.
   - Main element has `flex-1` class for proper footer positioning
   - Homepage moved to `src/routes/(public)/+page.svelte` with placeholder content
 
+### Phase 2 Status: IN PROGRESS
+
+- 2.1: Hero Component COMPLETE
+  - Implementation: `src/lib/components/Hero.svelte` - Full-width hero with gradient, CTA
+  - Tests: `src/lib/components/Hero.spec.ts` (19 tests) - Config and props validation
+  - Features: Gradient background, radial gradient overlays, bouncing cookie emoji, CTA button with arrow, decorative wave SVG
+  - Props: `title` (required), `tagline`, `ctaText`, `ctaHref` (all optional)
+
 ## Key File Locations
 
 | File                                 | Purpose                                               |
@@ -97,7 +105,8 @@ export const tableName = sqliteTable('table_name', {
 8. ~~Header component (PRD 1.3)~~ DONE - `src/lib/components/Header.svelte` with 13 tests
 9. ~~Footer component (PRD 1.4)~~ DONE - `src/lib/components/Footer.svelte` with 15 tests
 10. ~~Public layout group (PRD 1.5)~~ DONE - `src/routes/(public)/+layout.svelte` with Header and Footer
-11. **NEXT: Hero component (PRD 2.1)** - `src/lib/components/Hero.svelte` with gradient, CTA button
+11. ~~Hero component (PRD 2.1)~~ DONE - `src/lib/components/Hero.svelte` with 19 tests
+12. **NEXT: Homepage (PRD 2.2)** - `src/routes/(public)/+page.svelte` with Hero and featured products
 
 ## Commands Reference
 
@@ -139,7 +148,8 @@ bun run db:push      # Push schema to D1
 | `src/lib/server/db/db.spec.ts`      | 10    | Database helper functions          |
 | `src/lib/components/Header.spec.ts` | 13    | Header component config logic      |
 | `src/lib/components/Footer.spec.ts` | 15    | Footer component config logic      |
-| **Total**                           | 97    |                                    |
+| `src/lib/components/Hero.spec.ts`   | 19    | Hero component config logic        |
+| **Total**                           | 116   |                                    |
 
 ## Site Config Notes
 
@@ -231,6 +241,41 @@ The `src/lib/components/Footer.svelte` component implements:
 - `text-footer-heading` - Golden accent for headings (#E9B44C)
 - `text-footer-text/80` - 80% opacity for secondary text
 - `border-footer-text/20` - 20% opacity for divider line
+
+## Hero Component Notes
+
+The `src/lib/components/Hero.svelte` component implements:
+
+1. **Props Interface:**
+   - `title` (required): Main headline text
+   - `tagline` (optional): Subheadline text
+   - `ctaText` (optional): Button text
+   - `ctaHref` (optional): Button destination URL
+2. **Visual Design:**
+   - Gradient background: `from-tertiary via-tertiary-light to-tertiary-medium`
+   - Radial gradient overlays for depth (primary and accent colors at 10% opacity)
+   - Decorative wave SVG at bottom
+   - Bouncing cookie emoji decoration
+3. **CTA Button Styling:**
+   - Rounded-full, shadow-lg, bg-primary
+   - Hover: bg-btn-hover-bg, shadow-xl
+   - Includes arrow icon
+4. **Responsive Breakpoints:**
+   - Mobile: py-16, text-3xl title, text-lg tagline
+   - SM: py-20, text-4xl title, text-xl tagline
+   - MD: text-5xl title, text-2xl tagline
+   - LG: py-28, text-6xl title
+
+### Hero Usage (for Homepage)
+
+```svelte
+<script lang="ts">
+	import Hero from '$lib/components/Hero.svelte';
+	import { config } from '$lib/config';
+</script>
+
+<Hero title={config.title} tagline={config.tagline} ctaText="Browse Our Menu" ctaHref="/menu" />
+```
 
 ## Public Layout Group Notes
 

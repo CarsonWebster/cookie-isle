@@ -419,21 +419,21 @@ Before marking any TODO as complete:
 
 ## Phase 2: Public Pages
 
-**Status:** Not Started
+**Status:** In Progress
 
 ### 2.1 Hero component
 
-**Status:** Not Started
+**Status:** Completed
 
-| ID    | Task                                                                                    | Status      |
-| ----- | --------------------------------------------------------------------------------------- | ----------- |
-| 2.1.1 | Create `src/lib/components/Hero.svelte` with props for title, tagline, ctaText, ctaHref | Not Started |
-| 2.1.2 | Add gradient background using theme colors                                              | Not Started |
-| 2.1.3 | Add decorative cookie images on sides (desktop only)                                    | Not Started |
-| 2.1.4 | Style CTA button with primary color and hover effects                                   | Not Started |
-| 2.1.5 | Make responsive: stack content on mobile, show images on large screens                  | Not Started |
-| 2.1.6 | Write component test in `tests/unit/Hero.test.svelte.ts`                                | Not Started |
-| 2.1.7 | **Commit:** `feat: create Hero component`                                               | Not Started |
+| ID    | Task                                                                                    | Status    |
+| ----- | --------------------------------------------------------------------------------------- | --------- |
+| 2.1.1 | Create `src/lib/components/Hero.svelte` with props for title, tagline, ctaText, ctaHref | Completed |
+| 2.1.2 | Add gradient background using theme colors                                              | Completed |
+| 2.1.3 | Add decorative elements (radial gradients, wave, bouncing cookie emoji)                 | Completed |
+| 2.1.4 | Style CTA button with primary color and hover effects                                   | Completed |
+| 2.1.5 | Make responsive: stack content on mobile, full width on large screens                   | Completed |
+| 2.1.6 | Write component test in `src/lib/components/Hero.spec.ts` (19 tests)                    | Completed |
+| 2.1.7 | **Commit:** `feat: create Hero component`                                               | Completed |
 
 ### 2.2 Homepage
 
