@@ -97,8 +97,9 @@ export function _normalizeEmail(email: string): string {
 /**
  * Generates a random unsubscribe token.
  * Uses crypto.randomUUID and removes hyphens for a cleaner URL.
+ * Prefixed with _ to allow export from +server.ts (SvelteKit requirement)
  */
-export function generateUnsubscribeToken(): string {
+export function _generateUnsubscribeToken(): string {
 	return crypto.randomUUID().replace(/-/g, '');
 }
 
@@ -171,7 +172,7 @@ export async function POST({ request, platform }: RequestEvent): Promise<Respons
 		}
 
 		// Generate unique unsubscribe token
-		const unsubscribeToken = generateUnsubscribeToken();
+		const unsubscribeToken = _generateUnsubscribeToken();
 
 		// Insert new subscriber
 		await db.insert(newsletter).values({
