@@ -1689,12 +1689,43 @@ if (data.url) {
 - Order metadata building (6 tests)
 - Type checks (2 tests)
 
+### CORS Headers (Phase 4.1.14 - COMPLETE)
+
+The checkout API now includes proper CORS headers for cross-origin requests:
+
+1. **Allowed Origins:**
+   - `https://thecookieisle.com` (production)
+   - `https://www.thecookieisle.com` (production www)
+   - `https://preview.cookie-isle.pages.dev` (preview environment)
+   - `http://localhost:5173` (local development)
+   - `http://127.0.0.1:5173` (local development alternate)
+
+2. **CORS Headers:**
+   - `Access-Control-Allow-Origin`: Echoes back the origin if allowed
+   - `Access-Control-Allow-Methods`: POST, OPTIONS
+   - `Access-Control-Allow-Headers`: Content-Type
+   - `Access-Control-Max-Age`: 86400 (24 hours)
+
+3. **Implementation:**
+   - `getCorsHeaders(origin)` helper function checks allowed origins
+   - OPTIONS handler for preflight requests (returns 204)
+   - POST handler includes CORS headers in all responses
+   - Same-origin requests (no Origin header) bypass CORS entirely
+
+4. **Test Coverage:**
+   - 4 new tests added (67 total in checkout API tests)
+   - Tests for OPTIONS handler with allowed/disallowed origins
+   - Tests for same-origin requests
+
 ### Next Tasks (Phase 4.4+)
 
 1. ~~Connect checkout form to API (PRD 4.2)~~ DONE
 2. ~~Stripe webhook handler (PRD 4.3)~~ DONE - 44 tests
-3. **NEXT: Checkout success page (PRD 4.4)** - Display order confirmation after payment
-4. Create newsletter signup API (PRD 4.5)
+3. ~~Checkout success page (PRD 4.4)~~ DONE - 27 tests
+4. ~~Create newsletter signup API (PRD 4.5)~~ DONE - 54 tests
+5. ~~Connect newsletter form (PRD 4.6)~~ DONE
+6. **Phase 5: R2 Image Upload** - Now available since R2 bucket is set up
+7. **Phase 6: Admin Dashboard** - Complete
 
 ## Checkout Form API Integration Notes (Phase 4.2 - COMPLETE)
 

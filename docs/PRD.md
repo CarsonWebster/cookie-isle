@@ -707,26 +707,26 @@ Before marking any TODO as complete:
 
 ### 4.1 Stripe checkout endpoint
 
-**Status:** Mostly Complete (CORS headers pending)
+**Status:** Completed
 
-| ID     | Task                                                                       | Status      |
-| ------ | -------------------------------------------------------------------------- | ----------- |
-| 4.1.1  | Install Stripe SDK: `bun add stripe`                                       | Completed   |
-| 4.1.2  | Create `src/lib/server/stripe.ts` with Stripe client initialization        | Completed   |
-| 4.1.3  | Create `src/routes/api/checkout/+server.ts` POST handler                   | Completed   |
-| 4.1.4  | Define request body type with Zod or manual validation                     | Completed   |
-| 4.1.5  | Validate cart items: check products exist in DB and are active             | Completed   |
-| 4.1.6  | Validate prices match database (prevent price manipulation)                | Completed   |
-| 4.1.7  | Build Stripe line_items array with stripe_price_id from DB                 | Completed   |
-| 4.1.8  | Add tip as separate line item if present                                   | Completed   |
-| 4.1.9  | Add gift box as separate line item if present                              | Completed   |
-| 4.1.10 | Create Stripe checkout session with metadata (customer info, slot, etc.)   | Completed   |
-| 4.1.11 | Set success_url to `/checkout/success?session_id={CHECKOUT_SESSION_ID}`    | Completed   |
-| 4.1.12 | Set cancel_url to `/checkout`                                              | Completed   |
-| 4.1.13 | Return session URL for frontend redirect                                   | Completed   |
-| 4.1.14 | Add CORS headers for allowed origins                                       | Not Started |
-| 4.1.15 | Write unit tests for validation logic in `tests/unit/checkout-api.test.ts` | Completed   |
-| 4.1.16 | **Commit:** `feat: create Stripe checkout API endpoint`                    | Not Started |
+| ID     | Task                                                                       | Status    |
+| ------ | -------------------------------------------------------------------------- | --------- |
+| 4.1.1  | Install Stripe SDK: `bun add stripe`                                       | Completed |
+| 4.1.2  | Create `src/lib/server/stripe.ts` with Stripe client initialization        | Completed |
+| 4.1.3  | Create `src/routes/api/checkout/+server.ts` POST handler                   | Completed |
+| 4.1.4  | Define request body type with Zod or manual validation                     | Completed |
+| 4.1.5  | Validate cart items: check products exist in DB and are active             | Completed |
+| 4.1.6  | Validate prices match database (prevent price manipulation)                | Completed |
+| 4.1.7  | Build Stripe line_items array with stripe_price_id from DB                 | Completed |
+| 4.1.8  | Add tip as separate line item if present                                   | Completed |
+| 4.1.9  | Add gift box as separate line item if present                              | Completed |
+| 4.1.10 | Create Stripe checkout session with metadata (customer info, slot, etc.)   | Completed |
+| 4.1.11 | Set success_url to `/checkout/success?session_id={CHECKOUT_SESSION_ID}`    | Completed |
+| 4.1.12 | Set cancel_url to `/checkout`                                              | Completed |
+| 4.1.13 | Return session URL for frontend redirect                                   | Completed |
+| 4.1.14 | Add CORS headers for allowed origins                                       | Completed |
+| 4.1.15 | Write unit tests for validation logic in `tests/unit/checkout-api.test.ts` | Completed |
+| 4.1.16 | **Commit:** `feat: create Stripe checkout API endpoint`                    | Completed |
 
 ### 4.2 Connect checkout form to API
 
@@ -745,42 +745,42 @@ Before marking any TODO as complete:
 
 **Status:** Completed
 
-| ID     | Task                                                                                | Status      |
-| ------ | ----------------------------------------------------------------------------------- | ----------- |
-| 4.3.1  | Create `src/routes/api/webhook/+server.ts` POST handler                             | Completed   |
-| 4.3.2  | Get raw body from request for signature verification                                | Completed   |
-| 4.3.3  | Verify Stripe webhook signature using STRIPE_WEBHOOK_SECRET                         | Completed   |
-| 4.3.4  | Return 400 if signature verification fails                                          | Completed   |
-| 4.3.5  | Handle `checkout.session.completed` event type                                      | Completed   |
-| 4.3.6  | Extract order data from session metadata                                            | Completed   |
-| 4.3.7  | Parse line items from session                                                       | Completed   |
-| 4.3.8  | Insert order record into D1 `orders` table                                          | Completed   |
-| 4.3.9  | Update `dailyCapacity` table: increment cookies_ordered for date                    | Completed   |
-| 4.3.10 | Return 200 OK on successful processing                                              | Completed   |
-| 4.3.11 | Log errors but still return 200 to prevent Stripe retries on non-recoverable errors | Completed   |
-| 4.3.12 | Write unit tests for webhook processing in `src/routes/api/webhook/server.spec.ts`  | Completed   |
-| 4.3.13 | **Commit:** `feat: create Stripe webhook handler`                                   | Not Started |
+| ID     | Task                                                                                | Status    |
+| ------ | ----------------------------------------------------------------------------------- | --------- |
+| 4.3.1  | Create `src/routes/api/webhook/+server.ts` POST handler                             | Completed |
+| 4.3.2  | Get raw body from request for signature verification                                | Completed |
+| 4.3.3  | Verify Stripe webhook signature using STRIPE_WEBHOOK_SECRET                         | Completed |
+| 4.3.4  | Return 400 if signature verification fails                                          | Completed |
+| 4.3.5  | Handle `checkout.session.completed` event type                                      | Completed |
+| 4.3.6  | Extract order data from session metadata                                            | Completed |
+| 4.3.7  | Parse line items from session                                                       | Completed |
+| 4.3.8  | Insert order record into D1 `orders` table                                          | Completed |
+| 4.3.9  | Update `dailyCapacity` table: increment cookies_ordered for date                    | Completed |
+| 4.3.10 | Return 200 OK on successful processing                                              | Completed |
+| 4.3.11 | Log errors but still return 200 to prevent Stripe retries on non-recoverable errors | Completed |
+| 4.3.12 | Write unit tests for webhook processing in `src/routes/api/webhook/server.spec.ts`  | Completed |
+| 4.3.13 | **Commit:** `feat: create Stripe webhook handler`                                   | Completed |
 
 ### 4.4 Checkout success page
 
 **Status:** Completed
 
-| ID     | Task                                                                                     | Status      |
-| ------ | ---------------------------------------------------------------------------------------- | ----------- |
-| 4.4.1  | Create `src/routes/(public)/checkout/success/+page.server.ts`                            | Completed   |
-| 4.4.2  | Get session_id from URL query params                                                     | Completed   |
-| 4.4.3  | Retrieve session from Stripe to verify it's valid                                        | Completed   |
-| 4.4.4  | Load order from D1 by stripe_session_id                                                  | Completed   |
-| 4.4.5  | Return 404 if order not found                                                            | Completed   |
-| 4.4.6  | Create `src/routes/(public)/checkout/success/+page.svelte`                               | Completed   |
-| 4.4.7  | Display success icon and "Order Confirmed!" heading                                      | Completed   |
-| 4.4.8  | Display order summary: items, quantities, total                                          | Completed   |
-| 4.4.9  | Display fulfillment details: date, time, type                                            | Completed   |
-| 4.4.10 | Display customer info confirmation                                                       | Completed   |
-| 4.4.11 | Clear cart from localStorage on page load                                                | Completed   |
-| 4.4.12 | Add "Back to Home" button                                                                | Completed   |
-| 4.4.13 | Write page test in `src/routes/(public)/checkout/success/page.server.spec.ts` (27 tests) | Completed   |
-| 4.4.14 | **Commit:** `feat: create checkout success page`                                         | Not Started |
+| ID     | Task                                                                                     | Status    |
+| ------ | ---------------------------------------------------------------------------------------- | --------- |
+| 4.4.1  | Create `src/routes/(public)/checkout/success/+page.server.ts`                            | Completed |
+| 4.4.2  | Get session_id from URL query params                                                     | Completed |
+| 4.4.3  | Retrieve session from Stripe to verify it's valid                                        | Completed |
+| 4.4.4  | Load order from D1 by stripe_session_id                                                  | Completed |
+| 4.4.5  | Return 404 if order not found                                                            | Completed |
+| 4.4.6  | Create `src/routes/(public)/checkout/success/+page.svelte`                               | Completed |
+| 4.4.7  | Display success icon and "Order Confirmed!" heading                                      | Completed |
+| 4.4.8  | Display order summary: items, quantities, total                                          | Completed |
+| 4.4.9  | Display fulfillment details: date, time, type                                            | Completed |
+| 4.4.10 | Display customer info confirmation                                                       | Completed |
+| 4.4.11 | Clear cart from localStorage on page load                                                | Completed |
+| 4.4.12 | Add "Back to Home" button                                                                | Completed |
+| 4.4.13 | Write page test in `src/routes/(public)/checkout/success/page.server.spec.ts` (27 tests) | Completed |
+| 4.4.14 | **Commit:** `feat: create checkout success page`                                         | Completed |
 
 ### 4.5 Newsletter signup endpoint
 

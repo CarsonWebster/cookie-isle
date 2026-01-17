@@ -1,1 +1,3 @@
 Read through @docs/PRD.md and @memory.md . Continue with whatever phase we left off at. What's the next most important task? Pick a single task, make a plan. Then, implement, test, and amek a commit message. Only do one task. Update the PRD.md document with our current progress and memory.md with whatever notes will be relevant to future agents building out the next feature
+
+Our cloudflare R2 bucket is setup! Phase 5 is now available for implementation. Complete defered tasks before proceedign to phase 7 and beyond

@@ -437,10 +437,71 @@ export function buildOrderMetadata(req: CheckoutRequest): Record<string, string>
 }
 
 // ============================================================================
-// Request Handler
+// CORS Configuration
 // ============================================================================
 
+/**
+ * List of allowed origins for CORS requests.
+ * Includes production, preview, and development environments.
+ */
+const ALLOWED_ORIGINS = [
+	'https://thecookieisle.com',
+	'https://www.thecookieisle.com',
+	'https://preview.cookie-isle.pages.dev',
+	'http://localhost:5173',
+	'http://127.0.0.1:5173'
+];
+
+/**
+ * Gets the CORS headers for the response.
+ * If the origin is allowed, returns appropriate CORS headers.
+ * Otherwise, returns an empty object.
+ */
+function getCorsHeaders(requestOrigin: string | null): Record<string, string> {
+	// If no origin header, it's a same-origin request - no CORS needed
+	if (!requestOrigin) {
+		return {};
+	}
+
+	// Check if origin is allowed
+	const isAllowed = ALLOWED_ORIGINS.includes(requestOrigin);
+
+	if (isAllowed) {
+		return {
+			'Access-Control-Allow-Origin': requestOrigin,
+			'Access-Control-Allow-Methods': 'POST, OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type',
+			'Access-Control-Max-Age': '86400' // 24 hours
+		};
+	}
+
+	return {};
+}
+
+// ============================================================================
+// Request Handlers
+// ============================================================================
+
+/**
+ * Handles preflight OPTIONS requests for CORS.
+ */
+export const OPTIONS = async ({ request }: RequestEvent) => {
+	const origin = request.headers.get('Origin');
+	const corsHeaders = getCorsHeaders(origin);
+
+	return new Response(null, {
+		status: 204,
+		headers: corsHeaders
+	});
+};
+
+/**
+ * Handles POST requests to create a Stripe checkout session.
+ */
 export const POST = async ({ request, platform, url }: RequestEvent) => {
+	const origin = request.headers.get('Origin');
+	const corsHeaders = getCorsHeaders(origin);
+
 	// Parse request body
 	let body: unknown;
 	try {
@@ -454,7 +515,7 @@ export const POST = async ({ request, platform, url }: RequestEvent) => {
 	if (validationErrors.length > 0) {
 		return json(
 			{ error: 'Validation failed', details: validationErrors } satisfies CheckoutErrorResponse,
-			{ status: 400 }
+			{ status: 400, headers: corsHeaders }
 		);
 	}
 
@@ -476,7 +537,7 @@ export const POST = async ({ request, platform, url }: RequestEvent) => {
 				error: 'Cart validation failed',
 				details: dbValidationErrors
 			} satisfies CheckoutErrorResponse,
-			{ status: 400 }
+			{ status: 400, headers: corsHeaders }
 		);
 	}
 
@@ -518,7 +579,7 @@ export const POST = async ({ request, platform, url }: RequestEvent) => {
 			throw new Error('Stripe session created but no URL returned');
 		}
 
-		return json({ url: session.url } satisfies CheckoutResponse);
+		return json({ url: session.url } satisfies CheckoutResponse, { headers: corsHeaders });
 	} catch (e) {
 		console.error('Stripe checkout session creation failed:', e);
 		throw error(500, 'Failed to create checkout session');
