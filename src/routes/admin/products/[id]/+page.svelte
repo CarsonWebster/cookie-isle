@@ -9,16 +9,22 @@
 	// Delete confirmation state
 	let showDeleteModal = $state(false);
 
-	// Image states for crop preview
+	// Image states for crop preview - initialized from loaded product data
+	// svelte-ignore state_referenced_locally
 	let cardImageUrl = $state(data.product.imageUrl || '');
+	// svelte-ignore state_referenced_locally
 	let heroImageUrl = $state(data.product.heroImageUrl || '');
 	let showCardCropPreview = $state(false);
 	let showHeroCropPreview = $state(false);
 
 	// Focal points (initialize from product data, default to center)
+	// svelte-ignore state_referenced_locally
 	let cardFocalX = $state(data.product.cardFocalX ?? 50);
+	// svelte-ignore state_referenced_locally
 	let cardFocalY = $state(data.product.cardFocalY ?? 50);
+	// svelte-ignore state_referenced_locally
 	let heroFocalX = $state(data.product.heroFocalX ?? 50);
+	// svelte-ignore state_referenced_locally
 	let heroFocalY = $state(data.product.heroFocalY ?? 50);
 
 	// Get error for a field
@@ -29,8 +35,10 @@
 		return errors[field];
 	}
 
-	// Auto-generate slug from title - initialize from data.product
+	// Auto-generate slug from title - initialized from loaded product data
+	// svelte-ignore state_referenced_locally
 	let title = $state(data.product.title);
+	// svelte-ignore state_referenced_locally
 	let slug = $state(data.product.slug);
 	let autoSlug = $state(false); // Disabled by default for edit
 
