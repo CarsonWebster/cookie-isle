@@ -117,10 +117,10 @@
 		<div class="space-y-6 lg:col-span-2">
 			<!-- Customer Information -->
 			<div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-				<div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+				<div class="border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
 					<h2 class="text-lg font-semibold text-gray-900">Customer Information</h2>
 				</div>
-				<div class="p-6">
+				<div class="p-4 sm:p-6">
 					<dl class="space-y-3">
 						<div class="flex justify-between">
 							<dt class="text-sm font-medium text-gray-500">Name</dt>
@@ -156,10 +156,10 @@
 
 			<!-- Fulfillment Information -->
 			<div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-				<div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+				<div class="border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
 					<h2 class="text-lg font-semibold text-gray-900">Fulfillment Information</h2>
 				</div>
-				<div class="p-6">
+				<div class="p-4 sm:p-6">
 					<dl class="space-y-3">
 						<div class="flex justify-between">
 							<dt class="text-sm font-medium text-gray-500">Type</dt>
@@ -199,23 +199,29 @@
 
 			<!-- Order Items -->
 			<div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-				<div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+				<div class="border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
 					<h2 class="text-lg font-semibold text-gray-900">Order Items</h2>
 				</div>
 				<div class="overflow-x-auto">
 					<table class="min-w-full divide-y divide-gray-200">
 						<thead class="bg-gray-50">
 							<tr>
-								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+								<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase sm:px-6">
 									Item
 								</th>
-								<th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
-									Quantity
+								<th
+									class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase sm:px-6"
+								>
+									Qty
 								</th>
-								<th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+								<th
+									class="px-2 py-3 text-right text-xs font-medium text-gray-500 uppercase sm:px-6"
+								>
 									Price
 								</th>
-								<th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+								<th
+									class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase sm:px-6"
+								>
 									Total
 								</th>
 							</tr>
@@ -223,7 +229,7 @@
 						<tbody class="divide-y divide-gray-200 bg-white">
 							{#each data.order.items as item (item.productId)}
 								<tr>
-									<td class="px-6 py-4">
+									<td class="px-3 py-4 sm:px-6">
 										<a
 											href="/menu/{item.slug}"
 											class="text-sm font-medium text-gray-900 hover:text-primary"
@@ -231,13 +237,13 @@
 											{item.title}
 										</a>
 									</td>
-									<td class="px-6 py-4 text-center text-sm text-gray-500">
+									<td class="px-2 py-4 text-center text-sm text-gray-500 sm:px-6">
 										{item.quantity}
 									</td>
-									<td class="px-6 py-4 text-right text-sm text-gray-900">
+									<td class="px-2 py-4 text-right text-sm text-gray-900 sm:px-6">
 										{formatPrice(item.priceCents)}
 									</td>
-									<td class="px-6 py-4 text-right text-sm font-medium text-gray-900">
+									<td class="px-3 py-4 text-right text-sm font-medium text-gray-900 sm:px-6">
 										{formatPrice(item.priceCents * item.quantity)}
 									</td>
 								</tr>
@@ -250,10 +256,10 @@
 			<!-- Gift Message (if present) -->
 			{#if data.order.giftBox && data.order.giftMessage}
 				<div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-					<div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+					<div class="border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
 						<h2 class="text-lg font-semibold text-gray-900">Gift Message</h2>
 					</div>
-					<div class="p-6">
+					<div class="p-4 sm:p-6">
 						<p class="text-sm whitespace-pre-wrap text-gray-700">{data.order.giftMessage}</p>
 					</div>
 				</div>
@@ -264,10 +270,10 @@
 		<div class="space-y-6">
 			<!-- Order Summary -->
 			<div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-				<div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+				<div class="border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
 					<h2 class="text-lg font-semibold text-gray-900">Order Summary</h2>
 				</div>
-				<div class="p-6">
+				<div class="p-4 sm:p-6">
 					<dl class="space-y-3">
 						<div class="flex justify-between">
 							<dt class="text-sm text-gray-600">Subtotal</dt>
@@ -304,10 +310,10 @@
 			<!-- Actions -->
 			{#if canMarkFulfilled}
 				<div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-					<div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+					<div class="border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
 						<h2 class="text-lg font-semibold text-gray-900">Actions</h2>
 					</div>
-					<div class="p-6">
+					<div class="p-4 sm:p-6">
 						<form method="POST" action="?/markFulfilled" use:enhance>
 							<button
 								type="submit"
@@ -326,10 +332,10 @@
 
 			<!-- Order Metadata -->
 			<div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-				<div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+				<div class="border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
 					<h2 class="text-lg font-semibold text-gray-900">Order Details</h2>
 				</div>
-				<div class="p-6">
+				<div class="p-4 sm:p-6">
 					<dl class="space-y-3">
 						<div>
 							<dt class="text-xs font-medium text-gray-500 uppercase">Order ID</dt>

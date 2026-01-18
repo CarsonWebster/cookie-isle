@@ -204,7 +204,7 @@
 
 		<!-- Main Content Area -->
 		<main class="flex-1 pt-16 md:ml-64 md:pt-0">
-			<div class="p-4 sm:p-6 lg:p-8">
+			<div class="p-3 sm:p-6 lg:p-8">
 				{@render children()}
 			</div>
 		</main>
