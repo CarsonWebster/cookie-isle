@@ -43,6 +43,7 @@
 	// Upload state
 	let isUploading = $state(false);
 	let uploadError = $state<string | null>(null);
+	// svelte-ignore non_reactive_update - DOM ref via bind:this
 	let fileInput: HTMLInputElement;
 
 	// Filtered images based on search
@@ -149,9 +150,12 @@
 		aria-labelledby="picker-title"
 		tabindex="-1"
 	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="flex max-h-[90vh] w-full max-w-4xl flex-col rounded-xl bg-white shadow-xl"
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="document"
 		>
 			<!-- Modal Header -->
 			<div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">

@@ -4,8 +4,8 @@
 	let { data } = $props();
 
 	const subscribers = $derived(data.subscribers);
-	const totalCount = $derived(data.totalCount);
-	const activeCount = $derived(data.activeCount);
+	const totalCount = $derived(data.totalCount ?? 0);
+	const activeCount = $derived(data.activeCount ?? 0);
 	const unsubscribedCount = $derived(totalCount - activeCount);
 	const hasSubscribers = $derived(totalCount > 0);
 </script>

@@ -42,14 +42,14 @@ describe('Admin Dashboard Route', () => {
 	});
 
 	it('should render the admin dashboard without errors', async () => {
-		render(AdminDashboard, { props: { data: mockDashboardData } });
+		render(AdminDashboard, { data: mockDashboardData });
 
 		// Verify the page title is present
 		await expect.element(page.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
 	});
 
 	it('should display stats cards', async () => {
-		render(AdminDashboard, { props: { data: mockDashboardData } });
+		render(AdminDashboard, { data: mockDashboardData });
 
 		// Verify stats are displayed
 		await expect.element(page.getByText("Today's Orders")).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe('Admin Dashboard Route', () => {
 	});
 
 	it('should display recent orders table', async () => {
-		render(AdminDashboard, { props: { data: mockDashboardData } });
+		render(AdminDashboard, { data: mockDashboardData });
 
 		// Verify recent orders section
 		await expect.element(page.getByText('Recent Orders')).toBeInTheDocument();
@@ -67,7 +67,7 @@ describe('Admin Dashboard Route', () => {
 	});
 
 	it('should display cookies needed section', async () => {
-		render(AdminDashboard, { props: { data: mockDashboardData } });
+		render(AdminDashboard, { data: mockDashboardData });
 
 		// Verify cookies needed section
 		await expect.element(page.getByText('Cookies Needed Today')).toBeInTheDocument();
@@ -75,7 +75,7 @@ describe('Admin Dashboard Route', () => {
 	});
 
 	it('should display quick links', async () => {
-		render(AdminDashboard, { props: { data: mockDashboardData } });
+		render(AdminDashboard, { data: mockDashboardData });
 
 		// Verify quick links are present
 		await expect.element(page.getByText('View All Orders')).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('Admin Dashboard Route', () => {
 			cookiesNeededToday: []
 		};
 
-		render(AdminDashboard, { props: { data: emptyData } });
+		render(AdminDashboard, { data: emptyData });
 
 		// Should still render without errors
 		await expect.element(page.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();

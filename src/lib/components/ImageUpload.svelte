@@ -54,13 +54,20 @@
 	let isDragging = $state(false);
 	let isUploading = $state(false);
 	let uploadError = $state<string | null>(null);
-	let previewUrl = $state<string | null>(currentImageUrl);
-	let uploadedUrl = $state<string | null>(currentImageUrl);
+	let previewUrl = $state<string | null>(null);
+	let uploadedUrl = $state<string | null>(null);
+
+	// Sync with prop changes
+	$effect(() => {
+		previewUrl = currentImageUrl;
+		uploadedUrl = currentImageUrl;
+	});
 
 	// Gallery picker state
 	let showGalleryModal = $state(false);
 
 	// File input reference
+	// svelte-ignore non_reactive_update - DOM ref via bind:this
 	let fileInput: HTMLInputElement;
 
 	/**

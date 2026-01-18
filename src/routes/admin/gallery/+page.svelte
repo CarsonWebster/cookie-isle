@@ -248,13 +248,18 @@
 	<div
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
 		onclick={() => (selectedImage = null)}
+		onkeydown={(e) => e.key === 'Escape' && (selectedImage = null)}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="image-detail-title"
+		tabindex="-1"
 	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-xl"
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="document"
 		>
 			<!-- Modal Header -->
 			<div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
@@ -394,11 +399,19 @@
 	<div
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
 		onclick={() => (deleteConfirmImage = null)}
+		onkeydown={(e) => e.key === 'Escape' && (deleteConfirmImage = null)}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="delete-confirm-title"
+		tabindex="-1"
 	>
-		<div class="w-full max-w-md rounded-xl bg-white shadow-xl" onclick={(e) => e.stopPropagation()}>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<div
+			class="w-full max-w-md rounded-xl bg-white shadow-xl"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="p-6">
 				<div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
 					<svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

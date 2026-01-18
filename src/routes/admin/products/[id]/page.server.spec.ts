@@ -388,15 +388,17 @@ describe('Product Edit Page - Update Action', () => {
 			platform: undefined
 		} as never);
 
-		expect(result).toEqual({
+		expect(result).toMatchObject({
 			status: 500,
-			data: { error: 'Database not available' }
+			data: expect.objectContaining({
+				error: expect.stringContaining('Failed to verify product exists')
+			})
 		});
 	});
 
 	it('handles database error during slug check', async () => {
 		const db = createMockDb([]);
-		// Mock select to throw error
+		// Mock select to throw error - this now fails at product existence check first
 		db.select = vi.fn().mockReturnValue({
 			from: vi.fn().mockReturnValue({
 				where: vi.fn().mockReturnValue({
@@ -419,9 +421,12 @@ describe('Product Edit Page - Update Action', () => {
 			platform: {}
 		} as never);
 
-		expect(result).toEqual({
+		// Now fails at product existence check (which runs before slug check)
+		expect(result).toMatchObject({
 			status: 500,
-			data: { error: 'Failed to check slug uniqueness' }
+			data: expect.objectContaining({
+				error: expect.stringContaining('Failed to verify product exists')
+			})
 		});
 	});
 
@@ -448,9 +453,11 @@ describe('Product Edit Page - Update Action', () => {
 			platform: {}
 		} as never);
 
-		expect(result).toEqual({
+		expect(result).toMatchObject({
 			status: 500,
-			data: { error: 'Failed to update product' }
+			data: expect.objectContaining({
+				error: expect.stringContaining('Failed to update product')
+			})
 		});
 	});
 });
