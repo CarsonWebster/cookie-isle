@@ -387,7 +387,7 @@ export const config: SiteConfig = {
 	// Feature Flags
 	// -------------------------------------------------------------------------
 	features: {
-		comingSoonMode: false,
+		comingSoonMode: true,
 		comingSoonHeadline: 'Coming Soon',
 		comingSoonText: `I'm busy baking up something special!
 The Cookie Isle is a cozy cottage bakery bringing fresh baked happiness to our community. 
