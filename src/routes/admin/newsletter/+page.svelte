@@ -85,6 +85,11 @@
 						<th
 							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
 						>
+							Name
+						</th>
+						<th
+							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
+						>
 							Email
 						</th>
 						<th
@@ -107,6 +112,11 @@
 				<tbody class="divide-y divide-gray-200 bg-white">
 					{#each subscribers as subscriber (subscriber.id)}
 						<tr class="hover:bg-gray-50 {subscriber.subscribed === false ? 'opacity-60' : ''}">
+							<td class="px-6 py-4 whitespace-nowrap">
+								<span class="text-sm font-medium text-secondary">
+									{subscriber.firstName || '—'}
+								</span>
+							</td>
 							<td class="px-6 py-4 whitespace-nowrap">
 								<div class="flex items-center">
 									<span class="mr-2 text-xl">{subscriber.subscribed === false ? '📭' : '📧'}</span>
@@ -176,6 +186,13 @@
 					</div>
 
 					<div class="space-y-2 text-sm">
+						{#if subscriber.firstName}
+							<div class="flex justify-between">
+								<span class="text-text-light">Name:</span>
+								<span class="font-medium text-secondary">{subscriber.firstName}</span>
+							</div>
+						{/if}
+
 						<div class="flex justify-between">
 							<span class="text-text-light">Source:</span>
 							<span

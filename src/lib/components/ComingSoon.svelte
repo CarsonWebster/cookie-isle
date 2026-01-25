@@ -14,6 +14,7 @@
 	import { config } from '$lib/config';
 
 	// Newsletter form state using Svelte 5 runes
+	let firstName = $state('');
 	let email = $state('');
 	let isSubmitting = $state(false);
 	let submitStatus = $state<'idle' | 'success' | 'error'>('idle');
@@ -50,6 +51,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					email: email.trim(),
+					firstName: firstName.trim() || undefined,
 					source: 'coming-soon'
 				})
 			});
@@ -59,7 +61,8 @@
 			if (data.success) {
 				submitStatus = 'success';
 				submitMessage = data.message || config.newsletter.successMessage;
-				email = ''; // Clear the form on success
+				firstName = ''; // Clear the form on success
+				email = '';
 			} else {
 				submitStatus = 'error';
 				// Use first validation detail if available, otherwise generic error
@@ -121,17 +124,28 @@
 				<h3 class="mb-4 text-lg font-medium text-secondary">
 					{config.newsletter.headline}
 				</h3>
-				<form onsubmit={handleSubmit} class="flex flex-col gap-3 sm:flex-row">
-					<label for="newsletter-email" class="sr-only">Email address</label>
-					<input
-						id="newsletter-email"
-						type="email"
-						bind:value={email}
-						placeholder={config.newsletter.placeholder}
-						required
-						disabled={isSubmitting}
-						class="flex-1 rounded-full border border-tertiary-medium bg-white px-5 py-3 text-secondary placeholder-text-light/60 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-					/>
+				<form onsubmit={handleSubmit} class="flex flex-col gap-3">
+					<div class="flex flex-col gap-3 sm:flex-row">
+						<label for="newsletter-firstName" class="sr-only">First name</label>
+						<input
+							id="newsletter-firstName"
+							type="text"
+							bind:value={firstName}
+							placeholder="First name"
+							disabled={isSubmitting}
+							class="flex-1 rounded-full border border-tertiary-medium bg-white px-5 py-3 text-secondary placeholder-text-light/60 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:max-w-[140px]"
+						/>
+						<label for="newsletter-email" class="sr-only">Email address</label>
+						<input
+							id="newsletter-email"
+							type="email"
+							bind:value={email}
+							placeholder={config.newsletter.placeholder}
+							required
+							disabled={isSubmitting}
+							class="flex-1 rounded-full border border-tertiary-medium bg-white px-5 py-3 text-secondary placeholder-text-light/60 shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+						/>
+					</div>
 					<button
 						type="submit"
 						disabled={isSubmitting || !isValidEmail}

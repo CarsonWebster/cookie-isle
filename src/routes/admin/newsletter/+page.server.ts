@@ -6,6 +6,7 @@ import { desc } from 'drizzle-orm';
 export interface NewsletterSubscriber {
 	id: number;
 	email: string;
+	firstName: string | null;
 	source: string | null;
 	subscribed: boolean | null;
 	subscribedAt: string | null;
@@ -24,11 +25,12 @@ export interface NewsletterPageData {
  */
 export function _generateCSV(subscribers: NewsletterSubscriber[]): string {
 	// CSV header
-	const header = 'Email,Source,Subscribed,Subscribed Date,Unsubscribed Date\n';
+	const header = 'First Name,Email,Source,Subscribed,Subscribed Date,Unsubscribed Date\n';
 
 	// CSV rows
 	const rows = subscribers
 		.map((sub) => {
+			const firstName = sub.firstName || '';
 			const email = sub.email;
 			const source = sub.source || 'website';
 			const subscribed = sub.subscribed !== false ? 'Yes' : 'No';
@@ -36,12 +38,13 @@ export function _generateCSV(subscribers: NewsletterSubscriber[]): string {
 			const unsubscribedDate = sub.unsubscribedAt || '';
 
 			// Escape quotes in values
+			const escapedFirstName = firstName.replace(/"/g, '""');
 			const escapedEmail = email.replace(/"/g, '""');
 			const escapedSource = source.replace(/"/g, '""');
 			const escapedSubscribedDate = subscribedDate.replace(/"/g, '""');
 			const escapedUnsubscribedDate = unsubscribedDate.replace(/"/g, '""');
 
-			return `"${escapedEmail}","${escapedSource}","${subscribed}","${escapedSubscribedDate}","${escapedUnsubscribedDate}"`;
+			return `"${escapedFirstName}","${escapedEmail}","${escapedSource}","${subscribed}","${escapedSubscribedDate}","${escapedUnsubscribedDate}"`;
 		})
 		.join('\n');
 
@@ -65,6 +68,7 @@ export const load: PageServerLoad = async ({ platform }) => {
 			.select({
 				id: newsletter.id,
 				email: newsletter.email,
+				firstName: newsletter.firstName,
 				source: newsletter.source,
 				subscribed: newsletter.subscribed,
 				subscribedAt: newsletter.subscribedAt,

@@ -12,6 +12,7 @@ import { sendWelcomeEmail } from '$lib/server/email';
 /** Newsletter signup request body */
 export interface NewsletterRequest {
 	email: string;
+	firstName?: string;
 	source?: string;
 }
 
@@ -75,6 +76,11 @@ export function _validateNewsletterRequest(body: unknown): string[] {
 		errors.push('Email must be a string');
 	} else if (!_isValidEmail(req.email)) {
 		errors.push('Invalid email format');
+	}
+
+	// Validate firstName (optional)
+	if (req.firstName !== undefined && typeof req.firstName !== 'string') {
+		errors.push('First name must be a string');
 	}
 
 	// Validate source (optional)
@@ -142,6 +148,7 @@ export async function POST({ request, platform }: RequestEvent): Promise<Respons
 
 	const req = body as NewsletterRequest;
 	const email = _normalizeEmail(req.email);
+	const firstName = req.firstName?.trim() || null;
 	const source = req.source || 'website';
 
 	// Check for database availability
@@ -177,6 +184,7 @@ export async function POST({ request, platform }: RequestEvent): Promise<Respons
 		// Insert new subscriber
 		await db.insert(newsletter).values({
 			email,
+			firstName,
 			source,
 			unsubscribeToken
 		});

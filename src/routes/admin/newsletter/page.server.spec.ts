@@ -39,6 +39,7 @@ describe('Newsletter Page Server', () => {
 				{
 					id: 1,
 					email: 'test@example.com',
+					firstName: null,
 					source: 'website',
 					subscribed: true,
 					subscribedAt: '2026-01-16T10:00:00.000Z',
@@ -47,6 +48,7 @@ describe('Newsletter Page Server', () => {
 				{
 					id: 2,
 					email: 'user@test.com',
+					firstName: null,
 					source: 'coming-soon',
 					subscribed: true,
 					subscribedAt: '2026-01-15T09:00:00.000Z',
@@ -56,14 +58,14 @@ describe('Newsletter Page Server', () => {
 
 			const csv = _generateCSV(subscribers);
 
-			expect(csv).toContain('Email,Source,Subscribed,Subscribed Date,Unsubscribed Date');
-			expect(csv).toContain('"test@example.com","website","Yes","2026-01-16T10:00:00.000Z",""');
-			expect(csv).toContain('"user@test.com","coming-soon","Yes","2026-01-15T09:00:00.000Z",""');
+			expect(csv).toContain('First Name,Email,Source,Subscribed,Subscribed Date,Unsubscribed Date');
+			expect(csv).toContain('","test@example.com","website","Yes","2026-01-16T10:00:00.000Z",""');
+			expect(csv).toContain('","user@test.com","coming-soon","Yes","2026-01-15T09:00:00.000Z",""');
 		});
 
 		it('should handle empty subscribers array', () => {
 			const csv = _generateCSV([]);
-			expect(csv).toBe('Email,Source,Subscribed,Subscribed Date,Unsubscribed Date\n');
+			expect(csv).toBe('First Name,Email,Source,Subscribed,Subscribed Date,Unsubscribed Date\n');
 		});
 
 		it('should escape quotes in email addresses', () => {
@@ -71,6 +73,7 @@ describe('Newsletter Page Server', () => {
 				{
 					id: 1,
 					email: 'test"quoted"@example.com',
+					firstName: null,
 					source: 'website',
 					subscribed: true,
 					subscribedAt: '2026-01-16T10:00:00.000Z',
@@ -87,6 +90,7 @@ describe('Newsletter Page Server', () => {
 				{
 					id: 1,
 					email: 'test@example.com',
+					firstName: null,
 					source: null,
 					subscribed: true,
 					subscribedAt: '2026-01-16T10:00:00.000Z',
@@ -95,7 +99,7 @@ describe('Newsletter Page Server', () => {
 			];
 
 			const csv = _generateCSV(subscribers);
-			expect(csv).toContain('"test@example.com","website",');
+			expect(csv).toContain('","test@example.com","website",');
 		});
 
 		it('should handle null subscribedAt', () => {
@@ -103,6 +107,7 @@ describe('Newsletter Page Server', () => {
 				{
 					id: 1,
 					email: 'test@example.com',
+					firstName: null,
 					source: 'website',
 					subscribed: true,
 					subscribedAt: null,
@@ -111,7 +116,7 @@ describe('Newsletter Page Server', () => {
 			];
 
 			const csv = _generateCSV(subscribers);
-			expect(csv).toContain('"test@example.com","website","Yes","",""');
+			expect(csv).toContain('","test@example.com","website","Yes","",""');
 		});
 
 		it('should show unsubscribed status correctly', () => {
@@ -119,6 +124,7 @@ describe('Newsletter Page Server', () => {
 				{
 					id: 1,
 					email: 'test@example.com',
+					firstName: null,
 					source: 'website',
 					subscribed: false,
 					subscribedAt: '2026-01-16T10:00:00.000Z',
@@ -128,7 +134,7 @@ describe('Newsletter Page Server', () => {
 
 			const csv = _generateCSV(subscribers);
 			expect(csv).toContain(
-				'"test@example.com","website","No","2026-01-16T10:00:00.000Z","2026-01-17T10:00:00.000Z"'
+				'","test@example.com","website","No","2026-01-16T10:00:00.000Z","2026-01-17T10:00:00.000Z"'
 			);
 		});
 	});
@@ -266,6 +272,7 @@ describe('Newsletter Page Server', () => {
 			const subscriber: NewsletterSubscriber = {
 				id: 1,
 				email: 'test@example.com',
+					firstName: null,
 				source: 'website',
 				subscribed: true,
 				subscribedAt: '2026-01-16T10:00:00.000Z',
@@ -281,6 +288,7 @@ describe('Newsletter Page Server', () => {
 			const subscriber: NewsletterSubscriber = {
 				id: 1,
 				email: 'test@example.com',
+					firstName: null,
 				source: null,
 				subscribed: null,
 				subscribedAt: null,

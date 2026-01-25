@@ -68,6 +68,7 @@ export const orders = sqliteTable('orders', {
 export const newsletter = sqliteTable('newsletter', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	email: text('email').notNull().unique(),
+	firstName: text('first_name'),
 	source: text('source').default('website'),
 	subscribed: integer('subscribed', { mode: 'boolean' }).default(true),
 	unsubscribeToken: text('unsubscribe_token').notNull().unique(),

@@ -28,6 +28,7 @@ export const GET: RequestHandler = async ({ platform, cookies }) => {
 			.select({
 				id: newsletter.id,
 				email: newsletter.email,
+				firstName: newsletter.firstName,
 				source: newsletter.source,
 				subscribed: newsletter.subscribed,
 				subscribedAt: newsletter.subscribedAt,
